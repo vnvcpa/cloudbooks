@@ -62,7 +62,8 @@ body {
   left: var(--sidebar-width);
   right: 0;
   bottom: 0;
-  padding: 30px;
+  /* Top reduced by 80% (6px), Sides reduced by 30% (21px), Bottom kept at 30px */
+  padding: 6px 21px 30px 21px;
   overflow-y: auto;
 }
 
@@ -467,7 +468,7 @@ body {
   margin-bottom: 20px;
 }
 .dashboard-header h1 {
-  font-size: 24px;
+  font-size: 19.2px; /* Reduced by 20% from 24px */
   font-weight: 500;
   color: var(--primary-dark);
 }
@@ -490,7 +491,10 @@ body {
   
   .app-sidebar {
     transform: translateX(-100%);
-    width: 100%;
+    width: max-content; /* Shrinks to fit longest button */
+    min-width: 240px; /* Prevents it from getting too narrow */
+    border-right: 1px solid var(--border-color);
+    box-shadow: 4px 0 16px rgba(0,0,0,0.1);
     align-items: stretch;
     overflow-y: auto;
   }
