@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VNVBooks</title>
+  <title>VNVBooks - Cloud Accounting System</title>
   <style>
     /* CSS Variables for cohesive enterprise theming */
     :root {
@@ -45,12 +45,12 @@
       align-items: center;
       justify-content: space-between;
       padding: 0 20px;
-      z-index: 998;
+      z-index: 1000; /* Header spans full width seamlessly over sidebar */
     }
 
     .app-sidebar {
       position: fixed;
-      top: 0;
+      top: var(--header-height); /* Sidebar sits cleanly beneath the header */
       left: 0;
       bottom: 0;
       width: var(--sidebar-width);
@@ -78,6 +78,7 @@
       flex: 1;
       display: flex;
       align-items: center;
+      gap: 10px;
     }
 
     .header-center {
@@ -95,7 +96,7 @@
     }
 
     .hamburger-btn {
-      display: none;
+      display: none; /* Hidden on desktop */
     }
 
     .logo-text-main {
@@ -126,42 +127,78 @@
       background-color: #e0f2fe;
     }
 
-    /* 3. Left Navigation Panel Elements */
-    .sidebar-top-slot {
-      width: 100%;
-      height: var(--header-height);
+    /* Select Client - Desktop Header Version */
+    .header-client-container {
+      position: relative;
+      height: 100%;
       display: flex;
       align-items: center;
-      justify-content: center;
-      border-bottom: 1px solid var(--border-color);
-      background-color: var(--bg-white);
     }
 
-    .btn-client-books {
-      width: 42px;
-      height: 42px;
-      background-color: var(--primary-dark);
-      color: var(--bg-white);
+    .btn-header-client {
+      background: transparent;
+      color: var(--primary-dark);
       border: none;
-      border-radius: 8px;
-      font-size: 8.5px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      transition: background-color 0.2s ease;
-      box-shadow: 0 2px 4px rgba(10, 66, 117, 0.2);
       display: flex;
       align-items: center;
-      justify-content: center;
-      text-align: center;
-      line-height: 1.1;
-      padding: 4px;
-      flex-shrink: 0;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      transition: background-color 0.2s ease;
+      white-space: nowrap; /* Do not wrap text */
     }
 
-    .btn-client-books:hover {
-      background-color: var(--primary-light);
+    .btn-header-client:hover {
+      background-color: #e0f2fe;
     }
 
+    .popup-client {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      top: 40px; 
+      left: 0;
+      background-color: var(--bg-white);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 8px 0;
+      min-width: 180px;
+      z-index: 1001;
+      transform: translateY(-10px);
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header-client-container:hover .popup-client {
+      visibility: visible;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .popup-client a {
+      padding: 10px 20px;
+      text-decoration: none;
+      color: var(--text-main);
+      font-size: 13px;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .popup-client a:hover {
+      background-color: #e0f2fe;
+      color: var(--primary-dark);
+    }
+
+    /* Display Utility Classes */
+    .desktop-only { display: flex; }
+    .mobile-only { display: none !important; }
+
+    /* 3. Left Navigation Panel Elements */
     .nav-item-container {
       width: 100%;
       display: flex;
@@ -213,9 +250,8 @@
         position: relative;
       }
 
-      /* Desktop Popup overrides for non-Create items */
       .desktop-popup {
-        display: flex !important; /* Force structure for desktop positioning */
+        display: flex !important; 
         visibility: hidden;
         opacity: 0;
         position: absolute;
@@ -235,7 +271,6 @@
         cursor: default;
       }
 
-      /* Keep popup within view if button is near bottom of screen */
       .desktop-popup.popup-bottom {
         top: auto;
         bottom: 0;
@@ -253,7 +288,6 @@
         border-left: 3px solid transparent;
       }
 
-      /* Ensure purely mobile accordions (like the Create fallback) stay completely hidden on desktop */
       .accordion-content:not(.desktop-popup) {
         display: none !important;
       }
@@ -353,6 +387,19 @@
       border-left-color: var(--accent);
     }
 
+    .mobile-group-header {
+      padding: 15px 30px 5px 30px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .accordion-content a.grouped-item {
+      padding: 10px 30px 10px 45px;
+    }
+
     /* Search Overlay */
     .search-overlay {
       position: fixed;
@@ -360,14 +407,27 @@
       left: 0;
       width: 100%;
       height: calc(100vh - var(--header-height));
-      background-color: var(--bg-app);
+      background-color: rgba(0, 0, 0, 0.4); 
       z-index: 1001;
       display: none;
-      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 30px;
     }
 
     .search-overlay.active {
       display: flex;
+    }
+
+    .search-panel {
+      width: 70%;
+      background-color: var(--bg-white);
+      border-radius: 8px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      max-height: 80vh;
+      overflow: hidden;
     }
 
     .search-bar-container {
@@ -386,6 +446,27 @@
       border-radius: 20px;
       font-size: 15px;
       outline: none;
+    }
+    
+    .search-results {
+      padding: 20px;
+      flex: 1;
+      overflow-y: auto;
+      background-color: var(--bg-white);
+    }
+
+    .result-item {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 14px;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .result-item:hover {
+      background-color: #e0f2fe;
+      color: var(--primary-dark);
     }
 
     /* Dashboard Card */
@@ -409,11 +490,12 @@
 
     /* Mobile Responsive Adjustments */
     @media (max-width: 768px) {
-      .app-header { z-index: 1002; }
+      .desktop-only { display: none !important; }
+      .mobile-only { display: flex !important; }
+
       .hamburger-btn { display: flex; }
       
       .app-sidebar {
-        top: var(--header-height);
         transform: translateX(-100%);
         width: 100%;
         align-items: stretch;
@@ -422,7 +504,6 @@
 
       .app-sidebar.mobile-open { transform: translateX(0); }
       .app-main { left: 0; }
-      .sidebar-top-slot { height: auto; border-bottom: none; }
       .nav-spacer { display: none; }
 
       .nav-item, .btn-client-books {
@@ -437,17 +518,24 @@
         background-color: var(--bg-white);
         color: var(--text-muted);
         box-shadow: none;
+        border: none;
         border-bottom: 1px solid var(--border-color);
+        font-size: 16px;
+        font-weight: 600;
+        white-space: nowrap;
       }
 
-      .btn-client-books { font-size: 16px; font-weight: 600; text-align: left; }
+      .btn-client-books:hover {
+        background-color: #e0f2fe;
+        color: var(--primary-dark);
+      }
+
       .nav-item svg.icon { margin-bottom: 0; }
       .nav-text { font-size: 16px; }
       .accordion-arrow { display: block; }
       .accordion-arrow.active { transform: rotate(180deg); }
       .mega-menu { display: none !important; }
 
-      /* Reset mobile styles for popups so they act as accordions again */
       .desktop-popup {
         visibility: visible;
         opacity: 1;
@@ -457,6 +545,21 @@
         border: none;
         border-radius: 0;
       }
+
+      /* Search overlay specifically for mobile */
+      .search-overlay {
+        background-color: var(--bg-app); 
+        padding-top: 0;
+      }
+
+      .search-panel {
+        width: 100%;
+        height: 100%;
+        max-height: 100%;
+        border-radius: 0;
+        box-shadow: none;
+        background-color: transparent;
+      }
     }
   </style>
 </head>
@@ -464,11 +567,25 @@
 
   <header class="app-header">
     <div class="header-left">
-      <button class="icon-btn hamburger-btn" onclick="toggleSidebar()" title="Menu">
+      <button class="icon-btn hamburger-btn mobile-only" onclick="toggleSidebar()" title="Menu">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
         </svg>
       </button>
+
+      <div class="header-client-container desktop-only">
+        <button class="btn-header-client">
+          <span class="client-name-display">Select Client</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div class="popup-client">
+          <a href="#" onclick="selectClient('Client Books A', event)">Client Books A</a>
+          <a href="#" onclick="selectClient('Client Books B', event)">Client Books B</a>
+          <a href="#" onclick="selectClient('Add New Client', event)">Add New Client</a>
+        </div>
+      </div>
     </div>
 
     <div class="header-center">
@@ -476,7 +593,7 @@
     </div>
 
     <div class="header-right">
-      <button class="icon-btn" onclick="toggleSearch()" title="Search">
+      <button class="icon-btn" id="btnOpenSearch" onclick="toggleSearch()" title="Search">
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
@@ -486,17 +603,17 @@
 
   <nav class="app-sidebar" id="appSidebar">
     
-    <div class="nav-item-container sidebar-top-slot">
+    <div class="nav-item-container mobile-only">
       <button class="btn-client-books" onclick="toggleAccordion('client')">
-        <span>Select<br>Client</span>
+        <span class="client-name-display">Select Client</span>
         <svg class="accordion-arrow" id="arrow-client" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
       </button>
-      <div class="accordion-content desktop-popup" id="acc-client">
-        <a href="#">Client Books A</a>
-        <a href="#">Client Books B</a>
-        <a href="#">Add New Client</a>
+      <div class="accordion-content" id="acc-client">
+        <a href="#" onclick="selectClient('Client Books A', event)">Client Books A</a>
+        <a href="#" onclick="selectClient('Client Books B', event)">Client Books B</a>
+        <a href="#" onclick="selectClient('Add New Client', event)">Add New Client</a>
       </div>
     </div>
 
@@ -529,11 +646,32 @@
           </div>
         </div>
       </div>
+      
       <div class="accordion-content" id="acc-create">
-        <a href="#">Sales Invoice / Receipt</a>
-        <a href="#">Purchase Order / Payment</a>
-        <a href="#">General Journal</a>
-        <a href="#">Time Sheet</a>
+        <div class="mobile-group-header">Sales</div>
+        <a href="#" class="grouped-item">Sales Receipt</a>
+        <a href="#" class="grouped-item">Sales Invoice</a>
+        <a href="#" class="grouped-item">AR Collection</a>
+        <a href="#" class="grouped-item">Statement</a>
+        <a href="#" class="grouped-item">Add Customer</a>
+        
+        <div class="mobile-group-header">Purchases</div>
+        <a href="#" class="grouped-item">Cash Purchases</a>
+        <a href="#" class="grouped-item">Purchase Orders</a>
+        <a href="#" class="grouped-item">Receiving Reports</a>
+        <a href="#" class="grouped-item">AP Payments</a>
+        <a href="#" class="grouped-item">Credit Card Charges</a>
+        <a href="#" class="grouped-item">Add Vendor</a>
+
+        <div class="mobile-group-header">Payroll</div>
+        <a href="#" class="grouped-item">Time Sheet</a>
+        <a href="#" class="grouped-item">Add Employees</a>
+
+        <div class="mobile-group-header">Others</div>
+        <a href="#" class="grouped-item">General Journal</a>
+        <a href="#" class="grouped-item">Deposit</a>
+        <a href="#" class="grouped-item">Transfer</a>
+        <a href="#" class="grouped-item">Products/Services</a>
       </div>
     </div>
 
@@ -594,31 +732,71 @@
   </nav>
 
   <div class="search-overlay" id="searchOverlay">
-    <div class="search-bar-container">
-      <button class="icon-btn" onclick="toggleSearch()" title="Close Search">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline>
-        </svg>
-      </button>
-      <input type="text" id="transactionSearch" class="search-input-box" placeholder="Search transactions..." onkeyup="mockSearchMatches()">
-    </div>
-    <div class="search-results" id="searchResultsContainer">
-      <p style="color: var(--text-muted); font-size: 14px;">Type to search for invoices, receipts, and clients...</p>
+    <div class="search-panel" id="searchPanel">
+      <div class="search-bar-container">
+        <button class="icon-btn" onclick="toggleSearch()" title="Close Search">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <input type="text" id="transactionSearch" class="search-input-box" placeholder="Search transactions..." onkeyup="mockSearchMatches()">
+      </div>
+      <div class="search-results" id="searchResultsContainer">
+        <p style="color: var(--text-muted); font-size: 14px;">Type to search for invoices, receipts, and clients...</p>
+      </div>
     </div>
   </div>
 
   <main class="app-main">
-    <div class="dashboard-header"><h1>Dashboard</h1><p>VNVBooks General Ledger Overview</p></div>
+    <div class="dashboard-header"><h1>Dashboard</h1><p id="dashboardStatus">VNVBooks General Ledger Overview</p></div>
     <div class="dashboard-card"><p>Welcome back. Your accounts are up to date.</p></div>
   </main>
 
   <script>
+    // Logic to select a client and hide the menu dynamically
+    function selectClient(clientName, event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      // Update the label for both Desktop and Mobile views
+      const displaySpans = document.querySelectorAll('.client-name-display');
+      displaySpans.forEach(span => span.textContent = clientName);
+
+      // Close mobile accordion if open
+      const accClient = document.getElementById('acc-client');
+      const arrowClient = document.getElementById('arrow-client');
+      if (accClient && accClient.classList.contains('active')) {
+        accClient.classList.remove('active');
+        if (arrowClient) arrowClient.classList.remove('active');
+      }
+
+      // Close sidebar if on mobile to view the dashboard change
+      if (window.innerWidth <= 768) {
+        document.getElementById('appSidebar').classList.remove('mobile-open');
+      }
+
+      // Hide desktop popup momentarily (CSS hover handles normal state, this forces a hide upon click)
+      const desktopPopup = document.querySelector('.popup-client');
+      if (desktopPopup) {
+        desktopPopup.style.visibility = 'hidden';
+        desktopPopup.style.opacity = '0';
+        setTimeout(() => {
+          desktopPopup.style.visibility = '';
+          desktopPopup.style.opacity = '';
+        }, 300); // Resets after cursor moves away
+      }
+
+      // Update Dashboard to reflect selected client
+      document.getElementById('dashboardStatus').innerText = 'Viewing ledger for: ' + clientName;
+    }
+
     function toggleSidebar() { 
       document.getElementById('appSidebar').classList.toggle('mobile-open'); 
     }
 
     function toggleAccordion(id) {
-      // Disables tap logic entirely on desktop since CSS hover handles everything smoothly now
       if (window.innerWidth > 768) return; 
 
       const contentToToggle = document.getElementById('acc-' + id);
@@ -644,11 +822,33 @@
       const query = document.getElementById('transactionSearch').value;
       const container = document.getElementById('searchResultsContainer');
       if (query.length > 1) {
-        container.innerHTML = '<div class="result-item"><strong>' + query + '</strong> - Mock Transaction #102</div><div class="result-item"><strong>' + query + '</strong> - Mock Client Acme</div>';
+        container.innerHTML = 
+          '<div class="result-item" onclick="handleSearchResultClick(\'Mock Transaction #102\')"><strong>' + query + '</strong> - Mock Transaction #102</div>' +
+          '<div class="result-item" onclick="handleSearchResultClick(\'Mock Client Acme\')"><strong>' + query + '</strong> - Mock Client Acme</div>';
       } else {
         container.innerHTML = '<p style="color: var(--text-muted); font-size: 14px;">Type to search...</p>';
       }
     }
+
+    function handleSearchResultClick(itemName) {
+      toggleSearch();
+      document.getElementById('dashboardStatus').innerText = 'Viewing details for: ' + itemName;
+    }
+
+    // Global listener to close search panel when clicking outside of it
+    document.addEventListener('click', function(event) {
+      const overlay = document.getElementById('searchOverlay');
+      const searchPanel = document.getElementById('searchPanel');
+      const searchBtn = document.getElementById('btnOpenSearch');
+      
+      // Check if the overlay is currently open
+      if (overlay.classList.contains('active')) {
+        // If the user clicked outside the central search panel AND they didn't click the search toggle button in the header
+        if (!searchPanel.contains(event.target) && !searchBtn.contains(event.target)) {
+          toggleSearch();
+        }
+      }
+    });
   </script>
 </body>
 </html>
