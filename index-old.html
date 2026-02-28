@@ -4,564 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VNVBooks</title>
-  <style>
-    /* CSS Variables for cohesive enterprise theming */
-    :root {
-      --primary-dark: #0A4275;
-      --primary-light: #1584A4;
-      --accent: #00ACC1;
-      --text-main: #333333;
-      --text-muted: #607D8B;
-      --bg-app: #f4f7f9;
-      --bg-white: #ffffff;
-      --border-color: #eaedf1;
-      --header-height: 50px;
-      --sidebar-width: 55px;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-      background-color: var(--bg-app);
-      color: var(--text-main);
-      overflow: hidden;
-    }
-
-    /* 1. Overall Layout & Dimensions */
-    .app-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: var(--header-height);
-      background-color: var(--bg-white);
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
-      z-index: 1000; /* Header spans full width seamlessly over sidebar */
-    }
-
-    .app-sidebar {
-      position: fixed;
-      top: var(--header-height); /* Sidebar sits cleanly beneath the header */
-      left: 0;
-      bottom: 0;
-      width: var(--sidebar-width);
-      background-color: var(--bg-white);
-      border-right: 1px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 999;
-      transition: transform 0.3s ease;
-    }
-
-    .app-main {
-      position: absolute;
-      top: var(--header-height);
-      left: var(--sidebar-width);
-      right: 0;
-      bottom: 0;
-      padding: 30px;
-      overflow-y: auto;
-    }
-
-    /* 2. Top Header Elements */
-    .header-left {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .header-center {
-      flex: 0 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .header-right {
-      flex: 1;
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-    }
-
-    .hamburger-btn {
-      display: none; /* Hidden on desktop */
-    }
-
-    .logo-text-main {
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--primary-dark);
-      letter-spacing: 0.5px;
-    }
-    .logo-text-main span {
-      color: var(--primary-light);
-    }
-
-    .icon-btn {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: color 0.2s ease, background-color 0.2s ease;
-      padding: 6px;
-      border-radius: 4px;
-    }
-
-    .icon-btn:hover {
-      color: var(--primary-dark);
-      background-color: #e0f2fe;
-    }
-
-    /* Select Client - Desktop Header Version */
-    .header-client-container {
-      position: relative;
-      height: 100%;
-      display: flex;
-      align-items: center;
-    }
-
-    .btn-header-client {
-      background: transparent;
-      color: var(--primary-dark);
-      border: none;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 10px;
-      border-radius: 6px;
-      transition: background-color 0.2s ease;
-      white-space: nowrap; /* Do not wrap text */
-    }
-
-    .btn-header-client:hover {
-      background-color: #e0f2fe;
-    }
-
-    .popup-client {
-      visibility: hidden;
-      opacity: 0;
-      position: absolute;
-      top: 40px; 
-      left: 0;
-      background-color: var(--bg-white);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      padding: 8px 0;
-      min-width: 180px;
-      z-index: 1001;
-      transform: translateY(-10px);
-      transition: all 0.2s ease;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .header-client-container:hover .popup-client {
-      visibility: visible;
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .popup-client a {
-      padding: 10px 20px;
-      text-decoration: none;
-      color: var(--text-main);
-      font-size: 13px;
-      transition: background-color 0.2s ease, color 0.2s ease;
-      white-space: nowrap;
-    }
-
-    .popup-client a:hover {
-      background-color: #e0f2fe;
-      color: var(--primary-dark);
-    }
-
-    /* Display Utility Classes */
-    .desktop-only { display: flex; }
-    .mobile-only { display: none !important; }
-
-    /* 3. Left Navigation Panel Elements */
-    .nav-item-container {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .nav-item {
-      position: relative;
-      width: 100%;
-      height: 55px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .nav-item:hover {
-      color: var(--primary-dark);
-      background-color: #e0f2fe;
-    }
-
-    .nav-item svg.icon {
-      margin-bottom: 4px;
-    }
-
-    .nav-text {
-      font-size: 9px;
-      font-weight: 600;
-      letter-spacing: 0.3px;
-      text-align: center;
-    }
-
-    .accordion-arrow {
-      display: none;
-      margin-left: auto;
-      transition: transform 0.3s ease;
-    }
-
-    .nav-spacer {
-      flex: 1;
-    }
-
-    /* Desktop Hover Menus (Mega-Menu & Popups) */
-    @media (min-width: 769px) {
-      .nav-item-container {
-        position: relative;
-      }
-
-      .desktop-popup {
-        display: flex !important; 
-        visibility: hidden;
-        opacity: 0;
-        position: absolute;
-        top: 0;
-        left: var(--sidebar-width);
-        background-color: var(--bg-white);
-        box-shadow: 4px 4px 24px rgba(0, 0, 0, 0.08);
-        border: 1px solid var(--border-color);
-        border-left: none;
-        border-radius: 0 8px 8px 0;
-        padding: 10px 0;
-        width: auto;
-        min-width: 200px;
-        z-index: 1000;
-        transform: translateX(-10px);
-        transition: all 0.2s ease;
-        cursor: default;
-      }
-
-      .desktop-popup.popup-bottom {
-        top: auto;
-        bottom: 0;
-      }
-
-      .nav-item-container:hover .desktop-popup {
-        visibility: visible;
-        opacity: 1;
-        transform: translateX(0);
-      }
-
-      .desktop-popup a {
-        padding: 10px 24px;
-        font-size: 13px;
-        border-left: 3px solid transparent;
-      }
-
-      .accordion-content:not(.desktop-popup) {
-        display: none !important;
-      }
-    }
-
-    /* Mega-Menu Dedicated Desktop Styles */
-    .mega-menu {
-      visibility: hidden;
-      opacity: 0;
-      position: absolute;
-      top: 0;
-      left: var(--sidebar-width);
-      background-color: var(--bg-white);
-      box-shadow: 4px 4px 24px rgba(0, 0, 0, 0.08);
-      border: 1px solid var(--border-color);
-      border-left: none;
-      border-radius: 0 8px 8px 0;
-      padding: 24px;
-      display: flex;
-      gap: 35px;
-      z-index: 1000;
-      transform: translateX(-10px);
-      transition: all 0.2s ease;
-      cursor: default;
-    }
-
-    .nav-item.create-trigger:hover .mega-menu {
-      visibility: visible;
-      opacity: 1;
-      transform: translateX(0);
-    }
-
-    .menu-column {
-      display: flex;
-      flex-direction: column;
-      min-width: 160px;
-    }
-
-    .menu-column h4 {
-      font-size: 13px;
-      color: var(--primary-dark);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: 2px solid var(--accent);
-      padding-bottom: 6px;
-      margin-bottom: 12px;
-      white-space: nowrap;
-    }
-
-    .menu-column ul {
-      list-style: none;
-    }
-
-    .menu-column li {
-      margin-bottom: 8px;
-    }
-
-    .menu-column a {
-      text-decoration: none;
-      color: var(--text-main);
-      font-size: 13px;
-      transition: color 0.2s ease;
-      white-space: nowrap;
-    }
-
-    .menu-column a:hover {
-      color: var(--accent);
-      font-weight: 500;
-    }
-
-    /* Mobile Accordion Base Content */
-    .accordion-content {
-      display: none;
-      flex-direction: column;
-      background-color: #f8fafc;
-      width: 100%;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .accordion-content.active {
-      display: flex;
-    }
-
-    .accordion-content a {
-      padding: 15px 30px;
-      text-decoration: none;
-      color: var(--text-main);
-      font-size: 14px;
-      border-left: 3px solid transparent;
-      transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-      white-space: nowrap;
-    }
-
-    .accordion-content a:hover {
-      background-color: #e0f2fe;
-      color: var(--primary-dark);
-      border-left-color: var(--accent);
-    }
-
-    .mobile-group-header {
-      padding: 15px 30px 5px 30px;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--primary-light);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .accordion-content a.grouped-item {
-      padding: 10px 30px 10px 45px;
-    }
-
-    /* Search Overlay */
-    .search-overlay {
-      position: fixed;
-      top: var(--header-height);
-      left: 0;
-      width: 100%;
-      height: calc(100vh - var(--header-height));
-      background-color: rgba(0, 0, 0, 0.4); 
-      z-index: 1001;
-      display: none;
-      justify-content: center;
-      align-items: flex-start;
-      padding-top: 30px;
-    }
-
-    .search-overlay.active {
-      display: flex;
-    }
-
-    .search-panel {
-      width: 70%;
-      background-color: var(--bg-white);
-      border-radius: 8px;
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
-      display: flex;
-      flex-direction: column;
-      max-height: 80vh;
-      overflow: hidden;
-    }
-
-    .search-bar-container {
-      background-color: var(--bg-white);
-      padding: 15px 20px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .search-input-box {
-      flex: 1;
-      padding: 10px 15px;
-      border: 1px solid #d1d9e0;
-      border-radius: 20px;
-      font-size: 15px;
-      outline: none;
-    }
-    
-    .search-results {
-      padding: 20px;
-      flex: 1;
-      overflow-y: auto;
-      background-color: var(--bg-white);
-    }
-
-    .result-item {
-      padding: 12px;
-      border-bottom: 1px solid var(--border-color);
-      font-size: 14px;
-      color: var(--text-main);
-      cursor: pointer;
-      transition: background-color 0.2s ease, color 0.2s ease;
-    }
-
-    .result-item:hover {
-      background-color: #e0f2fe;
-      color: var(--primary-dark);
-    }
-
-    /* Dashboard Card */
-    .dashboard-header {
-      margin-bottom: 20px;
-    }
-    .dashboard-header h1 {
-      font-size: 24px;
-      font-weight: 500;
-      color: var(--primary-dark);
-    }
-    .dashboard-card {
-      background: var(--bg-white);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 40px;
-      text-align: center;
-      color: var(--text-muted);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-    }
-
-    /* Mobile Responsive Adjustments */
-    @media (max-width: 768px) {
-      .desktop-only { display: none !important; }
-      .mobile-only { display: flex !important; }
-
-      .hamburger-btn { display: flex; }
-      
-      .app-sidebar {
-        transform: translateX(-100%);
-        width: 100%;
-        align-items: stretch;
-        overflow-y: auto;
-      }
-
-      .app-sidebar.mobile-open { transform: translateX(0); }
-      .app-main { left: 0; }
-      .nav-spacer { display: none; }
-
-      .nav-item, .btn-client-books {
-        height: 65px;
-        width: 100%;
-        flex-direction: row;
-        justify-content: flex-start;
-        padding: 0 30px;
-        gap: 20px;
-        border-radius: 0;
-        margin: 0;
-        background-color: var(--bg-white);
-        color: var(--text-muted);
-        box-shadow: none;
-        border: none;
-        border-bottom: 1px solid var(--border-color);
-        font-size: 16px;
-        font-weight: 600;
-        white-space: nowrap;
-      }
-
-      .btn-client-books:hover {
-        background-color: #e0f2fe;
-        color: var(--primary-dark);
-      }
-
-      .nav-item svg.icon { margin-bottom: 0; }
-      .nav-text { font-size: 16px; }
-      .accordion-arrow { display: block; }
-      .accordion-arrow.active { transform: rotate(180deg); }
-      .mega-menu { display: none !important; }
-
-      .desktop-popup {
-        visibility: visible;
-        opacity: 1;
-        position: static;
-        transform: none;
-        box-shadow: none;
-        border: none;
-        border-radius: 0;
-      }
-
-      /* Search overlay specifically for mobile */
-      .search-overlay {
-        background-color: var(--bg-app); 
-        padding-top: 0;
-      }
-
-      .search-panel {
-        width: 100%;
-        height: 100%;
-        max-height: 100%;
-        border-radius: 0;
-        box-shadow: none;
-        background-color: transparent;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
@@ -618,11 +61,20 @@
     </div>
 
     <div class="nav-item-container">
+      <div class="nav-item" onclick="handleMenuClick('dashboard', null, event)">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span class="nav-text">Dashboard</span>
+      </div>
+    </div>
+
+    <div class="nav-item-container">
       <div class="nav-item create-trigger" onclick="toggleAccordion('create')">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
         </svg>
-        <span class="nav-text">Create</span>
+        <span class="nav-text">Add New</span>
         <svg class="accordion-arrow" id="arrow-create" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
@@ -630,48 +82,162 @@
         <div class="mega-menu">
           <div class="menu-column">
             <h4>Sales</h4>
-            <ul><li><a href="#">Sales Receipt</a></li><li><a href="#">Sales Invoice</a></li><li><a href="#">AR Collection</a></li><li><a href="#">Statement</a></li><li><a href="#">Add Customer</a></li></ul>
+            <ul><li><a href="#" onclick="handleMenuClick('addnew', 'salesReceipt', event)">Sales Receipt</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'sales_invoice', event)">Sales Invoice</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'ar_collection', event)">AR Collection</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'statement', event)">Statement</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'customer', event)">Customer</a></li></ul>
           </div>
           <div class="menu-column">
             <h4>Purchases</h4>
-            <ul><li><a href="#">Cash Purchases</a></li><li><a href="#">Purchase Orders</a></li><li><a href="#">Receiving Reports</a></li><li><a href="#">AP Payments</a></li><li><a href="#">Credit Card Charges</a></li><li><a href="#">Add Vendor</a></li></ul>
+            <ul><li><a href="#" onclick="handleMenuClick('addnew', 'cash_purchases', event)">Cash Purchases</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'purchase_orders', event)">Purchase Orders</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'receiving_reports', event)">Receiving Reports</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'ap_payments', event)">AP Payments</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'credit_card_charges', event)">Credit Card Charges</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'vendors', event)">Vendors</a></li></ul>
           </div>
           <div class="menu-column">
             <h4>Payroll</h4>
-            <ul><li><a href="#">Time Sheet</a></li><li><a href="#">Add Employees</a></li></ul>
+            <ul><li><a href="#" onclick="handleMenuClick('addnew', 'time_sheet', event)">Time Sheet</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'employees', event)">Employees</a></li></ul>
           </div>
           <div class="menu-column">
             <h4>Others</h4>
-            <ul><li><a href="#">General Journal</a></li><li><a href="#">Deposit</a></li><li><a href="#">Transfer</a></li><li><a href="#">Products/Services</a></li></ul>
+            <ul><li><a href="#" onclick="handleMenuClick('addnew', 'general_journal', event)">General Journal</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'deposit', event)">Deposit</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'transfer', event)">Transfer</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'products_services', event)">Products/Services</a></li></ul>
           </div>
         </div>
       </div>
       
       <div class="accordion-content" id="acc-create">
         <div class="mobile-group-header">Sales</div>
-        <a href="#" class="grouped-item">Sales Receipt</a>
-        <a href="#" class="grouped-item">Sales Invoice</a>
-        <a href="#" class="grouped-item">AR Collection</a>
-        <a href="#" class="grouped-item">Statement</a>
-        <a href="#" class="grouped-item">Add Customer</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'salesReceipt', event)">Sales Receipt</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'sales_invoice', event)">Sales Invoice</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'ar_collection', event)">AR Collection</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'statement', event)">Statement</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'customer', event)">Customer</a>
         
         <div class="mobile-group-header">Purchases</div>
-        <a href="#" class="grouped-item">Cash Purchases</a>
-        <a href="#" class="grouped-item">Purchase Orders</a>
-        <a href="#" class="grouped-item">Receiving Reports</a>
-        <a href="#" class="grouped-item">AP Payments</a>
-        <a href="#" class="grouped-item">Credit Card Charges</a>
-        <a href="#" class="grouped-item">Add Vendor</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'cash_purchases', event)">Cash Purchases</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'purchase_orders', event)">Purchase Orders</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'receiving_reports', event)">Receiving Reports</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'ap_payments', event)">AP Payments</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'credit_card_charges', event)">Credit Card Charges</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'vendors', event)">Vendors</a>
 
         <div class="mobile-group-header">Payroll</div>
-        <a href="#" class="grouped-item">Time Sheet</a>
-        <a href="#" class="grouped-item">Add Employees</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'time_sheet', event)">Time Sheet</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'employees', event)">Employees</a>
 
-        <div class="mobile-group-header">Others</div>
-        <a href="#" class="grouped-item">General Journal</a>
-        <a href="#" class="grouped-item">Deposit</a>
-        <a href="#" class="grouped-item">Transfer</a>
-        <a href="#" class="grouped-item">Products/Services</a>
+        <div class="mobile-group-header">Accountant</div>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'general_journal', event)">General Journal</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'deposit', event)">Deposit</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'transfer', event)">Transfer</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'products_services', event)">Products/Services</a>
+      </div>
+    </div>
+
+    <div class="nav-item-container">
+      <div class="nav-item create-trigger" onclick="toggleAccordion('sales')">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
+        </svg>
+        <span class="nav-text">Sales</span>
+        <svg class="accordion-arrow" id="arrow-sales" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+
+        <div class="mega-menu">
+          <div class="menu-column">
+            <h4>Sales</h4>
+            <ul>
+              <li><a href="#" onclick="handleMenuClick('sales', 'salesReceipt', event)">Sales Receipt</a></li>
+              <li><a href="#" onclick="handleMenuClick('sales', 'salesInvoice', event)">Sales Invoice</a></li>
+              <li><a href="#" onclick="handleMenuClick('sales', 'arCollection', event)">AR Collection</a></li>
+              <li><a href="#" onclick="handleMenuClick('sales', 'statement', event)">Statement</a></li>
+              <li><a href="#" onclick="handleMenuClick('sales', 'customer', event)">Customer</a></li></ul>
+          </div>
+        </div>
+      </div>
+      
+      <div class="accordion-content" id="acc-sales">
+        <div class="mobile-group-header">Sales</div>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'salesReceipt', event)">Sales Receipt</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'salesInvoice', event)">Sales Invoice</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'arCollection', event)">AR Collection</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'statement', event)">Statement</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'customer', event)">Customer</a>
+      </div>
+    </div>
+
+    <div class="nav-item-container">
+      <div class="nav-item create-trigger" onclick="toggleAccordion('purchases')">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
+        </svg>
+        <span class="nav-text">Purchases</span>
+        <svg class="accordion-arrow" id="arrow-purchases" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+
+        <div class="mega-menu">
+          <div class="menu-column">
+            <h4>Purchases</h4>
+            <ul><li><a href="#" onclick="handleMenuClick('purchases', 'cash_purchases', event)">Cash Purchases</a></li><li><a href="#" onclick="handleMenuClick('purchases', 'purchase_orders', event)">Purchase Orders</a></li><li><a href="#" onclick="handleMenuClick('purchases', 'receiving_reports', event)">Receiving Reports</a></li><li><a href="#" onclick="handleMenuClick('purchases', 'ap_payments', event)">AP Payments</a></li><li><a href="#" onclick="handleMenuClick('purchases', 'credit_card_charges', event)">Credit Card Charges</a></li><li><a href="#" onclick="handleMenuClick('purchases', 'vendors', event)">Vendors</a></li></ul>
+          </div>
+        </div>
+      </div>
+      
+      <div class="accordion-content" id="acc-purchases">
+        <div class="mobile-group-header">Purchases</div>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('purchases', 'cash_purchases', event)">Cash Purchases</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('purchases', 'purchase_orders', event)">Purchase Orders</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('purchases', 'receiving_reports', event)">Receiving Reports</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('purchases', 'ap_payments', event)">AP Payments</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('purchases', 'credit_card_charges', event)">Credit Card Charges</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('purchases', 'vendors', event)">Vendors</a>
+      </div>
+    </div>
+
+    <div class="nav-item-container">
+      <div class="nav-item create-trigger" onclick="toggleAccordion('payroll')">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
+        </svg>
+        <span class="nav-text">Payroll</span>
+        <svg class="accordion-arrow" id="arrow-payroll" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+
+        <div class="mega-menu">
+          <div class="menu-column">
+            <h4>Payroll</h4>
+            <ul><li><a href="#" onclick="handleMenuClick('payroll', 'time_sheet', event)">Time Sheet</a></li><li><a href="#" onclick="handleMenuClick('payroll', 'employees', event)">Employees</a></li></ul>
+          </div>
+        </div>
+      </div>
+      
+      <div class="accordion-content" id="acc-payroll">
+        <div class="mobile-group-header">Payroll</div>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('payroll', 'time_sheet', event)">Time Sheet</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('payroll', 'employees', event)">Employees</a>
+      </div>
+    </div>
+
+    <div class="nav-item-container">
+      <div class="nav-item create-trigger" onclick="toggleAccordion('accountant')">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
+        </svg>
+        <span class="nav-text">Accountant</span>
+        <svg class="accordion-arrow" id="arrow-accountant" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+
+        <div class="mega-menu">
+          <div class="menu-column">
+            <h4>Others</h4>
+            <ul><li><a href="#" onclick="handleMenuClick('accountant', 'general_journal', event)">General Journal</a></li><li><a href="#" onclick="handleMenuClick('accountant', 'deposit', event)">Deposit</a></li><li><a href="#" onclick="handleMenuClick('accountant', 'transfer', event)">Transfer</a></li><li><a href="#" onclick="handleMenuClick('accountant', 'products_services', event)">Products/Services</a></li></ul>
+          </div>
+        </div>
+      </div>
+      
+      <div class="accordion-content" id="acc-accountant">
+        <div class="mobile-group-header">Accountant</div>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('accountant', 'general_journal', event)">General Journal</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('accountant', 'deposit', event)">Deposit</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('accountant', 'transfer', event)">Transfer</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('accountant', 'products_services', event)">Products/Services</a>
       </div>
     </div>
 
@@ -686,9 +252,9 @@
         </svg>
       </div>
       <div class="accordion-content desktop-popup" id="acc-reports">
-        <a href="#">Financial Statements</a>
-        <a href="#">Accounts Receivable</a>
-        <a href="#">Accounts Payable</a>
+        <a href="#" onclick="handleMenuClick('reports', 'financial_statements', event)">Financial Statements</a>
+        <a href="#" onclick="handleMenuClick('reports', 'accounts_receivable', event)">Accounts Receivable</a>
+        <a href="#" onclick="handleMenuClick('reports', 'accounts_payable', event)">Accounts Payable</a>
       </div>
     </div>
 
@@ -705,10 +271,10 @@
         </svg>
       </div>
       <div class="accordion-content desktop-popup popup-bottom" id="acc-settings">
-        <a href="#">Company Settings</a>
-        <a href="#">Manage Users</a>
-        <a href="#">Chart of Accounts</a>
-        <a href="LICENSE" target="_blank">License</a>
+        <a href="#" onclick="handleMenuClick('settings', 'company_settings', event)">Company Settings</a>
+        <a href="#" onclick="handleMenuClick('settings', 'manage_users', event)">Manage Users</a>
+        <a href="#" onclick="handleMenuClick('settings', 'chart_of_accounts', event)">Chart of Accounts</a>
+        <a href="LICENSE" target="_blank" onclick="handleMenuClick('settings', 'license', event)">License</a>
       </div>
     </div>
 
@@ -723,9 +289,9 @@
         </svg>
       </div>
       <div class="accordion-content desktop-popup popup-bottom" id="acc-account">
-        <a href="#">My Profile</a>
-        <a href="#">Security & Password</a>
-        <a href="#">Logout</a>
+        <a href="#" onclick="handleMenuClick('account', 'my_profile', event)">My Profile</a>
+        <a href="#" onclick="handleMenuClick('account', 'security_password', event)">Security & Password</a>
+        <a href="#" onclick="handleMenuClick('account', 'logout', event)">Logout</a>
       </div>
     </div>
 
@@ -747,24 +313,42 @@
     </div>
   </div>
 
-  <main class="app-main">
+  <main class="app-main" id="mainContainer">
     <div class="dashboard-header"><h1>Dashboard</h1><p id="dashboardStatus">VNVBooks General Ledger Overview</p></div>
     <div class="dashboard-card"><p>Welcome back. Your accounts are up to date.</p></div>
   </main>
 
+  <script type="module">
+    // Make sure SVG loader logic exists to swap your custom icons (from previous response)
+    import { NavIcons } from './navIcons/navSVG.js';
+    
+    function injectIcons() {
+      document.querySelectorAll('.nav-item').forEach(item => {
+        const text = item.querySelector('.nav-text')?.innerText;
+        const iconContainer = item.querySelector('.icon');
+        if (!iconContainer) return;
+        switch(text) {
+          case 'Add New': iconContainer.outerHTML = NavIcons.addNew; break;
+          case 'Sales': iconContainer.outerHTML = NavIcons.sales; break;
+          case 'Purchases': iconContainer.outerHTML = NavIcons.purchase; break;
+          case 'Payroll': iconContainer.outerHTML = NavIcons.payroll; break;
+          case 'Accountant': iconContainer.outerHTML = NavIcons.accountant; break;
+        }
+      });
+    }
+    window.addEventListener('DOMContentLoaded', injectIcons);
+  </script>
+
   <script>
-    // Logic to select a client and hide the menu dynamically
+    // ----- CORE UI LOGIC -----
     function selectClient(clientName, event) {
       if (event) {
         event.preventDefault();
         event.stopPropagation();
       }
-
-      // Update the label for both Desktop and Mobile views
       const displaySpans = document.querySelectorAll('.client-name-display');
       displaySpans.forEach(span => span.textContent = clientName);
 
-      // Close mobile accordion if open
       const accClient = document.getElementById('acc-client');
       const arrowClient = document.getElementById('arrow-client');
       if (accClient && accClient.classList.contains('active')) {
@@ -772,12 +356,10 @@
         if (arrowClient) arrowClient.classList.remove('active');
       }
 
-      // Close sidebar if on mobile to view the dashboard change
       if (window.innerWidth <= 768) {
         document.getElementById('appSidebar').classList.remove('mobile-open');
       }
 
-      // Hide desktop popup momentarily (CSS hover handles normal state, this forces a hide upon click)
       const desktopPopup = document.querySelector('.popup-client');
       if (desktopPopup) {
         desktopPopup.style.visibility = 'hidden';
@@ -785,10 +367,8 @@
         setTimeout(() => {
           desktopPopup.style.visibility = '';
           desktopPopup.style.opacity = '';
-        }, 300); // Resets after cursor moves away
+        }, 300);
       }
-
-      // Update Dashboard to reflect selected client
       document.getElementById('dashboardStatus').innerText = 'Viewing ledger for: ' + clientName;
     }
 
@@ -835,20 +415,52 @@
       document.getElementById('dashboardStatus').innerText = 'Viewing details for: ' + itemName;
     }
 
-    // Global listener to close search panel when clicking outside of it
     document.addEventListener('click', function(event) {
       const overlay = document.getElementById('searchOverlay');
       const searchPanel = document.getElementById('searchPanel');
       const searchBtn = document.getElementById('btnOpenSearch');
-      
-      // Check if the overlay is currently open
       if (overlay.classList.contains('active')) {
-        // If the user clicked outside the central search panel AND they didn't click the search toggle button in the header
         if (!searchPanel.contains(event.target) && !searchBtn.contains(event.target)) {
           toggleSearch();
         }
       }
     });
+
+    // ----- GENERIC MODULE ROUTER -----
+    function handleMenuClick(parentFolder, childFile, event) {
+  if (event && event.preventDefault) event.preventDefault();
+  
+  const fileToLoad = childFile || parentFolder;
+  // This constructs: ./sales/salesReceipt.js
+  const modulePath = `./${parentFolder}/${fileToLoad}.js`;
+
+  const statusEl = document.getElementById('dashboardStatus');
+  if (statusEl) statusEl.innerText = "Loading " + fileToLoad + "...";
+
+  // Dynamic Import
+  import(modulePath)
+    .then(module => {
+      // If your file has an export function init(containerId)
+      if (module.init) {
+        module.init('mainContainer');
+      } else if (module.default) {
+        // Or if it uses export default
+        module.default('mainContainer');
+      }
+    })
+    .catch(err => {
+      console.error('Error loading module:', err);
+      if (statusEl) statusEl.innerText = "Error loading " + fileToLoad;
+    });
+        
+      /* Example of how you can dynamically import these later:
+      import(`./${parentFolder}/${fileToLoad}.js`)
+        .then(module => {
+           // module.renderView(document.getElementById('mainContainer'));
+        })
+        .catch(err => console.log('JS file not created yet', err));
+      */
+    }
   </script>
 </body>
 </html>
