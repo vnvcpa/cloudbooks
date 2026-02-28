@@ -8,10 +8,10 @@ export function initSalesReceipt(containerId) {
     container.innerHTML = `
         <div class="dashboard-header">
             <h1>Sales Receipt</h1>
-            <p>Create a new sales receipt</p>
+            <p>Create the sales receipt dashboard</p>
         </div>
         <div class="dashboard-card">
-            <p>Sales receipt form loading...</p>
+            <p>Sales receipt dashboard loading...</p>
         </div>
     `;
 
