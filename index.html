@@ -82,7 +82,7 @@
         <div class="mega-menu">
           <div class="menu-column">
             <h4>Sales</h4>
-            <ul><li><a href="#" onclick="handleMenuClick('addnew', 'sales_receipt', event)">Sales Receipt</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'sales_invoice', event)">Sales Invoice</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'ar_collection', event)">AR Collection</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'statement', event)">Statement</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'customer', event)">Customer</a></li></ul>
+            <ul><li><a href="#" onclick="handleMenuClick('addnew', 'salesReceipt', event)">Sales Receipt</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'sales_invoice', event)">Sales Invoice</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'ar_collection', event)">AR Collection</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'statement', event)">Statement</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'customer', event)">Customer</a></li></ul>
           </div>
           <div class="menu-column">
             <h4>Purchases</h4>
@@ -101,7 +101,7 @@
       
       <div class="accordion-content" id="acc-create">
         <div class="mobile-group-header">Sales</div>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'sales_receipt', event)">Sales Receipt</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'salesReceipt', event)">Sales Receipt</a>
         <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'sales_invoice', event)">Sales Invoice</a>
         <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'ar_collection', event)">AR Collection</a>
         <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'statement', event)">Statement</a>
@@ -140,14 +140,14 @@
         <div class="mega-menu">
           <div class="menu-column">
             <h4>Sales</h4>
-            <ul><li><a href="#" onclick="handleMenuClick('sales', 'sales_receipt', event)">Sales Receipt</a></li><li><a href="#" onclick="handleMenuClick('sales', 'sales_invoice', event)">Sales Invoice</a></li><li><a href="#" onclick="handleMenuClick('sales', 'ar_collection', event)">AR Collection</a></li><li><a href="#" onclick="handleMenuClick('sales', 'statement', event)">Statement</a></li><li><a href="#" onclick="handleMenuClick('sales', 'customer', event)">Customer</a></li></ul>
+            <ul><li><a href="#" onclick="handleMenuClick('sales', 'salesReceipt', event)">Sales Receipt</a></li><li><a href="#" onclick="handleMenuClick('sales', 'sales_invoice', event)">Sales Invoice</a></li><li><a href="#" onclick="handleMenuClick('sales', 'ar_collection', event)">AR Collection</a></li><li><a href="#" onclick="handleMenuClick('sales', 'statement', event)">Statement</a></li><li><a href="#" onclick="handleMenuClick('sales', 'customer', event)">Customer</a></li></ul>
           </div>
         </div>
       </div>
       
       <div class="accordion-content" id="acc-sales">
         <div class="mobile-group-header">Sales</div>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'sales_receipt', event)">Sales Receipt</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'salesReceipt', event)">Sales Receipt</a>
         <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'sales_invoice', event)">Sales Invoice</a>
         <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'ar_collection', event)">AR Collection</a>
         <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'statement', event)">Statement</a>
@@ -440,7 +440,7 @@
           : `Mapsd to ${displayName}`;
       }
 
-      import('./sales/sales.js')
+      import('./sales/salesReceipt.js')
         .then(module => {
           module.renderView(document.getElementById('mainContainer'));
         })
