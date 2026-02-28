@@ -1,6 +1,6 @@
-// sales/sales_receipt.js
+// sales/settings.js
 
-export function initSalesReceipt(containerId) {
+export function initSettings(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
@@ -8,7 +8,7 @@ export function initSalesReceipt(containerId) {
     container.innerHTML = `
         <div class="dashboard-header">
             <h1>Settings</h1>
-            <p>Create settings page</p>
+            <p>Create the Settings page</p>
         </div>
         <div class="dashboard-card">
             <p>Settings page is loading...</p>
