@@ -1,6 +1,6 @@
-// sales/accountSettings.js
+// sales/salesInvoice.js
 
-export function initAccountSettings(containerId) {
+export function initSalesInvoice(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
