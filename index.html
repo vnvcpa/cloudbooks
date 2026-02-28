@@ -5,6 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VNVBooks</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Desktop & Mobile Spacing Overrides */
+    .app-main {
+      padding-top: 6px !important;    /* Reduced by 80% (from 30px to 6px) */
+      padding-left: 21px !important;  /* Reduced by 30% (from 30px to 21px) */
+      padding-right: 21px !important; /* Reduced by 30% (from 30px to 21px) */
+    }
+    
+    .dashboard-header h1 {
+      font-size: 19.2px !important;   /* Reduced by 20% (from 24px to 19.2px) */
+    }
+
+    /* Mobile Sidebar Width Override */
+    @media (max-width: 768px) {
+      .app-sidebar {
+        width: max-content !important; /* Shrinks to fit longest button */
+        min-width: 240px !important;   /* Prevents it from getting too narrow */
+        border-right: 1px solid var(--border-color) !important;
+        box-shadow: 4px 0 16px rgba(0,0,0,0.1) !important; /* Adds depth since it's no longer full width */
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -70,7 +92,7 @@
     </div>
 
     <div class="nav-item-container">
-      <div class="nav-item create-trigger" onclick="toggleAccordion('create')">
+      <div class="nav-item create-trigger" onclick="handleParentClick('create', event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
         </svg>
@@ -128,7 +150,7 @@
     </div>
 
     <div class="nav-item-container">
-      <div class="nav-item create-trigger" onclick="toggleAccordion('sales')">
+      <div class="nav-item create-trigger" onclick="handleParentClick('sales', event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
         </svg>
@@ -161,7 +183,7 @@
     </div>
 
     <div class="nav-item-container">
-      <div class="nav-item create-trigger" onclick="toggleAccordion('purchases')">
+      <div class="nav-item create-trigger" onclick="handleParentClick('purchases', event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
         </svg>
@@ -190,7 +212,7 @@
     </div>
 
     <div class="nav-item-container">
-      <div class="nav-item create-trigger" onclick="toggleAccordion('payroll')">
+      <div class="nav-item create-trigger" onclick="handleParentClick('payroll', event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
         </svg>
@@ -215,7 +237,7 @@
     </div>
 
     <div class="nav-item-container">
-      <div class="nav-item create-trigger" onclick="toggleAccordion('accountant')">
+      <div class="nav-item create-trigger" onclick="handleParentClick('accountant', event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
         </svg>
@@ -242,7 +264,7 @@
     </div>
 
     <div class="nav-item-container">
-      <div class="nav-item" onclick="toggleAccordion('reports')">
+      <div class="nav-item" onclick="handleParentClick('reports', event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line>
         </svg>
@@ -261,7 +283,7 @@
     <div class="nav-spacer"></div>
 
     <div class="nav-item-container">
-      <div class="nav-item" onclick="toggleAccordion('settings')">
+      <div class="nav-item" onclick="handleParentClick('settings', event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
         </svg>
@@ -279,7 +301,7 @@
     </div>
 
     <div class="nav-item-container" style="margin-bottom: 15px;">
-      <div class="nav-item" onclick="toggleAccordion('account')">
+      <div class="nav-item" onclick="handleParentClick('account', event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>
         </svg>
@@ -376,11 +398,41 @@
       document.getElementById('appSidebar').classList.toggle('mobile-open'); 
     }
 
+    // Single Click / Double Click Routing Handler
+    const clickTimers = {};
+    function handleParentClick(folder, event) {
+      if (clickTimers[folder]) {
+        // Double Click detected
+        clearTimeout(clickTimers[folder]);
+        clickTimers[folder] = null;
+        
+        // Keep child buttons hidden by closing accordion if it just opened
+        const contentToToggle = document.getElementById('acc-' + folder);
+        const arrowToToggle = document.getElementById('arrow-' + folder);
+        if (contentToToggle) contentToToggle.classList.remove('active');
+        if (arrowToToggle) arrowToToggle.classList.remove('active');
+
+        // Load the Parent Dashboard file directly
+        handleMenuClick(folder, null, event);
+      } else {
+        // First Click detected
+        clickTimers[folder] = setTimeout(() => {
+          clickTimers[folder] = null;
+          // Toggle the mobile accordion
+          toggleAccordion(folder);
+        }, 250); // 250ms delay detects if user is double-tapping
+      }
+    }
+
     function toggleAccordion(id) {
       if (window.innerWidth > 768) return; 
 
       const contentToToggle = document.getElementById('acc-' + id);
       const arrowToToggle = document.getElementById('arrow-' + id);
+      
+      // Safety check in case folder doesn't have an accordion (like dashboard)
+      if (!contentToToggle) return;
+      
       const isOpening = !contentToToggle.classList.contains('active');
 
       document.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('active'));
@@ -416,6 +468,7 @@
     }
 
     document.addEventListener('click', function(event) {
+      // 1. Search Overlay dismissal
       const overlay = document.getElementById('searchOverlay');
       const searchPanel = document.getElementById('searchPanel');
       const searchBtn = document.getElementById('btnOpenSearch');
@@ -424,42 +477,48 @@
           toggleSearch();
         }
       }
+
+      // 2. Mobile Nav Panel dismiss on outside click
+      const sidebar = document.getElementById('appSidebar');
+      const hamburgerBtn = document.querySelector('.hamburger-btn');
+      if (window.innerWidth <= 768 && sidebar.classList.contains('mobile-open')) {
+        if (!sidebar.contains(event.target) && !hamburgerBtn.contains(event.target)) {
+          sidebar.classList.remove('mobile-open');
+        }
+      }
     });
 
     // ----- GENERIC MODULE ROUTER -----
     function handleMenuClick(parentFolder, childFile, event) {
-  if (event && event.preventDefault) event.preventDefault();
-  
-  const fileToLoad = childFile || parentFolder;
-  // This constructs: ./sales/salesReceipt.js
-  const modulePath = `./${parentFolder}/${fileToLoad}.js`;
-
-  const statusEl = document.getElementById('dashboardStatus');
-  if (statusEl) statusEl.innerText = "Loading " + fileToLoad + "...";
-
-  // Dynamic Import
-  import(modulePath)
-    .then(module => {
-      // If your file has an export function init(containerId)
-      if (module.init) {
-        module.init('mainContainer');
-      } else if (module.default) {
-        // Or if it uses export default
-        module.default('mainContainer');
+      if (event && event.preventDefault) event.preventDefault();
+      
+      // Hides the mobile popup navigation panel when any link is clicked
+      if (window.innerWidth <= 768) {
+        document.getElementById('appSidebar').classList.remove('mobile-open');
       }
-    })
-    .catch(err => {
-      console.error('Error loading module:', err);
-      if (statusEl) statusEl.innerText = "Error loading " + fileToLoad;
-    });
-        
-      /* Example of how you can dynamically import these later:
-      import(`./${parentFolder}/${fileToLoad}.js`)
+      
+      const fileToLoad = childFile || parentFolder;
+      // This constructs: ./sales/salesReceipt.js
+      const modulePath = `./${parentFolder}/${fileToLoad}.js`;
+
+      const statusEl = document.getElementById('dashboardStatus');
+      if (statusEl) statusEl.innerText = "Loading " + fileToLoad + "...";
+
+      // Dynamic Import
+      import(modulePath)
         .then(module => {
-           // module.renderView(document.getElementById('mainContainer'));
+          // If your file has an export function init(containerId)
+          if (module.init) {
+            module.init('mainContainer');
+          } else if (module.default) {
+            // Or if it uses export default
+            module.default('mainContainer');
+          }
         })
-        .catch(err => console.log('JS file not created yet', err));
-      */
+        .catch(err => {
+          console.error('Error loading module:', err);
+          if (statusEl) statusEl.innerText = "Error loading " + fileToLoad;
+        });
     }
   </script>
 </body>
