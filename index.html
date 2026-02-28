@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VNVBooks - Cloud Accounting System</title>
+  <style>
+    /* CSS Variables for cohesive enterprise theming */
+    :root {
+      --primary-dark: #0A4275;
+      --primary-light: #1584A4;
+      --accent: #00ACC1;
+      --text-main: #333333;
+      --text-muted: #607D8B;
+      --bg-app: #f4f7f9;
+      --bg-white: #ffffff;
+      --border-color: #eaedf1;
+      --header-height: 50px;
+      --sidebar-width: 55px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      background-color: var(--bg-app);
+      color: var(--text-main);
+      overflow: hidden;
+    }
+
+    /* 1. Overall Layout & Dimensions */
+    .app-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: var(--header-height);
+      background-color: var(--bg-white);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 998; /* Sidebar is now 999 and will overlap the left edge */
+    }
+
+    .app-sidebar {
+      position: fixed;
+      top: 0; /* Changed to 0 so the first item aligns with the header */
+      left: 0;
+      bottom: 0;
+      width: var(--sidebar-width);
+      background-color: var(--bg-white);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 999;
+      transition: transform 0.3s ease;
+    }
+
+    .app-main {
+      position: absolute;
+      top: var(--header-height);
+      left: var(--sidebar-width);
+      right: 0;
+      bottom: 0;
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    /* 2. Top Header Elements */
+    .header-left {
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-center {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .header-right {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .hamburger-btn {
+      display: none; /* Hidden on desktop */
+    }
+
+    /* Professional Text Logo in Header */
+    .logo-text-main {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      letter-spacing: 0.5px;
+    }
+    .logo-text-main span {
+      color: var(--primary-light);
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease, background-color 0.2s ease;
+      padding: 6px;
+      border-radius: 4px;
+    }
+
+    .icon-btn:hover {
+      color: var(--primary-dark);
+      background-color: #e0f2fe;
+    }
+
+    /* 3. Left Navigation Panel Elements */
+    .sidebar-top-slot {
+      width: 100%;
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid var(--border-color);
+      background-color: var(--bg-white);
+    }
+
+    /* Square Select Client Button vertically aligned with Header Logo */
+    .btn-client-books {
+      width: 42px;
+      height: 42px;
+      background-color: var(--primary-dark);
+      color: var(--bg-white);
+      border: none;
+      border-radius: 8px;
+      font-size: 8.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      box-shadow: 0 2px 4px rgba(10, 66, 117, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.1;
+      padding: 4px;
+      flex-shrink: 0;
+    }
+
+    .btn-client-books:hover {
+      background-color: var(--primary-light);
+    }
+
+    .nav-item-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-item {
+      position: relative;
+      width: 100%;
+      height: 55px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-item:hover {
+      color: var(--primary-dark);
+      background-color: #e0f2fe;
+    }
+
+    .nav-item svg.icon {
+      margin-bottom: 4px;
+    }
+
+    .nav-text {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-align: center;
+    }
+
+    /* Arrow icon for mobile accordion */
+    .accordion-arrow {
+      display: none;
+      margin-left: auto;
+      transition: transform 0.3s ease;
+    }
+
+    /* Push settings and user to bottom on desktop */
+    .nav-spacer {
+      flex: 1;
+    }
+
+    /* Mega-Menu Requirements (Desktop) */
+    .mega-menu {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      left: var(--sidebar-width);
+      background-color: var(--bg-white);
+      box-shadow: 4px 4px 24px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border-color);
+      border-left: none;
+      border-radius: 0 8px 8px 0;
+      padding: 24px;
+      display: flex;
+      gap: 35px;
+      z-index: 1000;
+      transform: translateX(-10px);
+      transition: all 0.2s ease;
+      cursor: default;
+    }
+
+    .nav-item.create-trigger:hover .mega-menu {
+      visibility: visible;
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .menu-column {
+      display: flex;
+      flex-direction: column;
+      min-width: 160px;
+    }
+
+    .menu-column h4 {
+      font-size: 13px;
+      color: var(--primary-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 6px;
+      margin-bottom: 12px;
+      white-space: nowrap;
+    }
+
+    .menu-column ul {
+      list-style: none;
+    }
+
+    .menu-column li {
+      margin-bottom: 8px;
+    }
+
+    .menu-column a {
+      text-decoration: none;
+      color: var(--text-main);
+      font-size: 13px;
+      transition: color 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .menu-column a:hover {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    /* Mobile Accordion Content (Hidden on Desktop) */
+    .accordion-content {
+      display: none;
+      flex-direction: column;
+      background-color: #f8fafc;
+      width: 100%;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .accordion-content.active {
+      display: flex;
+    }
+
+    .accordion-content a {
+      padding: 15px 30px;
+      text-decoration: none;
+      color: var(--text-main);
+      font-size: 14px;
+      border-left: 3px solid transparent;
+      transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .accordion-content a:hover {
+      background-color: #e0f2fe;
+      color: var(--primary-dark);
+      border-left-color: var(--accent);
+    }
+
+    /* Dashboard Placeholder Styling */
+    .dashboard-header {
+      margin-bottom: 20px;
+    }
+    .dashboard-header h1 {
+      font-size: 24px;
+      font-weight: 500;
+      color: var(--primary-dark);
+    }
+    .dashboard-header p {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-top: 5px;
+    }
+    .dashboard-card {
+      background: var(--bg-white);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 40px;
+      text-align: center;
+      color: var(--text-muted);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    /* Search Overlay (Hidden by Default) */
+    .search-overlay {
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      width: 100%;
+      height: calc(100vh - var(--header-height));
+      background-color: var(--bg-app);
+      z-index: 1001;
+      display: none;
+      flex-direction: column;
+    }
+
+    .search-overlay.active {
+      display: flex;
+    }
+
+    .search-bar-container {
+      background-color: var(--bg-white);
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .search-input-box {
+      flex: 1;
+      padding: 10px 15px;
+      border: 1px solid #d1d9e0;
+      border-radius: 20px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .search-input-box:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0, 172, 193, 0.15);
+    }
+
+    .search-results {
+      padding: 20px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .result-item {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 14px;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .result-item:hover {
+      background-color: #e0f2fe;
+      color: var(--primary-dark);
+    }
+
+    /* Mobile Responsive Adjustments */
+    @media (max-width: 768px) {
+      .app-header {
+        z-index: 1002; /* Ensure header stays on top when sidebar expands */
+      }
+
+      .hamburger-btn {
+        display: flex;
+      }
+      
+      .app-sidebar {
+        top: var(--header-height); /* Sidebar moves below header on mobile */
+        transform: translateX(-100%);
+        width: 100%; /* Fully covers screen except header */
+        align-items: stretch;
+        overflow-y: auto;
+      }
+
+      .app-sidebar.mobile-open {
+        transform: translateX(0);
+      }
+
+      .app-main {
+        left: 0;
+      }
+
+      .sidebar-top-slot {
+        height: auto;
+        border-bottom: none;
+      }
+
+      .nav-spacer {
+        display: none; /* Collapses space so Settings and Account move immediately after Reports */
+      }
+
+      /* Adjust nav items for full width mobile view */
+      .nav-item, .btn-client-books {
+        height: 65px;
+        width: 100%;
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: 0 30px;
+        gap: 20px;
+        border-radius: 0;
+        margin: 0;
+        background-color: var(--bg-white);
+        color: var(--text-muted);
+        box-shadow: none;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .btn-client-books {
+        font-size: 16px;
+        font-weight: 600;
+        text-align: left;
+      }
+
+      .btn-client-books:hover {
+        background-color: #e0f2fe;
+        color: var(--primary-dark);
+      }
+
+      .nav-item svg.icon {
+        margin-bottom: 0;
+      }
+
+      .nav-text {
+        font-size: 16px;
+      }
+
+      .accordion-arrow {
+        display: block; /* Show down arrow on mobile */
+      }
+
+      .accordion-arrow.active {
+        transform: rotate(180deg); /* Arrow points up when active */
+      }
+
+      .mega-menu {
+        display: none !important; /* Disable mega menu on mobile */
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-left">
+      <button class="icon-btn hamburger-btn" onclick="toggleSidebar()" title="Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="header-center">
+      <div class="logo-text-main">VNV<span>Books</span></div>
+    </div>
+
+    <div class="header-right">
+      <button class="icon-btn" onclick="toggleSearch()" title="Search">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <nav class="app-sidebar" id="appSidebar">
+    
+    <div class="nav-item-container sidebar-top-slot">
+      <button class="btn-client-books" onclick="toggleAccordion('client')">
+        <svg class="icon accordion-arrow" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+        <span>Select<br>Client</span>
+        <svg class="accordion-arrow" id="arrow-client" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </button>
+      
+      <div class="accordion-content" id="acc-client">
+        <a href="#">Client Books A</a>
+        <a href="#">Client Books B</a>
+        <a href="#">Add New Client</a>
+      </div>
+    </div>
+
+    <div class="nav-item-container">
+      <div class="nav-item create-trigger" onclick="toggleAccordion('create')">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="16"></line>
+          <line x1="8" y1="12" x2="16" y2="12"></line>
+        </svg>
+        <span class="nav-text">Create</span>
+        <svg class="accordion-arrow" id="arrow-create" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+
+        <div class="mega-menu">
+          <div class="menu-column">
+            <h4>Sales</h4>
+            <ul>
+              <li><a href="#">Sales Receipt</a></li>
+              <li><a href="#">Sales Invoice</a></li>
+              <li><a href="#">AR Collection</a></li>
+              <li><a href="#">Statement</a></li>
+              <li><a href="#">Add Customer</a></li>
+            </ul>
+          </div>
+          <div class="menu-column">
+            <h4>Purchases</h4>
+            <ul>
+              <li><a href="#">Cash Purchases</a></li>
+              <li><a href="#">Purchase Orders</a></li>
+              <li><a href="#">Receiving Reports</a></li>
+              <li><a href="#">AP Payments</a></li>
+              <li><a href="#">Credit Card Charges/Credits</a></li>
+              <li><a href="#">Add Vendor</a></li>
+            </ul>
+          </div>
+          <div class="menu-column">
+            <h4>Payroll</h4>
+            <ul>
+              <li><a href="#">Time Sheet</a></li>
+              <li><a href="#">Add Employees</a></li>
+            </ul>
+          </div>
+          <div class="menu-column">
+            <h4>Others</h4>
+            <ul>
+              <li><a href="#">General Journal</a></li>
+              <li><a href="#">Deposit</a></li>
+              <li><a href="#">Transfer</a></li>
+              <li><a href="#">Add Products and Services</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-content" id="acc-create">
+        <a href="#">Sales Invoice / Receipt</a>
+        <a href="#">Purchase Order / Payment</a>
+        <a href="#">General Journal</a>
+        <a href="#">Time Sheet</a>
+        <a href="#">Add Customer / Vendor</a>
+      </div>
+    </div>
+
+    <div class="nav-item-container">
+      <div class="nav-item" onclick="toggleAccordion('reports')">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+        <span class="nav-text">Reports</span>
+        <svg class="accordion-arrow" id="arrow-reports" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+
+      <div class="accordion-content" id="acc-reports">
+        <a href="#">Financial Statements</a>
+        <a href="#">Accounts Receivable</a>
+        <a href="#">Accounts Payable</a>
+        <a href="#">Payroll Summary</a>
+      </div>
+    </div>
+
+    <div class="nav-spacer"></div>
+
+    <div class="nav-item">
+      <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+      <span class="nav-text">Settings</span>
+    </div>
+
+    <div class="nav-item" style="margin-bottom: 15px;">
+      <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
+      <span class="nav-text">Account</span>
+    </div>
+
+  </nav>
+
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-bar-container">
+      <button class="icon-btn" onclick="toggleSearch()" title="Close Search">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
+      <input type="text" id="transactionSearch" class="search-input-box" placeholder="Search transactions..." onkeyup="mockSearchMatches()">
+    </div>
+    <div class="search-results" id="searchResultsContainer">
+      <p style="color: var(--text-muted); font-size: 14px;">Type to search for invoices, receipts, and clients...</p>
+    </div>
+  </div>
+
+  <main class="app-main">
+    <div class="dashboard-header">
+      <h1>Dashboard</h1>
+      <p>Welcome to your VNVBooks General Ledger Overview</p>
+    </div>
+    <div class="dashboard-card">
+      <p>Select an action from the "Create" menu or access your "Reports" to begin processing your accounting cycles.</p>
+    </div>
+  </main>
+
+  <script>
+    // Toggle Left Navigation Sidebar for Mobile
+    function toggleSidebar() {
+      const sidebar = document.getElementById('appSidebar');
+      sidebar.classList.toggle('mobile-open');
+    }
+
+    // Toggle Accordion logic specifically for mobile items
+    function toggleAccordion(id) {
+      if (window.innerWidth > 768) {
+        // Desktop handles 'Create' purely via CSS hover mega-menu
+        if (id === 'client') {
+          console.log('Select Client Clicked (Desktop)');
+        }
+        return; 
+      }
+
+      const contentToToggle = document.getElementById('acc-' + id);
+      const arrowToToggle = document.getElementById('arrow-' + id);
+      
+      const isOpening = !contentToToggle.classList.contains('active');
+
+      // Close all accordions first (mutually exclusive)
+      const allContents = document.querySelectorAll('.accordion-content');
+      const allArrows = document.querySelectorAll('.accordion-arrow');
+      
+      allContents.forEach(content => content.classList.remove('active'));
+      allArrows.forEach(arrow => arrow.classList.remove('active'));
+
+      // If we are opening a new tab, open it and rotate arrow
+      if (isOpening) {
+        contentToToggle.classList.add('active');
+        arrowToToggle.classList.add('active');
+      }
+    }
+
+    // Toggle Search Overlay
+    function toggleSearch() {
+      const searchOverlay = document.getElementById('searchOverlay');
+      const input = document.getElementById('transactionSearch');
+      
+      searchOverlay.classList.toggle('active');
+      
+      // Auto-focus input when opened
+      if(searchOverlay.classList.contains('active')) {
+        setTimeout(function() { input.focus(); }, 100);
+      } else {
+        // Clear when closed
+        input.value = '';
+        document.getElementById('searchResultsContainer').innerHTML = '<p style="color: var(--text-muted); font-size: 14px;">Type to search for invoices, receipts, and clients...</p>';
+      }
+    }
+
+    // Mock functionality for showing potential search matches below the box
+    function mockSearchMatches() {
+      const query = document.getElementById('transactionSearch').value;
+      const container = document.getElementById('searchResultsContainer');
+      
+      if (query.length > 1) {
+        container.innerHTML = 
+          '<div class="result-item"><strong>' + query + '</strong> - Sales Invoice #1024</div>' +
+          '<div class="result-item"><strong>' + query + '</strong> - Purchase Order #882</div>' +
+          '<div class="result-item">Client Match: Acme Corp (contains <strong>' + query + '</strong>)</div>';
+      } else {
+        container.innerHTML = '<p style="color: var(--text-muted); font-size: 14px;">Type to search for invoices, receipts, and clients...</p>';
+      }
+    }
+  </script>
+</body>
+</html>
