@@ -440,6 +440,12 @@
           : `Mapsd to ${displayName}`;
       }
 
+      import('./sales/sales.js')
+        .then(module => {
+          module.renderView(document.getElementById('mainContainer'));
+        })
+        .catch(err => console.log('JS file not created yet', err));
+          
       /* Example of how you can dynamically import these later:
       import(`./${parentFolder}/${fileToLoad}.js`)
         .then(module => {
