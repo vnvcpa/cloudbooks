@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VNVBooks - Cloud Accounting System</title>
+  <style>
+    /* CSS Variables for cohesive enterprise theming */
+    :root {
+      --primary-dark: #0A4275;
+      --primary-light: #1584A4;
+      --accent: #00ACC1;
+      --text-main: #333333;
+      --text-muted: #607D8B;
+      --bg-app: #f4f7f9;
+      --bg-white: #ffffff;
+      --border-color: #eaedf1;
+      --header-height: 50px;
+      --sidebar-width: 55px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      background-color: var(--bg-app);
+      color: var(--text-main);
+      overflow: hidden;
+    }
+
+    /* 1. Overall Layout & Dimensions */
+    .app-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: var(--header-height);
+      background-color: var(--bg-white);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 1000;
+    }
+
+    .app-sidebar {
+      position: fixed;
+      top: var(--header-height); 
+      left: 0;
+      bottom: 0;
+      width: var(--sidebar-width);
+      background-color: var(--bg-white);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 999;
+      transition: transform 0.3s ease;
+      overflow-y: auto; /* Added to support the new longer list of navigation items */
+    }
+
+    /* Hide scrollbar for sidebar cleanly */
+    .app-sidebar::-webkit-scrollbar { width: 0px; }
+    .app-sidebar { scrollbar-width: none; }
+
+    .app-main {
+      position: absolute;
+      top: var(--header-height);
+      left: var(--sidebar-width);
+      right: 0;
+      bottom: 0;
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    /* 2. Top Header Elements */
+    .header-left {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-center {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .header-right {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .hamburger-btn {
+      display: none; 
+    }
+
+    .logo-text-main {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      letter-spacing: 0.5px;
+    }
+    .logo-text-main span {
+      color: var(--primary-light);
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease, background-color 0.2s ease;
+      padding: 6px;
+      border-radius: 4px;
+    }
+
+    .icon-btn:hover {
+      color: var(--primary-dark);
+      background-color: #e0f2fe;
+    }
+
+    /* Select Client - Desktop Header Version */
+    .header-client-container {
+      position: relative;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    .btn-header-client {
+      background: transparent;
+      color: var(--primary-dark);
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      transition: background-color 0.2s ease;
+      white-space: nowrap; 
+    }
+
+    .btn-header-client:hover {
+      background-color: #e0f2fe;
+    }
+
+    .popup-client {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      top: 40px; 
+      left: 0;
+      background-color: var(--bg-white);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 8px 0;
+      min-width: 180px;
+      z-index: 1001;
+      transform: translateY(-10px);
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header-client-container:hover .popup-client {
+      visibility: visible;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .popup-client a {
+      padding: 10px 20px;
+      text-decoration: none;
+      color: var(--text-main);
+      font-size: 13px;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .popup-client a:hover {
+      background-color: #e0f2fe;
+      color: var(--primary-dark);
+    }
+
+    /* Display Utility Classes */
+    .desktop-only { display: flex; }
+    .mobile-only { display: none !important; }
+
+    /* 3. Left Navigation Panel Elements */
+    .nav-item-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-item {
+      position: relative;
+      width: 100%;
+      height: 55px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .nav-item:hover {
+      color: var(--primary-dark);
+      background-color: #e0f2fe;
+    }
+
+    .nav-item svg.icon {
+      margin-bottom: 4px;
+    }
+
+    .nav-text {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-align: center;
+    }
+
+    .accordion-arrow {
+      display: none;
+      margin-left: auto;
+      transition: transform 0.3s ease;
+    }
+
+    .nav-spacer {
+      flex: 1;
+      min-height: 20px; /* Gives some breathing room if screen is short */
+    }
+
+    /* Desktop Hover Menus (Mega-Menu & Popups) */
+    @media (min-width: 769px) {
+      .nav-item-container {
+        position: relative;
+      }
+
+      .desktop-popup {
+        display: flex !important; 
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        left: var(--sidebar-width);
+        background-color: var(--bg-white);
+        box-shadow: 4px 4px 24px rgba(0, 0, 0, 0.08);
+        border: 1px solid var(--border-color);
+        border-left: none;
+        border-radius: 0 8px 8px 0;
+        padding: 10px 0;
+        width: auto;
+        min-width: 200px;
+        z-index: 1000;
+        transform: translateX(-10px);
+        transition: all 0.2s ease;
+        cursor: default;
+      }
+
+      .desktop-popup.popup-bottom {
+        top: auto;
+        bottom: 0;
+      }
+
+      .nav-item-container:hover .desktop-popup {
+        visibility: visible;
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .desktop-popup a {
+        padding: 10px 24px;
+        font-size: 13px;
+        border-left: 3px solid transparent;
+      }
+
+      .accordion-content:not(.desktop-popup) {
+        display: none !important;
+      }
+    }
+
+    /* Mega-Menu Dedicated Desktop Styles */
+    .mega-menu {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      left: var(--sidebar-width);
+      background-color: var(--bg-white);
+      box-shadow: 4px 4px 24px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border-color);
+      border-left: none;
+      border-radius: 0 8px 8px 0;
+      padding: 24px;
+      display: flex;
+      gap: 35px;
+      z-index: 1000;
+      transform: translateX(-10px);
+      transition: all 0.2s ease;
+      cursor: default;
+    }
+
+    .nav-item.create-trigger:hover .mega-menu {
+      visibility: visible;
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .menu-column {
+      display: flex;
+      flex-direction: column;
+      min-width: 160px;
+    }
+
+    .menu-column h4 {
+      font-size: 13px;
+      color: var(--primary-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 6px;
+      margin-bottom: 12px;
+      white-space: nowrap;
+    }
+
+    .menu-column ul {
+      list-style: none;
+    }
+
+    .menu-column li {
+      margin-bottom: 8px;
+    }
+
+    .menu-column a {
+      text-decoration: none;
+      color: var(--text-main);
+      font-size: 13px;
+      transition: color 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .menu-column a:hover {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    /* Mobile Accordion Base Content */
+    .accordion-content {
+      display: none;
+      flex-direction: column;
+      background-color: #f8fafc;
+      width: 100%;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .accordion-content.active {
+      display: flex;
+    }
+
+    .accordion-content a {
+      padding: 15px 30px;
+      text-decoration: none;
+      color: var(--text-main);
+      font-size: 14px;
+      border-left: 3px solid transparent;
+      transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .accordion-content a:hover {
+      background-color: #e0f2fe;
+      color: var(--primary-dark);
+      border-left-color: var(--accent);
+    }
+
+    .mobile-group-header {
+      padding: 15px 30px 5px 30px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .accordion-content a.grouped-item {
+      padding: 10px 30px 10px 45px;
+    }
+
+    /* Search Overlay */
+    .search-overlay {
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      width: 100%;
+      height: calc(100vh - var(--header-height));
+      background-color: rgba(0, 0, 0, 0.4); 
+      z-index: 1001;
+      display: none;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 30px;
+    }
+
+    .search-overlay.active {
+      display: flex;
+    }
+
+    .search-panel {
+      width: 70%;
+      background-color: var(--bg-white);
+      border-radius: 8px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      max-height: 80vh;
+      overflow: hidden;
+    }
+
+    .search-bar-container {
+      background-color: var(--bg-white);
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .search-input-box {
+      flex: 1;
+      padding: 10px 15px;
+      border: 1px solid #d1d9e0;
+      border-radius: 20px;
+      font-size: 15px;
+      outline: none;
+    }
+    
+    .search-results {
+      padding: 20px;
+      flex: 1;
+      overflow-y: auto;
+      background-color: var(--bg-white);
+    }
+
+    .result-item {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 14px;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .result-item:hover {
+      background-color: #e0f2fe;
+      color: var(--primary-dark);
+    }
+
+    /* Dashboard Card */
+    .dashboard-header {
+      margin-bottom: 20px;
+    }
+    .dashboard-header h1 {
+      font-size: 24px;
+      font-weight: 500;
+      color: var(--primary-dark);
+    }
+    .dashboard-card {
+      background: var(--bg-white);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 40px;
+      text-align: center;
+      color: var(--text-muted);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    /* Mobile Responsive Adjustments */
+    @media (max-width: 768px) {
+      .desktop-only { display: none !important; }
+      .mobile-only { display: flex !important; }
+
+      .hamburger-btn { display: flex; }
+      
+      .app-sidebar {
+        transform: translateX(-100%);
+        width: 100%;
+        align-items: stretch;
+      }
+
+      .app-sidebar.mobile-open { transform: translateX(0); }
+      .app-main { left: 0; }
+      .nav-spacer { display: none; }
+
+      .nav-item, .btn-client-books {
+        height: 65px;
+        width: 100%;
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: 0 30px;
+        gap: 20px;
+        border-radius: 0;
+        margin: 0;
+        background-color: var(--bg-white);
+        color: var(--text-muted);
+        box-shadow: none;
+        border: none;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 16px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      .btn-client-books:hover {
+        background-color: #e0f2fe;
+        color: var(--primary-dark);
+      }
+
+      .nav-item svg.icon { margin-bottom: 0; }
+      .nav-text { font-size: 16px; }
+      .accordion-arrow { display: block; }
+      .accordion-arrow.active { transform: rotate(180deg); }
+      .mega-menu { display: none !important; }
+
+      .desktop-popup {
+        visibility: visible;
+        opacity: 1;
+        position: static;
+        transform: none;
+        box-shadow: none;
+        border: none;
+        border-radius: 0;
+      }
+
+      .search-overlay {
+        background-color: var(--bg-app); 
+        padding-top: 0;
+      }
+
+      .search-panel {
+        width: 100%;
+        height: 100%;
+        max-height: 100%;
+        border-radius: 0;
+        box-shadow: none;
+        background-color: transparent;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-left">
+      <button class="icon-btn hamburger-btn mobile-only" onclick="toggleSidebar()" title="Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="header-client-container desktop-only">
+        <button class="btn-header-client">
+          <span class="client-name-display">Select Client</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div class="popup-client">
+          <a href="#" onclick="selectClient('Client Books A', event)">Client Books A</a>
+          <a href="#" onclick="selectClient('Client Books B', event)">Client Books B</a>
+          <a href="#" onclick="selectClient('Add New Client', event)">Add New Client</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <div class="logo-text-main">VNV<span>Books</span></div>
+    </div>
+
+    <div class="header-right">
+      <button class="icon-btn" id="btnOpenSearch" onclick="toggleSearch()" title="Search">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <nav class="app-sidebar" id="appSidebar">
+    
+    <div class="nav-item-container mobile-only">
+      <button class="btn-client-books" onclick="toggleAccordion('client')">
+        <span class="client-name-display">Select Client</span>
+        <svg class="accordion-arrow" id="arrow-client" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </button>
+      <div class="accordion-content" id="acc-client">
+        <a href="#" onclick="selectClient('Client Books A', event)">Client Books A</a>
+        <a href="#" onclick="selectClient('Client Books B', event)">Client Books B</a>
+        <a href="#" onclick="selectClient('Add New Client', event)">Add New Client</a>
+      </div>
+    </div>
+
+    <div class="nav-item-container">
+      <div class="nav-item create-trigger" onclick="toggleAccordion('create')">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
+        </svg>
+        <span class="nav-text">Add New</span>
+        <svg class="accordion-arrow" id="arrow-create" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+
+        <div class="mega-menu">
+          <div class="menu-column">
+            <h4>Sales</h4>
+            <ul><li><a href="#">Sales Receipt</a></li><li><a href="#">Sales Invoice</a></li><li><a href="#">AR Collection</a></li><li><a href="#">Statement</a></li><li><a href="#">Customer</a></li></ul>
+          </div>
+          <div class="menu-column">
+            <h4>Purchases</h4>
+            <ul><li><a href="#">Cash Purchases</a></li><li><a href="#">Purchase Orders</a></li><li><a href="#">Receiving Reports</a></li><li><a href="#">AP Payments</a></li><li><a href="#">Credit Card Charges</a></li><li><a href="#">Vendor</a></li></ul>
+          </div>
+          <div class="menu-column">
+            <h4>Payroll</h4>
+            <ul><li><a href="#">Time Sheet</a></li><li><a href="#">Employees</a></li></ul>
+          </div>
+          <div class="menu-column">
+            <h4>Accountant</h4>
+            <ul><li><a href="#">General Journal</a></li><li><a href="#">Deposit</a></li><li><a href="#">Transfer</a></li><li><a href="#">Products/Services</a></li></ul>
+          </div>
+        </div>
+      </div>
+      
+      <div class="accordion-content" id="acc-create">
+        <div class="mobile-group-header">Sales</div>
+        <a href="#" class="grouped-item">Sales Receipt</a>
+        <a href="#" class="grouped-item">Sales Invoice</a>
+        <a href="#" class="grouped-item">AR Collection</a>
+        <a href="#" class="grouped-item">Statement</a>
+        <a href="#" class="grouped-item">Customer</a>
+        
+        <div class="mobile-group-header">Purchases</div>
+        <a href="#" class="grouped-item">Cash Purchases</a>
+        <a href="#" class="grouped-item">Purchase Orders</a>
+        <a href="#" class="grouped-item">Receiving Reports</a>
+        <a href="#" class="grouped-item">AP Payments</a>
+        <a href="#" class="grouped-item">Credit Card Charges</a>
+        <a href="#" class="grouped-item">Vendor</a>
+
+        <div class="mobile-group-header">Payroll</div>
+        <a href="#" class="grouped-item">Time Sheet</a>
+        <a href="#" class="grouped-item">Employees</a>
+
+        <div class="mobile-group-header">Accountant</div>
+        <a href="#" class="grouped-item">General Journal</a>
+        <a href="#" class="grouped-item">Deposit</a>
+        <a href="#" class="grouped-item">Transfer</a>
+        <a href="#" class="grouped-item">Products/Services</a>
+      </div>
+    </div>
+
+    <div class="nav-item-container">
+      <div class="nav-item" onclick="toggleAccordion('sales')">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line>
+        </svg>
+        <span class="nav-text">Sales</span>
+        <svg class="accordion-arrow" id="arrow-sales" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+      <div class="accordion-content desktop-popup" id="acc-sales">
+        <a href="#">Sales Receipt</a>
+        <a href="#">Sales Invoice</a>
+        <a href="#">AR Collection</a>
+        <a href="#">Statement</a>
+        <a href="#">Customer</a>
+      </div>
+    </div>
+
+    <div class="nav-item-container">
+      <div class="nav-item" onclick="toggleAccordion('purchases')">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span class="nav-text">Purchases</span>
+        <svg class="accordion-arrow" id="arrow-purchases" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+      <div class="accordion-content desktop-popup" id="acc-purchases">
+        <a href="#">Cash Purchases</a>
+        <a href="#">Purchase Orders</a>
+        <a href="#">Receiving Reports</a>
+        <a href="#">AP Payments</a>
+        <a href="#">Credit Card Charges</a>
+        <a href="#">Vendor</a>
+      </div>
+    </div>
+
+    <div class="nav-item-container">
+      <div class="nav-item" onclick="toggleAccordion('payroll')">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+        <span class="nav-text">Payroll</span>
+        <svg class="accordion-arrow" id="arrow-payroll" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+      <div class="accordion-content desktop-popup" id="acc-payroll">
+        <a href="#">Time Sheet</a>
+        <a href="#">Employees</a>
+      </div>
+    </div>
+
+    <div class="nav-item-container">
+      <div class="nav-item" onclick="toggleAccordion('accountant')">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+        <span class="nav-text">Accountant</span>
+        <svg class="accordion-arrow" id="arrow-accountant" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+      <div class="accordion-content desktop-popup popup-bottom" id="acc-accountant">
+        <a href="#">General Journal</a>
+        <a href="#">Deposit</a>
+        <a href="#">Transfer</a>
+        <a href="#">Products/Services</a>
+      </div>
+    </div>
+
+    <div class="nav-item-container">
+      <div class="nav-item" onclick="toggleAccordion('reports')">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+        <span class="nav-text">Reports</span>
+        <svg class="accordion-arrow" id="arrow-reports" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+      <div class="accordion-content desktop-popup popup-bottom" id="acc-reports">
+        <a href="#">Financial Statements</a>
+        <a href="#">Accounts Receivable</a>
+        <a href="#">Accounts Payable</a>
+      </div>
+    </div>
+
+    <div class="nav-spacer"></div>
+
+    <div class="nav-item-container">
+      <div class="nav-item" onclick="toggleAccordion('settings')">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <span class="nav-text">Settings</span>
+        <svg class="accordion-arrow" id="arrow-settings" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+      <div class="accordion-content desktop-popup popup-bottom" id="acc-settings">
+        <a href="#">Company Settings</a>
+        <a href="#">Manage Users</a>
+        <a href="#">Chart of Accounts</a>
+        <a href="LICENSE" target="_blank">License</a>
+      </div>
+    </div>
+
+    <div class="nav-item-container" style="margin-bottom: 15px;">
+      <div class="nav-item" onclick="toggleAccordion('account')">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span class="nav-text">Account</span>
+        <svg class="accordion-arrow" id="arrow-account" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+      <div class="accordion-content desktop-popup popup-bottom" id="acc-account">
+        <a href="#">My Profile</a>
+        <a href="#">Security & Password</a>
+        <a href="#">Logout</a>
+      </div>
+    </div>
+
+  </nav>
+
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-panel" id="searchPanel">
+      <div class="search-bar-container">
+        <button class="icon-btn" onclick="toggleSearch()" title="Close Search">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <input type="text" id="transactionSearch" class="search-input-box" placeholder="Search transactions..." onkeyup="mockSearchMatches()">
+      </div>
+      <div class="search-results" id="searchResultsContainer">
+        <p style="color: var(--text-muted); font-size: 14px;">Type to search for invoices, receipts, and clients...</p>
+      </div>
+    </div>
+  </div>
+
+  <main class="app-main">
+    <div class="dashboard-header"><h1>Dashboard</h1><p id="dashboardStatus">VNVBooks General Ledger Overview</p></div>
+    <div class="dashboard-card"><p>Welcome back. Your accounts are up to date.</p></div>
+  </main>
+
+  <script>
+    function selectClient(clientName, event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      const displaySpans = document.querySelectorAll('.client-name-display');
+      displaySpans.forEach(span => span.textContent = clientName);
+
+      const accClient = document.getElementById('acc-client');
+      const arrowClient = document.getElementById('arrow-client');
+      if (accClient && accClient.classList.contains('active')) {
+        accClient.classList.remove('active');
+        if (arrowClient) arrowClient.classList.remove('active');
+      }
+
+      if (window.innerWidth <= 768) {
+        document.getElementById('appSidebar').classList.remove('mobile-open');
+      }
+
+      const desktopPopup = document.querySelector('.popup-client');
+      if (desktopPopup) {
+        desktopPopup.style.visibility = 'hidden';
+        desktopPopup.style.opacity = '0';
+        setTimeout(() => {
+          desktopPopup.style.visibility = '';
+          desktopPopup.style.opacity = '';
+        }, 300);
+      }
+
+      document.getElementById('dashboardStatus').innerText = 'Viewing ledger for: ' + clientName;
+    }
+
+    function toggleSidebar() { 
+      document.getElementById('appSidebar').classList.toggle('mobile-open'); 
+    }
+
+    function toggleAccordion(id) {
+      if (window.innerWidth > 768) return; 
+
+      const contentToToggle = document.getElementById('acc-' + id);
+      const arrowToToggle = document.getElementById('arrow-' + id);
+      const isOpening = !contentToToggle.classList.contains('active');
+
+      document.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.accordion-arrow').forEach(a => a.classList.remove('active'));
+
+      if (isOpening) {
+        contentToToggle.classList.add('active');
+        arrowToToggle.classList.add('active');
+      }
+    }
+
+    function toggleSearch() {
+      const overlay = document.getElementById('searchOverlay');
+      overlay.classList.toggle('active');
+      if(overlay.classList.contains('active')) setTimeout(() => document.getElementById('transactionSearch').focus(), 100);
+    }
+
+    function mockSearchMatches() {
+      const query = document.getElementById('transactionSearch').value;
+      const container = document.getElementById('searchResultsContainer');
+      if (query.length > 1) {
+        container.innerHTML = 
+          '<div class="result-item" onclick="handleSearchResultClick(\'Mock Transaction #102\')"><strong>' + query + '</strong> - Mock Transaction #102</div>' +
+          '<div class="result-item" onclick="handleSearchResultClick(\'Mock Client Acme\')"><strong>' + query + '</strong> - Mock Client Acme</div>';
+      } else {
+        container.innerHTML = '<p style="color: var(--text-muted); font-size: 14px;">Type to search...</p>';
+      }
+    }
+
+    function handleSearchResultClick(itemName) {
+      toggleSearch();
+      document.getElementById('dashboardStatus').innerText = 'Viewing details for: ' + itemName;
+    }
+
+    document.addEventListener('click', function(event) {
+      const overlay = document.getElementById('searchOverlay');
+      const searchPanel = document.getElementById('searchPanel');
+      const searchBtn = document.getElementById('btnOpenSearch');
+      
+      if (overlay.classList.contains('active')) {
+        if (!searchPanel.contains(event.target) && !searchBtn.contains(event.target)) {
+          toggleSearch();
+        }
+      }
+    });
+  </script>
+</body>
+</html>
