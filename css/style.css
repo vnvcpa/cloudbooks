@@ -529,6 +529,8 @@ body {
 
   .nav-item svg.icon { margin-bottom: 0; }
   .nav-text { font-size: 16px; }
+  
+  /* FIXED ARROW CSS */
   .accordion-arrow { 
     display: block; 
     padding: 10px;
@@ -536,11 +538,13 @@ body {
     border-radius: 8px;
     background-color: transparent;
     transition: background-color 0.2s ease, transform 0.3s ease;
+    box-sizing: content-box; /* Ensures the padding expands OUTWARD, restoring visibility */
   }
   .accordion-arrow:active, .accordion-arrow:hover {
     background-color: rgba(10, 66, 117, 0.08); /* Separated color on tap */
   }
   .accordion-arrow.active { transform: rotate(180deg); }
+  
   .mega-menu { display: none !important; }
 
   .desktop-popup {
