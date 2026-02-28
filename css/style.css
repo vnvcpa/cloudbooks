@@ -62,8 +62,7 @@ body {
   left: var(--sidebar-width);
   right: 0;
   bottom: 0;
-  /* Top reduced by 80% (6px), Sides reduced by 30% (21px), Bottom kept at 30px */
-  padding: 6px 21px 30px 21px;
+  padding: 6px 21px 30px 21px; /* Top reduced 80%, Sides reduced 30% */
   overflow-y: auto;
 }
 
@@ -467,8 +466,9 @@ body {
 .dashboard-header {
   margin-bottom: 20px;
 }
+
 .dashboard-header h1 {
-  font-size: 19.2px; /* Reduced by 20% from 24px */
+  font-size: 19.2px; /* Reduced by 20% */
   font-weight: 500;
   color: var(--primary-dark);
 }
@@ -492,7 +492,7 @@ body {
   .app-sidebar {
     transform: translateX(-100%);
     width: max-content; /* Shrinks to fit longest button */
-    min-width: 240px; /* Prevents it from getting too narrow */
+    min-width: 240px;   /* Prevents it from getting too narrow */
     border-right: 1px solid var(--border-color);
     box-shadow: 4px 0 16px rgba(0,0,0,0.1);
     align-items: stretch;
@@ -529,7 +529,17 @@ body {
 
   .nav-item svg.icon { margin-bottom: 0; }
   .nav-text { font-size: 16px; }
-  .accordion-arrow { display: block; }
+  .accordion-arrow { 
+    display: block; 
+    padding: 10px;
+    margin-right: -10px;
+    border-radius: 8px;
+    background-color: transparent;
+    transition: background-color 0.2s ease, transform 0.3s ease;
+  }
+  .accordion-arrow:active, .accordion-arrow:hover {
+    background-color: rgba(10, 66, 117, 0.08); /* Separated color on tap */
+  }
   .accordion-arrow.active { transform: rotate(180deg); }
   .mega-menu { display: none !important; }
 
