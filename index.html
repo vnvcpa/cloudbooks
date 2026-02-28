@@ -423,29 +423,31 @@
 
     // ----- GENERIC MODULE ROUTER -----
     function handleMenuClick(parentFolder, childFile, event) {
-      // Prevent default anchor link jump
-      if (event && event.preventDefault) {
-        event.preventDefault();
-      }
-      
-      const fileToLoad = childFile || parentFolder;
-      console.log(`[Router] Loading module from: /${parentFolder}/${fileToLoad}.js`);
+  if (event && event.preventDefault) event.preventDefault();
+  
+  const fileToLoad = childFile || parentFolder;
+  // This constructs: ./sales/salesReceipt.js
+  const modulePath = `./${parentFolder}/${fileToLoad}.js`;
 
-      // Temporary visual feedback until JS files are connected
-      const statusEl = document.getElementById('dashboardStatus');
-      if (statusEl) {
-        let displayName = fileToLoad.replace(/_/g, ' ').toUpperCase();
-        statusEl.innerText = childFile 
-          ? `Mapsd to ${displayName} (Module: ${parentFolder})` 
-          : `Mapsd to ${displayName}`;
-      }
+  const statusEl = document.getElementById('dashboardStatus');
+  if (statusEl) statusEl.innerText = "Loading " + fileToLoad + "...";
 
-      import('./sales/salesReceipt.js')
-        .then(module => {
-          module.renderView(document.getElementById('mainContainer'));
-        })
-        .catch(err => console.log('JS file not created yet', err));
-          
+  // Dynamic Import
+  import(modulePath)
+    .then(module => {
+      // If your file has an export function init(containerId)
+      if (module.init) {
+        module.init('mainContainer');
+      } else if (module.default) {
+        // Or if it uses export default
+        module.default('mainContainer');
+      }
+    })
+    .catch(err => {
+      console.error('Error loading module:', err);
+      if (statusEl) statusEl.innerText = "Error loading " + fileToLoad;
+    });
+        
       /* Example of how you can dynamically import these later:
       import(`./${parentFolder}/${fileToLoad}.js`)
         .then(module => {
