@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VNVBooks</title>
   <link rel="stylesheet" href="css/style.css">
- </head>
+</head>
 <body>
 
   <header class="app-header">
@@ -47,7 +47,7 @@
   <nav class="app-sidebar" id="appSidebar">
     
     <div class="nav-item-container mobile-only">
-      <button class="btn-client-books" onclick="toggleAccordion('client')">
+      <button class="btn-client-books" onclick="toggleAccordion('client', event)">
         <span class="client-name-display">Select Client</span>
         <svg class="accordion-arrow" id="arrow-client" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
@@ -70,12 +70,12 @@
     </div>
 
     <div class="nav-item-container">
-      <div class="nav-item create-trigger" onclick="handleParentClick('create', event)">
+      <div class="nav-item create-trigger" onclick="handleMenuClick('addnew', null, event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
         </svg>
         <span class="nav-text">Add New</span>
-        <svg class="accordion-arrow" id="arrow-create" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="accordion-arrow" id="arrow-create" onclick="toggleAccordion('create', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
 
@@ -128,12 +128,12 @@
     </div>
 
     <div class="nav-item-container">
-      <div class="nav-item create-trigger" onclick="handleParentClick('sales', event)">
+      <div class="nav-item create-trigger" onclick="handleMenuClick('sales', null, event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
         </svg>
         <span class="nav-text">Sales</span>
-        <svg class="accordion-arrow" id="arrow-sales" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="accordion-arrow" id="arrow-sales" onclick="toggleAccordion('sales', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
 
@@ -161,12 +161,12 @@
     </div>
 
     <div class="nav-item-container">
-      <div class="nav-item create-trigger" onclick="handleParentClick('purchases', event)">
+      <div class="nav-item create-trigger" onclick="handleMenuClick('purchases', null, event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
         </svg>
         <span class="nav-text">Purchases</span>
-        <svg class="accordion-arrow" id="arrow-purchases" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="accordion-arrow" id="arrow-purchases" onclick="toggleAccordion('purchases', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
 
@@ -190,12 +190,12 @@
     </div>
 
     <div class="nav-item-container">
-      <div class="nav-item create-trigger" onclick="handleParentClick('payroll', event)">
+      <div class="nav-item create-trigger" onclick="handleMenuClick('payroll', null, event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
         </svg>
         <span class="nav-text">Payroll</span>
-        <svg class="accordion-arrow" id="arrow-payroll" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="accordion-arrow" id="arrow-payroll" onclick="toggleAccordion('payroll', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
 
@@ -215,12 +215,12 @@
     </div>
 
     <div class="nav-item-container">
-      <div class="nav-item create-trigger" onclick="handleParentClick('accountant', event)">
+      <div class="nav-item create-trigger" onclick="handleMenuClick('accountant', null, event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
         </svg>
         <span class="nav-text">Accountant</span>
-        <svg class="accordion-arrow" id="arrow-accountant" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="accordion-arrow" id="arrow-accountant" onclick="toggleAccordion('accountant', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
 
@@ -242,12 +242,12 @@
     </div>
 
     <div class="nav-item-container">
-      <div class="nav-item" onclick="handleParentClick('reports', event)">
+      <div class="nav-item" onclick="handleMenuClick('reports', null, event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line>
         </svg>
         <span class="nav-text">Reports</span>
-        <svg class="accordion-arrow" id="arrow-reports" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="accordion-arrow" id="arrow-reports" onclick="toggleAccordion('reports', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
       </div>
@@ -261,12 +261,12 @@
     <div class="nav-spacer"></div>
 
     <div class="nav-item-container">
-      <div class="nav-item" onclick="handleParentClick('settings', event)">
+      <div class="nav-item" onclick="handleMenuClick('settings', null, event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
         </svg>
         <span class="nav-text">Settings</span>
-        <svg class="accordion-arrow" id="arrow-settings" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="accordion-arrow" id="arrow-settings" onclick="toggleAccordion('settings', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
       </div>
@@ -279,12 +279,12 @@
     </div>
 
     <div class="nav-item-container" style="margin-bottom: 15px;">
-      <div class="nav-item" onclick="handleParentClick('account', event)">
+      <div class="nav-item" onclick="handleMenuClick('account', null, event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>
         </svg>
         <span class="nav-text">Account</span>
-        <svg class="accordion-arrow" id="arrow-account" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="accordion-arrow" id="arrow-account" onclick="toggleAccordion('account', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
       </div>
@@ -319,7 +319,7 @@
   </main>
 
   <script type="module">
-    // Make sure SVG loader logic exists to swap your custom icons (from previous response)
+    // Make sure SVG loader logic exists to swap your custom icons
     import { NavIcons } from './navIcons/navSVG.js';
     
     function injectIcons() {
@@ -376,41 +376,19 @@
       document.getElementById('appSidebar').classList.toggle('mobile-open'); 
     }
 
-    // Single Click / Double Click Routing Handler
-    const clickTimers = {};
-    function handleParentClick(folder, event) {
-      if (clickTimers[folder]) {
-        // Double Click detected
-        clearTimeout(clickTimers[folder]);
-        clickTimers[folder] = null;
-        
-        // Keep child buttons hidden by closing accordion if it just opened
-        const contentToToggle = document.getElementById('acc-' + folder);
-        const arrowToToggle = document.getElementById('arrow-' + folder);
-        if (contentToToggle) contentToToggle.classList.remove('active');
-        if (arrowToToggle) arrowToToggle.classList.remove('active');
-
-        // Load the Parent Dashboard file directly
-        handleMenuClick(folder, null, event);
-      } else {
-        // First Click detected
-        clickTimers[folder] = setTimeout(() => {
-          clickTimers[folder] = null;
-          // Toggle the mobile accordion
-          toggleAccordion(folder);
-        }, 250); // 250ms delay detects if user is double-tapping
+    function toggleAccordion(id, event) {
+      // Prevents the click from bubbling up and loading the dashboard on the parent nav-item
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
       }
-    }
-
-    function toggleAccordion(id) {
+      
       if (window.innerWidth > 768) return; 
 
       const contentToToggle = document.getElementById('acc-' + id);
       const arrowToToggle = document.getElementById('arrow-' + id);
       
-      // Safety check in case folder doesn't have an accordion (like dashboard)
       if (!contentToToggle) return;
-      
       const isOpening = !contentToToggle.classList.contains('active');
 
       document.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('active'));
@@ -418,7 +396,7 @@
 
       if (isOpening) {
         contentToToggle.classList.add('active');
-        arrowToToggle.classList.add('active');
+        if (arrowToToggle) arrowToToggle.classList.add('active');
       }
     }
 
@@ -470,7 +448,7 @@
     function handleMenuClick(parentFolder, childFile, event) {
       if (event && event.preventDefault) event.preventDefault();
       
-      // Hides the mobile popup navigation panel when any link is clicked
+      // Auto-hide mobile navigation panel upon selection
       if (window.innerWidth <= 768) {
         document.getElementById('appSidebar').classList.remove('mobile-open');
       }
