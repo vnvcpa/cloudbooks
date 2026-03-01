@@ -32,10 +32,12 @@
     </div>
 
     <div class="header-center">
-      <div class="logo-text-main">VNV<span>Books</span></div>
+      <div class="logo-text-main" id="dynamicHeaderTitle">Dashboard</div>
     </div>
 
     <div class="header-right">
+      <img src="onebook-logotext.jpg" alt="OneBook Logo" class="app-logo desktop-logo desktop-only">
+      <img src="onebook-logo.jpg" alt="OneBook Logo" class="app-logo mobile-logo mobile-only">
       <button class="icon-btn" id="btnOpenSearch" onclick="toggleSearch()" title="Search">
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -82,24 +84,11 @@
         <div class="mega-menu">
           <div class="menu-column">
             <h4>Sales</h4>
-            <ul>
-              <li><a href="#" onclick="handleMenuClick('addnew', 'salesReceipt', event)">Sales Receipt</a></li>
-              <li><a href="#" onclick="handleMenuClick('addnew', 'sales_invoice', event)">Sales Invoice</a></li>
-              <li><a href="#" onclick="handleMenuClick('addnew', 'ar_collection', event)">AR Collection</a></li>
-              <li><a href="#" onclick="handleMenuClick('addnew', 'statement', event)">Statement</a></li>
-              <li><a href="#" onclick="handleMenuClick('sales', 'addCustomer', event)">Add Customer</a></li>
-            </ul>
+            <ul><li><a href="#" onclick="handleMenuClick('addnew', 'salesReceipt', event)">Sales Receipt</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'sales_invoice', event)">Sales Invoice</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'ar_collection', event)">AR Collection</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'statement', event)">Statement</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'customer', event)">Customer</a></li></ul>
           </div>
           <div class="menu-column">
             <h4>Purchases</h4>
-            <ul>
-              <li><a href="#" onclick="handleMenuClick('addnew', 'cash_purchases', event)">Cash Purchases</a></li>
-              <li><a href="#" onclick="handleMenuClick('addnew', 'purchase_orders', event)">Purchase Orders</a></li>
-              <li><a href="#" onclick="handleMenuClick('addnew', 'receiving_reports', event)">Receiving Reports</a></li>
-              <li><a href="#" onclick="handleMenuClick('addnew', 'ap_payments', event)">AP Payments</a></li>
-              <li><a href="#" onclick="handleMenuClick('addnew', 'credit_card_charges', event)">Credit Card Charges</a></li>
-              <li><a href="#" onclick="handleMenuClick('addnew', 'vendors', event)">Vendors</a></li>
-            </ul>
+            <ul><li><a href="#" onclick="handleMenuClick('addnew', 'cash_purchases', event)">Cash Purchases</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'purchase_orders', event)">Purchase Orders</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'receiving_reports', event)">Receiving Reports</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'ap_payments', event)">AP Payments</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'credit_card_charges', event)">Credit Card Charges</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'vendors', event)">Vendors</a></li></ul>
           </div>
           <div class="menu-column">
             <h4>Payroll</h4>
@@ -118,7 +107,7 @@
         <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'sales_invoice', event)">Sales Invoice</a>
         <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'ar_collection', event)">AR Collection</a>
         <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'statement', event)">Statement</a>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'addCustomer', event)">Add Customer</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'customer', event)">Customer</a>
         
         <div class="mobile-group-header">Purchases</div>
         <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'cash_purchases', event)">Cash Purchases</a>
@@ -467,6 +456,14 @@
       }
       
       const fileToLoad = childFile || parentFolder;
+      
+      // Update Dynamic Header Title by formatting the fileToLoad string
+      let displayTitle = fileToLoad.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2');
+      displayTitle = displayTitle.replace(/\b\w/g, char => char.toUpperCase());
+      
+      const headerTitle = document.getElementById('dynamicHeaderTitle');
+      if (headerTitle) headerTitle.innerText = displayTitle;
+
       // This constructs: ./sales/salesReceipt.js
       const modulePath = `./${parentFolder}/${fileToLoad}.js`;
 
