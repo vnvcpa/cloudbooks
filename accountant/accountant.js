@@ -1,4 +1,4 @@
-// -accountant/accountant.js
+// accountant/accountant.js
 
 export function init(containerId) {
     const container = document.getElementById(containerId);
