@@ -1,6 +1,6 @@
 // accountant/accountant.js
 
-export function initSalesReceipt(containerId) {
+export function init(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
