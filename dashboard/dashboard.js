@@ -1,4 +1,4 @@
-// -sales/dashboard.js
+// sales/dashboard.js
 
 export function init(containerId) {
     const container = document.getElementById(containerId);
