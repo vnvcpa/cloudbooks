@@ -47,7 +47,7 @@
   <nav class="app-sidebar" id="appSidebar">
     
     <div class="nav-item-container mobile-only">
-      <button class="btn-client-books" onclick="toggleAccordion('client')">
+      <button class="btn-client-books" onclick="toggleAccordion('client', event)">
         <span class="client-name-display">Select Client</span>
         <svg class="accordion-arrow" id="arrow-client" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
@@ -70,23 +70,36 @@
     </div>
 
     <div class="nav-item-container">
-      <div class="nav-item create-trigger" onclick="toggleAccordion('create')">
+      <div class="nav-item create-trigger" onclick="handleMenuClick('addnew', null, event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
         </svg>
         <span class="nav-text">Add New</span>
-        <svg class="accordion-arrow" id="arrow-create" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="accordion-arrow" id="arrow-create" onclick="toggleAccordion('create', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
 
         <div class="mega-menu">
           <div class="menu-column">
             <h4>Sales</h4>
-            <ul><li><a href="#" onclick="handleMenuClick('addnew', 'salesReceipt', event)">Sales Receipt</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'sales_invoice', event)">Sales Invoice</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'ar_collection', event)">AR Collection</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'statement', event)">Statement</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'customer', event)">Customer</a></li></ul>
+            <ul>
+              <li><a href="#" onclick="handleMenuClick('addnew', 'salesReceipt', event)">Sales Receipt</a></li>
+              <li><a href="#" onclick="handleMenuClick('addnew', 'sales_invoice', event)">Sales Invoice</a></li>
+              <li><a href="#" onclick="handleMenuClick('addnew', 'ar_collection', event)">AR Collection</a></li>
+              <li><a href="#" onclick="handleMenuClick('addnew', 'statement', event)">Statement</a></li>
+              <li><a href="#" onclick="handleMenuClick('sales', 'addCustomer', event)">Add Customer</a></li>
+            </ul>
           </div>
           <div class="menu-column">
             <h4>Purchases</h4>
-            <ul><li><a href="#" onclick="handleMenuClick('addnew', 'cash_purchases', event)">Cash Purchases</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'purchase_orders', event)">Purchase Orders</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'receiving_reports', event)">Receiving Reports</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'ap_payments', event)">AP Payments</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'credit_card_charges', event)">Credit Card Charges</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'vendors', event)">Vendors</a></li></ul>
+            <ul>
+              <li><a href="#" onclick="handleMenuClick('addnew', 'cash_purchases', event)">Cash Purchases</a></li>
+              <li><a href="#" onclick="handleMenuClick('addnew', 'purchase_orders', event)">Purchase Orders</a></li>
+              <li><a href="#" onclick="handleMenuClick('addnew', 'receiving_reports', event)">Receiving Reports</a></li>
+              <li><a href="#" onclick="handleMenuClick('addnew', 'ap_payments', event)">AP Payments</a></li>
+              <li><a href="#" onclick="handleMenuClick('addnew', 'credit_card_charges', event)">Credit Card Charges</a></li>
+              <li><a href="#" onclick="handleMenuClick('addnew', 'vendors', event)">Vendors</a></li>
+            </ul>
           </div>
           <div class="menu-column">
             <h4>Payroll</h4>
@@ -105,7 +118,7 @@
         <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'sales_invoice', event)">Sales Invoice</a>
         <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'ar_collection', event)">AR Collection</a>
         <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'statement', event)">Statement</a>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'customer', event)">Customer</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'addCustomer', event)">Add Customer</a>
         
         <div class="mobile-group-header">Purchases</div>
         <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'cash_purchases', event)">Cash Purchases</a>
@@ -128,12 +141,12 @@
     </div>
 
     <div class="nav-item-container">
-      <div class="nav-item create-trigger" onclick="toggleAccordion('sales')">
+      <div class="nav-item create-trigger" onclick="handleMenuClick('sales', null, event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
         </svg>
         <span class="nav-text">Sales</span>
-        <svg class="accordion-arrow" id="arrow-sales" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="accordion-arrow" id="arrow-sales" onclick="toggleAccordion('sales', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
 
@@ -161,12 +174,12 @@
     </div>
 
     <div class="nav-item-container">
-      <div class="nav-item create-trigger" onclick="toggleAccordion('purchases')">
+      <div class="nav-item create-trigger" onclick="handleMenuClick('purchases', null, event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
         </svg>
         <span class="nav-text">Purchases</span>
-        <svg class="accordion-arrow" id="arrow-purchases" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="accordion-arrow" id="arrow-purchases" onclick="toggleAccordion('purchases', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
 
@@ -190,12 +203,12 @@
     </div>
 
     <div class="nav-item-container">
-      <div class="nav-item create-trigger" onclick="toggleAccordion('payroll')">
+      <div class="nav-item create-trigger" onclick="handleMenuClick('payroll', null, event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
         </svg>
         <span class="nav-text">Payroll</span>
-        <svg class="accordion-arrow" id="arrow-payroll" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="accordion-arrow" id="arrow-payroll" onclick="toggleAccordion('payroll', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
 
@@ -215,12 +228,12 @@
     </div>
 
     <div class="nav-item-container">
-      <div class="nav-item create-trigger" onclick="toggleAccordion('accountant')">
+      <div class="nav-item create-trigger" onclick="handleMenuClick('accountant', null, event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
         </svg>
         <span class="nav-text">Accountant</span>
-        <svg class="accordion-arrow" id="arrow-accountant" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="accordion-arrow" id="arrow-accountant" onclick="toggleAccordion('accountant', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
 
@@ -242,12 +255,12 @@
     </div>
 
     <div class="nav-item-container">
-      <div class="nav-item" onclick="toggleAccordion('reports')">
+      <div class="nav-item" onclick="handleMenuClick('reports', null, event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line>
         </svg>
         <span class="nav-text">Reports</span>
-        <svg class="accordion-arrow" id="arrow-reports" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="accordion-arrow" id="arrow-reports" onclick="toggleAccordion('reports', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
       </div>
@@ -261,12 +274,12 @@
     <div class="nav-spacer"></div>
 
     <div class="nav-item-container">
-      <div class="nav-item" onclick="toggleAccordion('settings')">
+      <div class="nav-item" onclick="handleMenuClick('settings', null, event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
         </svg>
         <span class="nav-text">Settings</span>
-        <svg class="accordion-arrow" id="arrow-settings" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="accordion-arrow" id="arrow-settings" onclick="toggleAccordion('settings', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
       </div>
@@ -279,12 +292,12 @@
     </div>
 
     <div class="nav-item-container" style="margin-bottom: 15px;">
-      <div class="nav-item" onclick="toggleAccordion('account')">
+      <div class="nav-item" onclick="handleMenuClick('account', null, event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>
         </svg>
         <span class="nav-text">Account</span>
-        <svg class="accordion-arrow" id="arrow-account" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="accordion-arrow" id="arrow-account" onclick="toggleAccordion('account', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
       </div>
@@ -319,7 +332,7 @@
   </main>
 
   <script type="module">
-    // Make sure SVG loader logic exists to swap your custom icons (from previous response)
+    // Make sure SVG loader logic exists to swap your custom icons
     import { NavIcons } from './navIcons/navSVG.js';
     
     function injectIcons() {
@@ -376,11 +389,19 @@
       document.getElementById('appSidebar').classList.toggle('mobile-open'); 
     }
 
-    function toggleAccordion(id) {
+    function toggleAccordion(id, event) {
+      // Prevents the click from bubbling up and loading the dashboard on the parent nav-item
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      
       if (window.innerWidth > 768) return; 
 
       const contentToToggle = document.getElementById('acc-' + id);
       const arrowToToggle = document.getElementById('arrow-' + id);
+      
+      if (!contentToToggle) return;
       const isOpening = !contentToToggle.classList.contains('active');
 
       document.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('active'));
@@ -388,7 +409,7 @@
 
       if (isOpening) {
         contentToToggle.classList.add('active');
-        arrowToToggle.classList.add('active');
+        if (arrowToToggle) arrowToToggle.classList.add('active');
       }
     }
 
@@ -416,6 +437,7 @@
     }
 
     document.addEventListener('click', function(event) {
+      // 1. Search Overlay dismissal
       const overlay = document.getElementById('searchOverlay');
       const searchPanel = document.getElementById('searchPanel');
       const searchBtn = document.getElementById('btnOpenSearch');
@@ -424,42 +446,48 @@
           toggleSearch();
         }
       }
+
+      // 2. Mobile Nav Panel dismiss on outside click
+      const sidebar = document.getElementById('appSidebar');
+      const hamburgerBtn = document.querySelector('.hamburger-btn');
+      if (window.innerWidth <= 768 && sidebar.classList.contains('mobile-open')) {
+        if (!sidebar.contains(event.target) && !hamburgerBtn.contains(event.target)) {
+          sidebar.classList.remove('mobile-open');
+        }
+      }
     });
 
     // ----- GENERIC MODULE ROUTER -----
     function handleMenuClick(parentFolder, childFile, event) {
-  if (event && event.preventDefault) event.preventDefault();
-  
-  const fileToLoad = childFile || parentFolder;
-  // This constructs: ./sales/salesReceipt.js
-  const modulePath = `./${parentFolder}/${fileToLoad}.js`;
-
-  const statusEl = document.getElementById('dashboardStatus');
-  if (statusEl) statusEl.innerText = "Loading " + fileToLoad + "...";
-
-  // Dynamic Import
-  import(modulePath)
-    .then(module => {
-      // If your file has an export function init(containerId)
-      if (module.init) {
-        module.init('mainContainer');
-      } else if (module.default) {
-        // Or if it uses export default
-        module.default('mainContainer');
+      if (event && event.preventDefault) event.preventDefault();
+      
+      // Auto-hide mobile navigation panel upon selection
+      if (window.innerWidth <= 768) {
+        document.getElementById('appSidebar').classList.remove('mobile-open');
       }
-    })
-    .catch(err => {
-      console.error('Error loading module:', err);
-      if (statusEl) statusEl.innerText = "Error loading " + fileToLoad;
-    });
-        
-      /* Example of how you can dynamically import these later:
-      import(`./${parentFolder}/${fileToLoad}.js`)
+      
+      const fileToLoad = childFile || parentFolder;
+      // This constructs: ./sales/salesReceipt.js
+      const modulePath = `./${parentFolder}/${fileToLoad}.js`;
+
+      const statusEl = document.getElementById('dashboardStatus');
+      if (statusEl) statusEl.innerText = "Loading " + fileToLoad + "...";
+
+      // Dynamic Import
+      import(modulePath)
         .then(module => {
-           // module.renderView(document.getElementById('mainContainer'));
+          // If your file has an export function init(containerId)
+          if (module.init) {
+            module.init('mainContainer');
+          } else if (module.default) {
+            // Or if it uses export default
+            module.default('mainContainer');
+          }
         })
-        .catch(err => console.log('JS file not created yet', err));
-      */
+        .catch(err => {
+          console.error('Error loading module:', err);
+          if (statusEl) statusEl.innerText = "Error loading " + fileToLoad;
+        });
     }
   </script>
 </body>
