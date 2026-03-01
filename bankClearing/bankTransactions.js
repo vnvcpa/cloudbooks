@@ -37,7 +37,6 @@ export function getTransaction(txId) {
 
 /**
  * Explainable Matching Engine
- * @param {string} txId 
  */
 export async function runMatcher(txId) {
     const tx = state.transactions.get(txId);
@@ -52,19 +51,14 @@ export async function runMatcher(txId) {
         let score = 0;
         let reasons = [];
 
-        // Exact Absolute Amount Match (rule)
         if (Math.abs(tx.amount) === Math.abs(ledgerTx.amount)) {
             score += 50;
             reasons.push("amount exact");
         }
-
-        // Fuzzy Payee Match (simplistic subset for example)
         if (tx.rawDescription.toLowerCase().includes(ledgerTx.payee.toLowerCase())) {
             score += 30;
             reasons.push(`fuzzy payee (~${ledgerTx.payee})`);
         }
-
-        // Invoice Match
         if (ledgerTx.invoice && tx.rawDescription.includes(ledgerTx.invoice)) {
             score += 20;
             reasons.push(`invoice # matched`);
@@ -90,7 +84,7 @@ export async function runMatcher(txId) {
 export function matchTransaction(txId, ledgerId, { userId }) {
     const event = { id: `m_${Date.now()}`, type: 'MATCH', txId, ledgerId, userId, timestamp: new Date() };
     state.events.push(event);
-    state.matches.set(txId, { ledgerId, confidence: 100, explanation: "Manual Match" });
+    state.matches.set(txId, { ledgerId, confidence: 100, explanation: "Manually Matched" });
     notify('onStateChange', { action: 'matched', txId });
     return event;
 }
@@ -121,11 +115,12 @@ export async function approve(batchIds, { userId, comment }) {
 
 export async function postTransaction(txId, { userId, dryRun = false }) {
     const tx = state.transactions.get(txId);
+    // Auto-approve for manual posting in this simplified demo flow
+    if (tx.status === 'draft') tx.status = 'approved'; 
+    
     if (tx.status !== 'approved') throw new Error("Transaction must be approved before posting.");
     
-    if (dryRun) {
-        return dryRunApply([txId]);
-    }
+    if (dryRun) return dryRunApply([txId]);
 
     const ledgerResponse = await ledgerAdapter.post(tx);
     tx.status = 'posted';
@@ -133,6 +128,24 @@ export async function postTransaction(txId, { userId, dryRun = false }) {
     state.events.push(event);
     notify('onStateChange', { action: 'posted', txId });
     return event;
+}
+
+/**
+ * Creates a brand new ledger transaction based on a bank feed item.
+ */
+export async function createTransactionFromBank(txId, txType, { userId }) {
+    const tx = state.transactions.get(txId);
+    if (!tx) throw new Error("Transaction not found");
+
+    // In a real app, this creates a record in your DB. Here we mock a ledger ID.
+    const newLedgerId = `L_NEW_${Date.now()}`;
+    const event = { type: 'CREATE_TX', txId, newLedgerId, txType, userId, timestamp: new Date() };
+    state.events.push(event);
+    
+    // Automatically match the bank tx to this newly created ledger item
+    matchTransaction(txId, newLedgerId, { userId });
+    
+    return newLedgerId;
 }
 
 export function dryRunApply(txIds) {
@@ -143,36 +156,18 @@ export function dryRunApply(txIds) {
         return { txId: id, action: 'would_post', impact: tx.amount };
     });
 
-    return {
-        isDryRun: true,
-        totalBalanceImpact: mockBalanceImpact,
-        diff
-    };
+    return { isDryRun: true, totalBalanceImpact: mockBalanceImpact, diff };
 }
 
 export function getAnomalyQueue({ limit = 10 }) {
     const anomalies = Array.from(state.transactions.values()).map(tx => {
         let riskScore = 0;
         let reasons = [];
-
-        // Amount outlier heuristic
-        if (Math.abs(tx.amount) > 2000) {
-            riskScore += 60;
-            reasons.push("High amount deviation");
-        }
-        // Quality heuristic
-        if (tx.ocrConfidence < 90) {
-            riskScore += 30;
-            reasons.push("Low OCR confidence");
-        }
-
+        if (Math.abs(tx.amount) > 2000) { riskScore += 60; reasons.push("High amount deviation"); }
+        if (tx.ocrConfidence < 90) { riskScore += 30; reasons.push("Low OCR confidence"); }
         return { tx, riskScore, reasons };
     });
-
-    return anomalies
-        .filter(a => a.riskScore > 0)
-        .sort((a, b) => b.riskScore - a.riskScore)
-        .slice(0, limit);
+    return anomalies.filter(a => a.riskScore > 0).sort((a, b) => b.riskScore - a.riskScore).slice(0, limit);
 }
 
 
@@ -210,18 +205,18 @@ export function init(containerId) {
                             <th style="padding: 10px 8px;">Description</th>
                             <th style="padding: 10px 8px;">Amount</th>
                             <th style="padding: 10px 8px;">Match Status</th>
+                            <th style="padding: 10px 8px;">State</th>
                             <th style="padding: 10px 8px;">Action</th>
                         </tr>
                     </thead>
                     <tbody id="bt-tableBody">
-                        <tr><td colspan="5" style="padding: 20px; text-align: center; color: #999;">No data loaded</td></tr>
+                        <tr><td colspan="6" style="padding: 20px; text-align: center; color: #999;">No data loaded</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     `;
 
-    // DOM Elements
     const btnLoadMock = document.getElementById('bt-btnLoadMock');
     const btnRunMatch = document.getElementById('bt-btnRunMatch');
     const btnAnomalies = document.getElementById('bt-btnAnomalies');
@@ -244,6 +239,8 @@ export function init(containerId) {
                     <div style="font-size: 11px; color: #666;">${match.explanation}</div>
                 `;
             }
+            
+            const stateColor = tx.status === 'posted' ? 'green' : (tx.status === 'pending_review' ? 'orange' : 'var(--text-muted)');
 
             return `
                 <tr style="border-bottom: 1px solid var(--border-color);">
@@ -251,12 +248,21 @@ export function init(containerId) {
                     <td style="padding: 12px 8px;">${tx.rawDescription}</td>
                     <td style="padding: 12px 8px; font-family: monospace;">$${tx.amount.toFixed(2)}</td>
                     <td style="padding: 12px 8px;">${matchHtml}</td>
+                    <td style="padding: 12px 8px; color: ${stateColor}; font-weight: 500;">${tx.status.toUpperCase()}</td>
                     <td style="padding: 12px 8px;">
-                        <button style="background: transparent; border: none; color: var(--accent); cursor: pointer; font-size: 13px;">Review</button>
+                        ${tx.status !== 'posted' 
+                            ? `<button class="bt-btn-review" data-id="${tx.id}" style="background: transparent; border: none; color: var(--accent); cursor: pointer; font-size: 13px; font-weight: bold;">Review</button>` 
+                            : `<span style="color: green;">✓ Done</span>`
+                        }
                     </td>
                 </tr>
             `;
         }).join('');
+
+        // Attach listeners to newly created Review buttons
+        document.querySelectorAll('.bt-btn-review').forEach(btn => {
+            btn.addEventListener('click', (e) => openReviewModal(e.target.getAttribute('data-id')));
+        });
     };
 
     // UI Hook: Listen to core engine state changes
@@ -265,7 +271,134 @@ export function init(containerId) {
         renderTable();
     });
 
-    // Event Listeners for UI Buttons
+    // ---------------------------------------------------------
+    // REVIEW MODAL LOGIC
+    // ---------------------------------------------------------
+    const openReviewModal = (txId) => {
+        const tx = getTransaction(txId);
+        const matchInfo = state.matches.get(txId);
+        
+        let existing = document.getElementById('reviewTxOverlay');
+        if (existing) existing.remove();
+
+        const overlay = document.createElement('div');
+        overlay.id = 'reviewTxOverlay';
+        overlay.style.cssText = `
+            position: fixed; top: var(--header-height); left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.4); z-index: 1001; display: flex;
+            justify-content: center; align-items: flex-start; padding-top: 30px; overflow-y: auto;
+        `;
+
+        overlay.innerHTML = `
+            <style>
+                .rv-modal { background: #fff; width: 600px; max-width: 95%; border-radius: 4px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); padding: 30px 40px; font-family: 'Segoe UI', Arial, sans-serif; color: #000; }
+                .rv-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--primary-dark); padding-bottom: 10px; }
+                .rv-header h2 { margin: 0; font-size: 18px; color: var(--primary-dark); }
+                .rv-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #666; }
+                .rv-tx-details { background: #f4f7f9; padding: 15px; border-radius: 4px; margin-bottom: 25px; font-size: 14px; }
+                .rv-section { margin-bottom: 25px; }
+                .rv-section h3 { font-size: 14px; text-transform: uppercase; margin-bottom: 10px; color: #666; }
+                .rv-select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px; }
+                .rv-btn-group { display: flex; gap: 10px; justify-content: flex-end; }
+                .rv-btn { padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 13px; border: none; }
+                .rv-btn-primary { background: var(--primary-dark); color: #fff; }
+                .rv-btn-secondary { background: var(--bg-app); border: 1px solid var(--primary-dark); color: var(--primary-dark); }
+                .rv-btn-warning { background: #f0ad4e; color: #fff; }
+            </style>
+            <div class="rv-modal">
+                <div class="rv-header">
+                    <h2>Review Transaction</h2>
+                    <button class="rv-close" id="rv-btnClose">&times;</button>
+                </div>
+                
+                <div class="rv-tx-details">
+                    <strong>Date:</strong> ${tx.date} <br>
+                    <strong>Desc:</strong> ${tx.rawDescription} <br>
+                    <strong>Amount:</strong> <span style="font-family: monospace; font-size: 16px;">$${tx.amount.toFixed(2)}</span>
+                </div>
+
+                <div class="rv-section">
+                    <h3>1. Match to Existing Ledger Entry</h3>
+                    <select class="rv-select" id="rv-matchSelect">
+                        <option value="">-- Select Existing Transaction --</option>
+                        <option value="L1" ${matchInfo?.ledgerId === 'L1' ? 'selected' : ''}>ACME Supplies - INV123 ($150.00)</option>
+                        <option value="L2">Office Depot - Receipt ($45.00)</option>
+                    </select>
+                    <div style="text-align: right;">
+                        <button class="rv-btn rv-btn-secondary" id="rv-btnMatchPost">Match & Post</button>
+                    </div>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+                <div class="rv-section">
+                    <h3>2. Or Create New Transaction</h3>
+                    <select class="rv-select" id="rv-createSelect">
+                        <optgroup label="Bank Account Types">
+                            <option value="sales_receipt">Sales Receipt</option>
+                            <option value="ar_collection">AR Collection</option>
+                            <option value="deposit">Deposit (Owner Investment)</option>
+                            <option value="cash_purchase">Cash Purchase</option>
+                            <option value="ap_payment">AP Payment</option>
+                        </optgroup>
+                        <optgroup label="Credit Card Types">
+                            <option value="cc_charge">Credit Card Charge</option>
+                            <option value="cc_credit">Credit Card Credit</option>
+                        </optgroup>
+                    </select>
+                    <div style="text-align: right;">
+                        <button class="rv-btn rv-btn-primary" id="rv-btnCreatePost">Create & Post</button>
+                    </div>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+                <div class="rv-btn-group" style="justify-content: space-between;">
+                    <button class="rv-btn rv-btn-warning" id="rv-btnSubmitReview">Send to Approver</button>
+                    <button class="rv-btn" id="rv-btnCancel" style="background: transparent; color: #333; text-decoration: underline;">Cancel</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        // Modal Event Listeners
+        const closeModal = () => overlay.remove();
+        document.getElementById('rv-btnClose').addEventListener('click', closeModal);
+        document.getElementById('rv-btnCancel').addEventListener('click', closeModal);
+        
+        // Match & Post Action
+        document.getElementById('rv-btnMatchPost').addEventListener('click', async () => {
+            const ledgerId = document.getElementById('rv-matchSelect').value;
+            if(!ledgerId) return alert("Please select a ledger entry to match.");
+            
+            try {
+                matchTransaction(txId, ledgerId, { userId: 'current_user' });
+                await postTransaction(txId, { userId: 'current_user' });
+                closeModal();
+            } catch(e) { alert(e.message); }
+        });
+
+        // Create & Post Action
+        document.getElementById('rv-btnCreatePost').addEventListener('click', async () => {
+            const txType = document.getElementById('rv-createSelect').value;
+            try {
+                // Creates the record in the engine, matches it, and posts it
+                await createTransactionFromBank(txId, txType, { userId: 'current_user' });
+                await postTransaction(txId, { userId: 'current_user' });
+                closeModal();
+            } catch(e) { alert(e.message); }
+        });
+
+        // Submit for Review Action
+        document.getElementById('rv-btnSubmitReview').addEventListener('click', async () => {
+            await submitForReview([txId], { userId: 'current_user', comment: 'Requires manager approval.' });
+            closeModal();
+        });
+    };
+
+    // ---------------------------------------------------------
+    // TOP LEVEL BUTTON LISTENERS
+    // ---------------------------------------------------------
     btnLoadMock.addEventListener('click', () => {
         const mockData = [
             { id: 'tx_001', date: '2026-02-25', amount: -150.00, currency: 'USD', rawDescription: 'ACME Supplies INV123', payee: 'ACME', status: 'draft', ocrConfidence: 100 },
@@ -279,9 +412,7 @@ export function init(containerId) {
         if (txs.length === 0) return alert("Load data first!");
         
         statusArea.innerText = "Running matching engine...";
-        for (let tx of txs) {
-            await runMatcher(tx.id);
-        }
+        for (let tx of txs) { await runMatcher(tx.id); }
         renderTable();
     });
 
