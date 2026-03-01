@@ -32,10 +32,12 @@
     </div>
 
     <div class="header-center">
-      <div class="logo-text-main">VNV<span>Books</span></div>
+      <div class="dynamic-header-title" id="dynamicHeaderTitle">Dashboard</div>
     </div>
 
     <div class="header-right">
+      <img src="onebook-logotext.png" alt="OneBook Logo" class="app-logo desktop-logo desktop-only">
+      <img src="onebook-logo.png" alt="OneBook Logo" class="app-logo mobile-logo mobile-only">
       <button class="icon-btn" id="btnOpenSearch" onclick="toggleSearch()" title="Search">
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -83,60 +85,70 @@
           <div class="menu-column">
             <h4>Sales</h4>
             <ul>
-              <li><a href="#" onclick="handleMenuClick('addnew', 'salesReceipt', event)">Sales Receipt</a></li>
-              <li><a href="#" onclick="handleMenuClick('addnew', 'sales_invoice', event)">Sales Invoice</a></li>
-              <li><a href="#" onclick="handleMenuClick('addnew', 'ar_collection', event)">AR Collection</a></li>
-              <li><a href="#" onclick="handleMenuClick('addnew', 'statement', event)">Statement</a></li>
-              <li><a href="#" onclick="handleMenuClick('sales', 'addCustomer', event)">Add Customer</a></li>
+              <li><a href="#" onclick="handleMenuClick('sales', 'addSalesReceipt', event)">Sales Receipt</a></li>
+              <li><a href="#" onclick="handleMenuClick('sales', 'addSalesInvoice', event)">Sales Invoice</a></li>
+              <li><a href="#" onclick="handleMenuClick('sales', 'addARCollection', event)">AR Collection</a></li>
+              <li><a href="#" onclick="handleMenuClick('sales', 'createStatement', event)">Statement</a></li>
+              <li><a href="#" onclick="handleMenuClick('sales', 'addCustomer', event)">Customer</a></li>
             </ul>
           </div>
           <div class="menu-column">
             <h4>Purchases</h4>
             <ul>
-              <li><a href="#" onclick="handleMenuClick('addnew', 'cash_purchases', event)">Cash Purchases</a></li>
-              <li><a href="#" onclick="handleMenuClick('addnew', 'purchase_orders', event)">Purchase Orders</a></li>
-              <li><a href="#" onclick="handleMenuClick('addnew', 'receiving_reports', event)">Receiving Reports</a></li>
-              <li><a href="#" onclick="handleMenuClick('addnew', 'ap_payments', event)">AP Payments</a></li>
-              <li><a href="#" onclick="handleMenuClick('addnew', 'credit_card_charges', event)">Credit Card Charges</a></li>
-              <li><a href="#" onclick="handleMenuClick('addnew', 'vendors', event)">Vendors</a></li>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'addCashPurchase', event)">Cash Purchase</a></li>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'addPurchaseOrder', event)">Purchase Order</a></li>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'addReceivingReport', event)">Receiving Report</a></li>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'addAPPayment', event)">AP Payment</a></li>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'addCreditCardCharge', event)">Credit Card Charge</a></li>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'addVendor', event)">Vendor</a></li>
             </ul>
           </div>
           <div class="menu-column">
             <h4>Payroll</h4>
-            <ul><li><a href="#" onclick="handleMenuClick('addnew', 'time_sheet', event)">Time Sheet</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'employees', event)">Employees</a></li></ul>
+            <ul>
+              <li><a href="#" onclick="handleMenuClick('payroll', 'addTimesheet', event)">Time Sheet</a></li>
+              <li><a href="#" onclick="handleMenuClick('payroll', 'addEmployee', event)">Employee</a></li>
+            </ul>
           </div>
           <div class="menu-column">
-            <h4>Others</h4>
-            <ul><li><a href="#" onclick="handleMenuClick('addnew', 'general_journal', event)">General Journal</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'deposit', event)">Deposit</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'transfer', event)">Transfer</a></li><li><a href="#" onclick="handleMenuClick('addnew', 'products_services', event)">Products/Services</a></li></ul>
+            <h4>Accounting</h4>
+            <ul>
+              <li><a href="#" onclick="handleMenuClick('accounting', 'bankTransactions', event)">Bank Transactions</a></li>
+              <li><a href="#" onclick="handleMenuClick('accounting', 'addGeneralJournal', event)">General Journal</a></li>
+              <li><a href="#" onclick="handleMenuClick('accounting', 'addDeposit', event)">Deposit</a></li>
+              <li><a href="#" onclick="handleMenuClick('accounting', 'addTransfer', event)">Transfer</a></li>
+              <li><a href="#" onclick="handleMenuClick('accounting', 'addProductsService', event)">Product or Service</a></li>
+            </ul>
           </div>
         </div>
       </div>
       
       <div class="accordion-content" id="acc-create">
         <div class="mobile-group-header">Sales</div>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'salesReceipt', event)">Sales Receipt</a>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'sales_invoice', event)">Sales Invoice</a>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'ar_collection', event)">AR Collection</a>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'statement', event)">Statement</a>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'addCustomer', event)">Add Customer</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'addSalesReceipt', event)">Sales Receipt</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'addSalesInvoice', event)">Sales Invoice</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'addARCollection', event)">AR Collection</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'createStatement', event)">Statement</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'addCustomer', event)">Customer</a>
         
         <div class="mobile-group-header">Purchases</div>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'cash_purchases', event)">Cash Purchases</a>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'purchase_orders', event)">Purchase Orders</a>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'receiving_reports', event)">Receiving Reports</a>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'ap_payments', event)">AP Payments</a>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'credit_card_charges', event)">Credit Card Charges</a>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'vendors', event)">Vendors</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'addCashPurchase', event)">Cash Purchase</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'addPurchaseOrder', event)">Purchase Order</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'addReceivingReport', event)">Receiving Report</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'addAPPayments', event)">AP Payment</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'addCreditCardCharges', event)">Credit Card Charge</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('purchases', 'addVendor', event)">Vendor</a>
 
         <div class="mobile-group-header">Payroll</div>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'time_sheet', event)">Time Sheet</a>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'employees', event)">Employees</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'addTimesheet', event)">Time Sheet</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('payroll', 'addEmployee', event)">Employee</a>
 
         <div class="mobile-group-header">Accountant</div>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'general_journal', event)">General Journal</a>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'deposit', event)">Deposit</a>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'transfer', event)">Transfer</a>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'products_services', event)">Products/Services</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'addBankTransactions', event)">Bank Transaction</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'addGeneralJournal', event)">General Journal</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'addDeposit', event)">Deposit</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'addTransfer', event)">Transfer</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'addProductService', event)">Product or Service</a>
       </div>
     </div>
 
@@ -154,23 +166,24 @@
           <div class="menu-column">
             <h4>Sales</h4>
             <ul>
-              <li><a href="#" onclick="handleMenuClick('sales', 'salesReceipt', event)">Sales Receipt</a></li>
-              <li><a href="#" onclick="handleMenuClick('sales', 'salesInvoice', event)">Sales Invoice</a></li>
-              <li><a href="#" onclick="handleMenuClick('sales', 'arCollection', event)">AR Collection</a></li>
-              <li><a href="#" onclick="handleMenuClick('sales', 'statement', event)">Statement</a></li>
-              <li><a href="#" onclick="handleMenuClick('sales', 'customer', event)">Customer</a></li></ul>
+              <li><a href="#" onclick="handleMenuClick('sales', 'salesReceipts', event)">Sales Receipts</a></li>
+              <li><a href="#" onclick="handleMenuClick('sales', 'salesInvoice', event)">Sales Invoices</a></li>
+              <li><a href="#" onclick="handleMenuClick('sales', 'arCollection', event)">Accounts Receivable Collections</a></li>
+              <li><a href="#" onclick="handleMenuClick('sales', 'statement', event)">Statements</a></li>
+              <li><a href="#" onclick="handleMenuClick('sales', 'customer', event)">Customers</a></li></ul>
           </div>
         </div>
       </div>
-      
+
       <div class="accordion-content" id="acc-sales">
         <div class="mobile-group-header">Sales</div>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'salesReceipt', event)">Sales Receipt</a>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'salesInvoice', event)">Sales Invoice</a>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'arCollection', event)">AR Collection</a>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'statement', event)">Statement</a>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'customer', event)">Customer</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'salesReceipt', event)">Sales Receipts</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'salesInvoice', event)">Sales Invoices</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'arCollection', event)">Accounts Receivable Collections</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'statement', event)">Statements</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'customer', event)">Customers</a>
       </div>
+
     </div>
 
     <div class="nav-item-container">
@@ -186,7 +199,14 @@
         <div class="mega-menu">
           <div class="menu-column">
             <h4>Purchases</h4>
-            <ul><li><a href="#" onclick="handleMenuClick('purchases', 'cash_purchases', event)">Cash Purchases</a></li><li><a href="#" onclick="handleMenuClick('purchases', 'purchase_orders', event)">Purchase Orders</a></li><li><a href="#" onclick="handleMenuClick('purchases', 'receiving_reports', event)">Receiving Reports</a></li><li><a href="#" onclick="handleMenuClick('purchases', 'ap_payments', event)">AP Payments</a></li><li><a href="#" onclick="handleMenuClick('purchases', 'credit_card_charges', event)">Credit Card Charges</a></li><li><a href="#" onclick="handleMenuClick('purchases', 'vendors', event)">Vendors</a></li></ul>
+            <ul>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'cash_purchases', event)">Cash Purchases</a></li>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'purchase_orders', event)">Purchase Orders</a></li>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'receiving_reports', event)">Receiving Reports</a></li>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'ap_payments', event)">AP Payments</a></li>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'credit_card_charges', event)">Credit Card Charges</a></li>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'vendors', event)">Vendors</a></li>
+            </ul>
           </div>
         </div>
       </div>
@@ -215,14 +235,17 @@
         <div class="mega-menu">
           <div class="menu-column">
             <h4>Payroll</h4>
-            <ul><li><a href="#" onclick="handleMenuClick('payroll', 'time_sheet', event)">Time Sheet</a></li><li><a href="#" onclick="handleMenuClick('payroll', 'employees', event)">Employees</a></li></ul>
+            <ul>
+              <li><a href="#" onclick="handleMenuClick('payroll', 'timesheets', event)">Time Sheet</a></li>
+              <li><a href="#" onclick="handleMenuClick('payroll', 'employees', event)">Employees</a></li>
+            </ul>
           </div>
         </div>
       </div>
       
       <div class="accordion-content" id="acc-payroll">
         <div class="mobile-group-header">Payroll</div>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('payroll', 'time_sheet', event)">Time Sheet</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('payroll', 'timesheets', event)">Time Sheet</a>
         <a href="#" class="grouped-item" onclick="handleMenuClick('payroll', 'employees', event)">Employees</a>
       </div>
     </div>
@@ -240,17 +263,24 @@
         <div class="mega-menu">
           <div class="menu-column">
             <h4>Others</h4>
-            <ul><li><a href="#" onclick="handleMenuClick('accountant', 'general_journal', event)">General Journal</a></li><li><a href="#" onclick="handleMenuClick('accountant', 'deposit', event)">Deposit</a></li><li><a href="#" onclick="handleMenuClick('accountant', 'transfer', event)">Transfer</a></li><li><a href="#" onclick="handleMenuClick('accountant', 'products_services', event)">Products/Services</a></li></ul>
+            <ul>
+              <li><a href="#" onclick="handleMenuClick('accountant', 'bankTransactions', event)">Bank Transactions</a></li>
+              <li><a href="#" onclick="handleMenuClick('accountant', 'general_journal', event)">General Journal</a></li>
+              <li><a href="#" onclick="handleMenuClick('accountant', 'deposit', event)">Deposit</a></li>
+              <li><a href="#" onclick="handleMenuClick('accountant', 'transfer', event)">Transfer</a></li>
+              <li><a href="#" onclick="handleMenuClick('accountant', 'products_services', event)">Products/Services</a></li>
+            </ul>
           </div>
         </div>
       </div>
       
-      <div class="accordion-content" id="acc-accountant">
-        <div class="mobile-group-header">Accountant</div>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('accountant', 'general_journal', event)">General Journal</a>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('accountant', 'deposit', event)">Deposit</a>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('accountant', 'transfer', event)">Transfer</a>
-        <a href="#" class="grouped-item" onclick="handleMenuClick('accountant', 'products_services', event)">Products/Services</a>
+      <div class="accordion-content" id="acc-accounting">
+        <div class="mobile-group-header">Accounting</div>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('accounting', 'bankTransactions', event)">Bank Transactions</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('accounting', 'general_journal', event)">General Journal</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('accounting', 'deposit', event)">Deposit</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('accounting', 'transfer', event)">Transfer</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('accounting', 'products_services', event)">Products/Services</a>
       </div>
     </div>
 
@@ -459,7 +489,10 @@
 
     // ----- GENERIC MODULE ROUTER -----
     function handleMenuClick(parentFolder, childFile, event) {
-      if (event && event.preventDefault) event.preventDefault();
+      if (event) {
+        if (event.preventDefault) event.preventDefault();
+        if (event.stopPropagation) event.stopPropagation(); // <-- STOPS EVENT BUBBLING
+      }
       
       // Auto-hide mobile navigation panel upon selection
       if (window.innerWidth <= 768) {
@@ -467,6 +500,14 @@
       }
       
       const fileToLoad = childFile || parentFolder;
+      
+      // Update Dynamic Header Title by formatting the fileToLoad string
+      let displayTitle = fileToLoad.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2');
+      displayTitle = displayTitle.replace(/\b\w/g, char => char.toUpperCase());
+      
+      const headerTitle = document.getElementById('dynamicHeaderTitle');
+      if (headerTitle) headerTitle.innerText = displayTitle;
+
       // This constructs: ./sales/salesReceipt.js
       const modulePath = `./${parentFolder}/${fileToLoad}.js`;
 
