@@ -32,7 +32,7 @@
     </div>
 
     <div class="header-center">
-      <div class="logo-text-main" id="dynamicHeaderTitle">Dashboard</div>
+      <div class="dynamic-header-title" id="dynamicHeaderTitle">Dashboard</div>
     </div>
 
     <div class="header-right">
@@ -462,8 +462,8 @@
       let displayTitle = fileToLoad.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2');
       displayTitle = displayTitle.replace(/\b\w/g, char => char.toUpperCase());
       
-      //const headerTitle = document.getElementById('dynamicHeaderTitle');
-      //if (headerTitle) headerTitle.innerText = displayTitle;
+      const headerTitle = document.getElementById('dynamicHeaderTitle');
+      if (headerTitle) headerTitle.innerText = displayTitle;
 
       // This constructs: ./sales/salesReceipt.js
       const modulePath = `./${parentFolder}/${fileToLoad}.js`;
