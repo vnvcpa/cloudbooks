@@ -1,4 +1,4 @@
-// sales/sales_receipt.js
+//-- sales/sales_receipt.js
 
 export function init(containerId) {
     const container = document.getElementById(containerId);
