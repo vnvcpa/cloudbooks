@@ -461,8 +461,9 @@
       let displayTitle = fileToLoad.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2');
       displayTitle = displayTitle.replace(/\b\w/g, char => char.toUpperCase());
       
-      const headerTitle = document.getElementById('dynamicHeaderTitle');
-      if (headerTitle) headerTitle.innerText = displayTitle;
+      // -- COMMENTING HERE REMOVES THE 'dynamicHeaderTitle' inside the child content containairs
+      // const headerTitle = document.getElementById('dynamicHeaderTitle');
+      // if (headerTitle) headerTitle.innerText = displayTitle;
 
       // This constructs: ./sales/salesReceipt.js
       const modulePath = `./${parentFolder}/${fileToLoad}.js`;
