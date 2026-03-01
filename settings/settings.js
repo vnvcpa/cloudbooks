@@ -1,6 +1,6 @@
 // sales/settings.js
 
-export function initSettings(containerId) {
+export function init(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
