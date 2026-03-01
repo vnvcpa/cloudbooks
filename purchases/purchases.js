@@ -7,7 +7,7 @@ export function initPurchases(containerId) {
     // Render your specific view
     container.innerHTML = `
         <div class="dashboard-header">
-            <h1>Purchases</h1>
+            <h1>Purchases Dashboard</h1>
             <p>Create your purchases dashboard</p>
         </div>
         <div class="dashboard-card">
