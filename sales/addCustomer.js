@@ -81,7 +81,7 @@ export function init(containerId) {
 
         <div class="ac-modal">
             <div class="ac-header-row">
-                <h2>Add Customer:</h2>
+                <h2>CUSTOMER:</h2>
                 <button class="ac-close-x" id="ac-btnCloseX" title="Close">&times;</button>
             </div>
 
