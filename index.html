@@ -449,7 +449,10 @@
 
     // ----- GENERIC MODULE ROUTER -----
     function handleMenuClick(parentFolder, childFile, event) {
-      if (event && event.preventDefault) event.preventDefault();
+      if (event) {
+        if (event.preventDefault) event.preventDefault();
+        if (event.stopPropagation) event.stopPropagation(); // <-- STOPS EVENT BUBBLING
+      }
       
       // Auto-hide mobile navigation panel upon selection
       if (window.innerWidth <= 768) {
