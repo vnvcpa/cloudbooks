@@ -1,6 +1,6 @@
 // purchases/purchases.js
 
-export function initPurchases(containerId) {
+export function init(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
