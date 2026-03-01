@@ -7,7 +7,6 @@ export function init(containerId) {
     // Render your specific view
     container.innerHTML = `
         <div class="dashboard-header">
-            <h1>Sales DAshboard</h1>
             <p>Create the sales dashboard</p>
         </div>
         <div class="dashboard-card">
