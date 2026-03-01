@@ -1,6 +1,6 @@
 // sales/sales_receipt.js
 
-export function initSales(containerId) {
+export function init(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
