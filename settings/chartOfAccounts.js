@@ -5,7 +5,7 @@ import {
     getFirestore, collection, query, where, getDocs, doc, updateDoc 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getLocalSession } from "../auth/authManager.js";
-import { init as openAddCoaModal } from "./addChartOfAccounts.js"; // Adjust path if necessary based on your folder structure
+import { init as openAddCoaModal } from "./addChartOfAccount.js"; // Adjust path if necessary based on your folder structure
 
 const firebaseConfig = {
     apiKey: "AIzaSyAH-mM4QI_yLxJY1iUAmaJD-mQpEaxeugw",
