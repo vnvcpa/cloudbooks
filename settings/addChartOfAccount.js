@@ -1,4 +1,4 @@
-// settings/addChartOfAccounts.js
+// settings/addChartOfAccount.js
 
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { 
@@ -10,7 +10,7 @@ const firebaseConfig = {
     apiKey: "AIzaSyAH-mM4QI_yLxJY1iUAmaJD-mQpEaxeugw",
     authDomain: "vnvcloudbook.firebaseapp.com",
     projectId: "vnvcloudbook",
-    storageBucket: "vnvcloudbook.firebasestorage.app" // Added to match authManager
+    storageBucket: "vnvcloudbook.firebasestorage.app"
 };
 
 // SAFE INITIALIZATION: Check if Firebase is already running before initializing
@@ -80,7 +80,7 @@ export function init(containerId, accountId = null) {
             .coa-badge { font-size: 11px; padding: 3px 8px; border-radius: 12px; background: #eee; margin-left: 10px; vertical-align: middle; }
             .coa-badge.inactive { background: #d9534f; color: #fff; }
 
-            .coa-import-btn { background: #f4f7f9; border: 1px solid #ccc; color: #333; padding: 6px 12px; font-size: 12px; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
+            .coa-import-btn { background: #f4f7f9; border: 1px solid #ccc; color: #333; padding: 6px 12px; font-size: 12px; border-radius: 4px; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
             .coa-import-btn:hover { border-color: var(--primary-dark); color: var(--primary-dark); }
         </style>
 
@@ -90,10 +90,11 @@ export function init(containerId, accountId = null) {
                     <span id="coa-headerTitle">ACCOUNT:</span>
                     <span id="coa-statusBadge" class="coa-badge" style="display:none;">INACTIVE</span>
                 </h2>
-                <div style="display: flex; gap: 15px; align-items: center;">
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <a href="./settings/coa_template.csv" download="coa_template.csv" class="coa-import-btn">Download Template</a>
                     <input type="file" id="coa-csvUpload" accept=".csv" style="display: none;">
-                    <button class="coa-import-btn" id="coa-btnImportCsv" title="Required Columns: Code, Name, Type, Description">Import CSV</button>
-                    <button class="coa-close-x" id="coa-btnCloseX" title="Close (Esc)">&times;</button>
+                    <button class="coa-import-btn" id="coa-btnImportCsv" title="Import filled CSV template">Import CSV</button>
+                    <button class="coa-close-x" id="coa-btnCloseX" title="Close (Esc)" style="margin-left: 5px;">&times;</button>
                 </div>
             </div>
 
@@ -201,7 +202,6 @@ export function init(containerId, accountId = null) {
             const snapshot = await getDocs(q);
             snapshot.forEach(docSnap => {
                 const data = docSnap.data();
-                // Prevent making an account a sub-account of itself
                 if (docSnap.id !== accountId) {
                     const opt = document.createElement('option');
                     opt.value = docSnap.id;
@@ -214,11 +214,6 @@ export function init(containerId, accountId = null) {
     loadParentAccounts();
 
     // --- LOGIC: CSV Import Engine ---
-    /* EXPECTED CSV FORMAT:
-       Code, Name, Type, Description
-       1010, Cash in Bank, Asset, Main checking account
-       4000, Sales, Revenue, Product sales
-    */
     btnImportCsv.addEventListener('click', () => fileInputCsv.click());
     
     fileInputCsv.addEventListener('change', (e) => {
@@ -241,15 +236,17 @@ export function init(containerId, accountId = null) {
                 const cols = lines[i].split(',').map(c => c.trim());
                 if(cols.length >= 3) {
                     const type = cols[2];
-                    const defaultBalance = (type === 'Asset' || type === 'Expense') ? 'Debit' : 'Credit';
+                    
+                    // Assign from CSV, fallback to standard accounting rules if missing
+                    const balanceType = cols[3] || ((type === 'Asset' || type === 'Expense') ? 'Debit' : 'Credit');
                     
                     const accData = {
                         code: cols[0],
                         name: cols[1],
                         type: type,
-                        balanceType: defaultBalance,
-                        description: cols[3] || '',
-                        subAccountOf: '',
+                        balanceType: balanceType,
+                        subAccountOf: cols[4] || '',
+                        description: cols[5] || '',
                         companyId: session.companyId,
                         createdBy: session.uid,
                         isActive: true,
@@ -263,8 +260,7 @@ export function init(containerId, accountId = null) {
             }
             alert(`Successfully imported ${successCount} accounts!`);
             cleanupAndClose();
-            // Trigger refresh if viewing dashboard
-            if(window.handleMenuClick) window.handleMenuClick('accounting', 'chartOfAccounts', null);
+            if(window.refreshChartOfAccountsTable) window.refreshChartOfAccountsTable();
         };
         reader.readAsText(file);
     });
@@ -275,7 +271,6 @@ export function init(containerId, accountId = null) {
     const cleanupAndClose = () => {
         document.removeEventListener('keydown', handleGlobalKeydown);
         overlay.remove();
-        // Refresh the table behind it if it exists
         if(window.refreshChartOfAccountsTable) window.refreshChartOfAccountsTable();
     };
 
@@ -310,7 +305,6 @@ export function init(containerId, accountId = null) {
                 
                 if (docSnap.exists()) {
                     const data = docSnap.data();
-                    // Security Check
                     if(data.companyId !== session.companyId) {
                         headerTitle.textContent = "UNAUTHORIZED ACCESS";
                         return;
@@ -324,9 +318,7 @@ export function init(containerId, accountId = null) {
                     elBalanceType.value = data.balanceType || '';
                     elDesc.value = data.description || '';
                     
-                    // Delay setting subAccount to ensure parent dropdown populated
                     setTimeout(() => elSubAccount.value = data.subAccountOf || '', 300);
-                    
                     updateUIState(data.isActive !== false); 
                 } else {
                     headerTitle.textContent = "ACCOUNT NOT FOUND";
@@ -356,7 +348,7 @@ export function init(containerId, accountId = null) {
             balanceType: elBalanceType.value,
             subAccountOf: elSubAccount.value,
             description: elDesc.value.trim(),
-            companyId: session.companyId, // The Anchor
+            companyId: session.companyId,
             isActive: accountIsActive,
             updatedAt: new Date().toISOString()
         };
