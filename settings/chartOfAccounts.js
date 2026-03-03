@@ -11,10 +11,9 @@ const firebaseConfig = {
     apiKey: "AIzaSyAH-mM4QI_yLxJY1iUAmaJD-mQpEaxeugw",
     authDomain: "vnvcloudbook.firebaseapp.com",
     projectId: "vnvcloudbook",
-    storageBucket: "vnvcloudbook.firebasestorage.app" // Added to match authManager
+    storageBucket: "vnvcloudbook.firebasestorage.app"
 };
 
-// SAFE INITIALIZATION: Check if Firebase is already running before initializing
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const db = getFirestore(app);
 
@@ -28,7 +27,6 @@ export function init(containerId) {
         return;
     }
 
-    // Render Dashboard Skeleton
     container.innerHTML = `
         <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <div>
@@ -63,15 +61,12 @@ export function init(containerId) {
     const tableBody = document.getElementById('coa-tableBody');
     const btnAddNew = document.getElementById('coa-btnAddNew');
 
-    // Bind Add Button to the external modal module
     btnAddNew.addEventListener('click', () => {
         openAddCoaModal(containerId, null);
     });
 
-    // Expose a global refresh function so the modal can trigger a table redraw on save
     window.refreshChartOfAccountsTable = async () => {
         try {
-            // 1. Filtered Query: ONLY fetch data matching this session's companyId
             const q = query(
                 collection(db, "chartOfAccounts"), 
                 where("companyId", "==", session.companyId)
@@ -83,7 +78,6 @@ export function init(containerId) {
                 accounts.push({ id: doc.id, ...doc.data() });
             });
 
-            // Sort by code naturally
             accounts.sort((a, b) => a.code.localeCompare(b.code, undefined, {numeric: true}));
 
             if (accounts.length === 0) {
@@ -91,18 +85,20 @@ export function init(containerId) {
                 return;
             }
 
-            // Render Rows
             tableBody.innerHTML = accounts.map(acc => {
                 const statusHtml = acc.isActive !== false 
                     ? `<span style="color: #5cb85c; font-weight: 500;">Active</span>` 
                     : `<span style="color: #d9534f; font-weight: 500;">Inactive</span>`;
                 
                 const rowStyle = acc.isActive === false ? 'opacity: 0.6; background: #fafafa;' : '';
+                
+                // NEW: Visual Currency Indicator next to Account Name
+                const currencyBadge = acc.currency ? `<span style="font-size: 10px; background: #eaedf1; color: var(--primary-dark); padding: 2px 6px; border-radius: 8px; margin-left: 8px; font-weight: bold;">${acc.currency}</span>` : '';
 
                 return `
                     <tr style="border-bottom: 1px solid var(--border-color); transition: background 0.2s; ${rowStyle}">
                         <td style="padding: 15px 20px; font-weight: 600;">${acc.code}</td>
-                        <td style="padding: 15px 20px; color: var(--primary-dark);">${acc.name}</td>
+                        <td style="padding: 15px 20px; color: var(--primary-dark);">${acc.name} ${currencyBadge}</td>
                         <td style="padding: 15px 20px;">${acc.type}</td>
                         <td style="padding: 15px 20px;">${statusHtml}</td>
                         <td style="padding: 15px 20px; text-align: center; position: relative;">
@@ -119,11 +115,9 @@ export function init(containerId) {
                 `;
             }).join('');
 
-            // Bind Row Actions using event delegation
             tableBody.querySelectorAll('.coa-btn-action').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    // Close all other menus first
                     document.querySelectorAll('.coa-row-menu').forEach(m => m.style.display = 'none');
                     const id = e.target.getAttribute('data-id');
                     document.getElementById(`menu-${id}`).style.display = 'block';
@@ -155,11 +149,9 @@ export function init(containerId) {
         }
     };
 
-    // Close dropdowns if clicked outside
     document.addEventListener('click', () => {
         document.querySelectorAll('.coa-row-menu').forEach(m => m.style.display = 'none');
     });
 
-    // Initial Load
     window.refreshChartOfAccountsTable();
 }
