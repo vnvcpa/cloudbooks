@@ -8,6 +8,23 @@
 </head>
 <body>
 
+  <div id="authOverlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--bg-app); z-index: 3000; align-items: center; justify-content: center;">
+    <div style="background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 24px rgba(0,0,0,0.1); width: 400px; max-width: 90%; text-align: center; font-family: 'Segoe UI', Arial, sans-serif;">
+      <h2 id="authTitle" style="color: var(--primary-dark); margin-top: 0; font-size: 24px;">Sign In to VNVBooks</h2>
+      <div id="authError" style="color: #d9534f; background: #fff0f0; border: 1px solid #d9534f; padding: 10px; border-radius: 4px; font-size: 13px; margin-bottom: 15px; display: none;"></div>
+      
+      <input type="email" id="authEmail" placeholder="Email Address" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; outline: none;">
+      <input type="password" id="authPassword" placeholder="Password" style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; outline: none;">
+      
+      <button id="authSubmitBtn" style="width: 100%; padding: 12px; background: var(--primary-dark); color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 15px; font-weight: bold; transition: background 0.2s;">Sign In</button>
+      
+      <p style="margin-top: 25px; font-size: 14px; color: #666;">
+        <span id="authToggleText">Don't have an account?</span> 
+        <a href="#" id="authToggleLink" style="color: var(--accent); text-decoration: none; font-weight: bold;">Sign Up</a>
+      </p>
+    </div>
+  </div>
+
   <header class="app-header">
     <div class="header-left">
       <button class="icon-btn hamburger-btn mobile-only" onclick="toggleSidebar()" title="Menu">
@@ -420,7 +437,6 @@
     }
 
     function toggleAccordion(id, event) {
-      // Prevents the click from bubbling up and loading the dashboard on the parent nav-item
       if (event) {
         event.preventDefault();
         event.stopPropagation();
@@ -494,6 +510,12 @@
         if (event.stopPropagation) event.stopPropagation(); // <-- STOPS EVENT BUBBLING
       }
       
+      // LOGOUT INTERCEPTOR
+      if (childFile === 'logout') {
+          if (window.handleAppLogout) window.handleAppLogout();
+          return;
+      }
+      
       // Auto-hide mobile navigation panel upon selection
       if (window.innerWidth <= 768) {
         document.getElementById('appSidebar').classList.remove('mobile-open');
@@ -531,5 +553,108 @@
         });
     }
   </script>
+
+  <script type="module">
+    import { loginUser, signUpUser, logoutUser, getLocalSession } from './auth/authManager.js';
+    import { init as initSetupCompany } from './settings/setupCompany.js';
+
+    // Expose logout globally for the router to catch
+    window.handleAppLogout = async () => {
+        try {
+            await logoutUser();
+            window.location.reload(); // Refresh clears memory and shows login screen
+        } catch (e) {
+            console.error("Logout failed", e);
+        }
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const session = getLocalSession();
+        const authOverlay = document.getElementById('authOverlay');
+        
+        // --- Flow Control ---
+        if (!session.uid) {
+            // 1. User is not logged in. Show overlay.
+            authOverlay.style.display = 'flex';
+        } else if (!session.companyId || session.companyId === 'null') {
+            // 2. User is logged in, but no company created yet. Force setup.
+            initSetupCompany('mainContainer');
+        } else {
+            // 3. Fully authenticated and setup. Load normal dashboard.
+            if (window.handleMenuClick) window.handleMenuClick('dashboard', null, null);
+        }
+
+        // --- Auth Overlay UI Logic ---
+        let isLoginMode = true;
+        const authTitle = document.getElementById('authTitle');
+        const authToggleText = document.getElementById('authToggleText');
+        const authToggleLink = document.getElementById('authToggleLink');
+        const authSubmitBtn = document.getElementById('authSubmitBtn');
+        const authEmail = document.getElementById('authEmail');
+        const authPassword = document.getElementById('authPassword');
+        const authError = document.getElementById('authError');
+
+        // Toggle between Sign In / Sign Up modes
+        authToggleLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            isLoginMode = !isLoginMode;
+            authError.style.display = 'none';
+            
+            if (isLoginMode) {
+                authTitle.innerText = "Sign In to VNVBooks";
+                authSubmitBtn.innerText = "Sign In";
+                authToggleText.innerText = "Don't have an account?";
+                authToggleLink.innerText = "Sign Up";
+            } else {
+                authTitle.innerText = "Create an Account";
+                authSubmitBtn.innerText = "Sign Up";
+                authToggleText.innerText = "Already have an account?";
+                authToggleLink.innerText = "Sign In";
+            }
+        });
+
+        // Handle Submit
+        authSubmitBtn.addEventListener('click', async () => {
+            const email = authEmail.value.trim();
+            const password = authPassword.value;
+            
+            if (!email || !password) {
+                authError.innerText = "Please enter both email and password.";
+                authError.style.display = 'block';
+                return;
+            }
+
+            authSubmitBtn.disabled = true;
+            authSubmitBtn.innerText = "Please wait...";
+            authError.style.display = 'none';
+
+            try {
+                let result;
+                if (isLoginMode) {
+                    result = await loginUser(email, password);
+                } else {
+                    result = await signUpUser(email, password);
+                }
+
+                // Success! Hide overlay and handle next steps
+                authOverlay.style.display = 'none';
+                
+                if (result.needsSetup) {
+                    initSetupCompany('mainContainer');
+                } else {
+                    if (window.handleMenuClick) window.handleMenuClick('dashboard', null, null);
+                }
+
+            } catch (error) {
+                authError.innerText = error.message.replace('Firebase: ', '');
+                authError.style.display = 'block';
+            } finally {
+                authSubmitBtn.disabled = false;
+                authSubmitBtn.innerText = isLoginMode ? "Sign In" : "Sign Up";
+            }
+        });
+    });
+  </script>
+
 </body>
 </html>
