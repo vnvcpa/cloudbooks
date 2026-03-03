@@ -5,6 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VNVBooks</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* CSS Overrides to dynamically handle long company names in the header */
+    .header-left {
+      min-width: 0; /* Allows flex child to shrink properly */
+    }
+    .header-client-container {
+      min-width: 0;
+      flex-shrink: 1;
+    }
+    .btn-header-client {
+      white-space: normal !important; /* Overrides style.css nowrap */
+      text-align: left;
+    }
+    .client-name-display {
+      display: -webkit-box;
+      -webkit-line-clamp: 2; /* Wraps to max 2 lines on mobile */
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 130px; /* Constraints for mobile */
+      font-size: clamp(11px, 2.5vw, 14px); /* Auto-scales font */
+      line-height: 1.1;
+      word-break: break-word;
+    }
+    @media (min-width: 769px) {
+      .client-name-display {
+        max-width: 250px;
+        -webkit-line-clamp: 1; /* Single line on desktop */
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -33,17 +64,15 @@
         </svg>
       </button>
 
-      <div class="header-client-container desktop-only">
+      <div class="header-client-container">
         <button class="btn-header-client">
-          <span class="client-name-display">Select Client</span>
+          <span class="client-name-display">Loading Workspace...</span>
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </button>
         <div class="popup-client">
-          <a href="#" onclick="selectClient('Client Books A', event)">Client Books A</a>
-          <a href="#" onclick="selectClient('Client Books B', event)">Client Books B</a>
-          <a href="#" onclick="selectClient('Add New Client', event)">Add New Client</a>
+          <a href="#" onclick="selectClient('Company Workspace', event)">Company Workspace</a>
         </div>
       </div>
     </div>
@@ -65,20 +94,6 @@
 
   <nav class="app-sidebar" id="appSidebar">
     
-    <div class="nav-item-container mobile-only">
-      <button class="btn-client-books" onclick="toggleAccordion('client', event)">
-        <span class="client-name-display">Select Client</span>
-        <svg class="accordion-arrow" id="arrow-client" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
-      </button>
-      <div class="accordion-content" id="acc-client">
-        <a href="#" onclick="selectClient('Client Books A', event)">Client Books A</a>
-        <a href="#" onclick="selectClient('Client Books B', event)">Client Books B</a>
-        <a href="#" onclick="selectClient('Add New Client', event)">Add New Client</a>
-      </div>
-    </div>
-
     <div class="nav-item-container">
       <div class="nav-item" onclick="handleMenuClick('dashboard', null, event)">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -557,6 +572,8 @@
   <script type="module">
     import { loginUser, signUpUser, logoutUser, getLocalSession } from './auth/authManager.js';
     import { init as initSetupCompany } from './settings/setupCompany.js';
+    import { getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     // Expose logout globally for the router to catch
     window.handleAppLogout = async () => {
@@ -568,7 +585,24 @@
         }
     };
 
-    window.addEventListener('DOMContentLoaded', () => {
+    // Helper to fetch and display the dynamic company name from Firebase
+    async function loadCompanyDetails(companyId) {
+        if (!companyId || companyId === 'null') return;
+        try {
+            const db = getFirestore(getApp());
+            const companyRef = doc(db, "companies", companyId);
+            const companySnap = await getDoc(companyRef);
+            if (companySnap.exists()) {
+                const compData = companySnap.data();
+                const displaySpans = document.querySelectorAll('.client-name-display');
+                displaySpans.forEach(span => span.textContent = compData.name);
+            }
+        } catch (error) {
+            console.error("Error fetching company details:", error);
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
         const session = getLocalSession();
         const authOverlay = document.getElementById('authOverlay');
         
@@ -580,7 +614,8 @@
             // 2. User is logged in, but no company created yet. Force setup.
             initSetupCompany('mainContainer');
         } else {
-            // 3. Fully authenticated and setup. Load normal dashboard.
+            // 3. Fully authenticated and setup. Fetch DB data and Load normal dashboard.
+            await loadCompanyDetails(session.companyId);
             if (window.handleMenuClick) window.handleMenuClick('dashboard', null, null);
         }
 
@@ -642,6 +677,7 @@
                 if (result.needsSetup) {
                     initSetupCompany('mainContainer');
                 } else {
+                    await loadCompanyDetails(result.companyId);
                     if (window.handleMenuClick) window.handleMenuClick('dashboard', null, null);
                 }
 
