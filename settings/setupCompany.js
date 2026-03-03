@@ -1,6 +1,6 @@
-// admin/setupCompany.js
+// settings/setupCompany.js
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { 
     getFirestore, 
@@ -18,11 +18,14 @@ const firebaseConfig = {
     storageBucket: "vnvcloudbook.firebasestorage.app"
 };
 
-const app = initializeApp(firebaseConfig);
+// SAFE INITIALIZATION
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const db = getFirestore(app);
 
 // Secondary app instance specifically for creating subordinate users without logging the admin out
-const secondaryApp = initializeApp(firebaseConfig, "SecondaryApp");
+const secondaryApp = !getApps().some(a => a.name === "SecondaryApp") 
+    ? initializeApp(firebaseConfig, "SecondaryApp") 
+    : getApp("SecondaryApp");
 const secondaryAuth = getAuth(secondaryApp);
 
 /**
@@ -51,8 +54,11 @@ export function init(containerId) {
             .sc-header p { margin: 8px 0 0 0; font-size: 14px; color: #666; }
             
             .sc-row { margin-bottom: 20px; }
+            .sc-row-flex { display: flex; gap: 15px; margin-bottom: 20px; }
+            .sc-col { flex: 1; }
+            
             .sc-label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #555; text-transform: uppercase; }
-            .sc-input { width: 100%; border: 1px solid #ccc; padding: 10px 12px; font-size: 14px; border-radius: 4px; outline: none; transition: border-color 0.2s; }
+            .sc-input { width: 100%; border: 1px solid #ccc; padding: 10px 12px; font-size: 14px; border-radius: 4px; outline: none; transition: border-color 0.2s; background: #fff; }
             .sc-input:focus { border-color: var(--primary-dark, #0A4275); }
             
             .sc-footer { margin-top: 30px; text-align: center; }
@@ -70,6 +76,29 @@ export function init(containerId) {
             <div class="sc-row">
                 <label class="sc-label">Company Name *</label>
                 <input type="text" class="sc-input" id="sc-companyName" required>
+            </div>
+            
+            <div class="sc-row-flex">
+                <div class="sc-col">
+                    <label class="sc-label">Currency Mode *</label>
+                    <select class="sc-input" id="sc-currencyMode">
+                        <option value="single">Single Currency</option>
+                        <option value="multi">Multi-Currency</option>
+                    </select>
+                </div>
+                <div class="sc-col">
+                    <label class="sc-label">Home Currency *</label>
+                    <select class="sc-input" id="sc-homeCurrency">
+                        <option value="PHP">PHP - Philippine Peso</option>
+                        <option value="USD">USD - US Dollar</option>
+                        <option value="EUR">EUR - Euro</option>
+                        <option value="GBP">GBP - British Pound</option>
+                        <option value="AUD">AUD - Australian Dollar</option>
+                        <option value="SGD">SGD - Australian Dollar</option>
+                        <option value="JPY">JPY - Japanese Yen</option>
+                        <option value="TWD">TWD - New Taiwan Dollar</option>
+                    </select>
+                </div>
             </div>
             
             <div class="sc-row">
@@ -110,10 +139,12 @@ export function init(containerId) {
 
         const companyData = {
             name: companyName,
+            currencyMode: overlay.querySelector('#sc-currencyMode').value,
+            homeCurrency: overlay.querySelector('#sc-homeCurrency').value,
             tin: overlay.querySelector('#sc-tin').value.trim(),
             industry: overlay.querySelector('#sc-industry').value.trim(),
             address: overlay.querySelector('#sc-address').value.trim(),
-            version: 'Pro', // <--- ADDED THIS: Defaults new companies to Pro (full access)
+            version: 'Pro',
             createdAt: new Date().toISOString(),
             createdBy: localStorage.getItem('vnv_uid')
         };
@@ -130,6 +161,9 @@ export function init(containerId) {
 
             // 3. Update local session state
             localStorage.setItem('vnv_companyId', newCompanyId);
+            // Cache the currency settings for quick access without hitting the DB
+            localStorage.setItem('vnv_homeCurrency', companyData.homeCurrency);
+            localStorage.setItem('vnv_currencyMode', companyData.currencyMode);
 
             // 4. Remove overlay and route to dashboard
             overlay.remove();
