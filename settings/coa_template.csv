@@ -1,0 +1,9 @@
+Code,Name,Type,Balance Type,Sub-account of,Description,Currency
+1010,Checking Account,Asset,Debit,,Main operating bank account,USD
+1020,Savings Account,Asset,Debit,,Reserve funds,USD
+1210,Accounts Receivable,Asset,Debit,,,USD
+2010,Accounts Payable,Liability,Credit,,Outstanding vendor bills,USD
+3010,Owner's Capital,Equity,Credit,,Owner initial investments,USD
+3020,Owner's Draw,Equity,Debit,,,USD
+4010,Service Income,Revenue,Credit,,Income from consulting,USD
+5010,Rent Expense,Expense,Debit,,Monthly office rent,USD
