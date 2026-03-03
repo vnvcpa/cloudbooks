@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VNVBooks</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-left">
+      <button class="icon-btn hamburger-btn mobile-only" onclick="toggleSidebar()" title="Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="header-client-container desktop-only">
+        <button class="btn-header-client">
+          <span class="client-name-display">Select Client</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div class="popup-client">
+          <a href="#" onclick="selectClient('Client Books A', event)">Client Books A</a>
+          <a href="#" onclick="selectClient('Client Books B', event)">Client Books B</a>
+          <a href="#" onclick="selectClient('Add New Client', event)">Add New Client</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <div class="dynamic-header-title" id="dynamicHeaderTitle">Dashboard</div>
+    </div>
+
+    <div class="header-right">
+      <img src="onebook-logotext.png" alt="OneBook Logo" class="app-logo desktop-logo desktop-only">
+      <img src="onebook-logo.png" alt="OneBook Logo" class="app-logo mobile-logo mobile-only">
+      <button class="icon-btn" id="btnOpenSearch" onclick="toggleSearch()" title="Search">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <nav class="app-sidebar" id="appSidebar">
+    
+    <div class="nav-item-container mobile-only">
+      <button class="btn-client-books" onclick="toggleAccordion('client', event)">
+        <span class="client-name-display">Select Client</span>
+        <svg class="accordion-arrow" id="arrow-client" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </button>
+      <div class="accordion-content" id="acc-client">
+        <a href="#" onclick="selectClient('Client Books A', event)">Client Books A</a>
+        <a href="#" onclick="selectClient('Client Books B', event)">Client Books B</a>
+        <a href="#" onclick="selectClient('Add New Client', event)">Add New Client</a>
+      </div>
+    </div>
+
+    <div class="nav-item-container">
+      <div class="nav-item" onclick="handleMenuClick('dashboard', null, event)">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span class="nav-text">Dashboard</span>
+      </div>
+    </div>
+
+    <div class="nav-item-container">
+      <div class="nav-item create-trigger" onclick="handleMenuClick('addnew', null, event)">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
+        </svg>
+        <span class="nav-text">Add New</span>
+        <svg class="accordion-arrow" id="arrow-create" onclick="toggleAccordion('create', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+
+        <div class="mega-menu">
+          <div class="menu-column">
+            <h4>Sales</h4>
+            <ul>
+              <li><a href="#" onclick="handleMenuClick('sales', 'addSalesReceipt', event)">Sales Receipt</a></li>
+              <li><a href="#" onclick="handleMenuClick('sales', 'addSalesInvoice', event)">Sales Invoice</a></li>
+              <li><a href="#" onclick="handleMenuClick('sales', 'addARCollection', event)">AR Collection</a></li>
+              <li><a href="#" onclick="handleMenuClick('sales', 'createStatement', event)">Statement</a></li>
+              <li><a href="#" onclick="handleMenuClick('sales', 'addCustomer', event)">Customer</a></li>
+            </ul>
+          </div>
+          <div class="menu-column">
+            <h4>Purchases</h4>
+            <ul>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'addCashPurchase', event)">Cash Purchase</a></li>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'addPurchaseOrder', event)">Purchase Order</a></li>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'addReceivingReport', event)">Receiving Report</a></li>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'addAPPayment', event)">AP Payment</a></li>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'addCreditCardCharge', event)">Credit Card Charge</a></li>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'addVendor', event)">Vendor</a></li>
+            </ul>
+          </div>
+          <div class="menu-column">
+            <h4>Payroll</h4>
+            <ul>
+              <li><a href="#" onclick="handleMenuClick('payroll', 'addTimesheet', event)">Time Sheet</a></li>
+              <li><a href="#" onclick="handleMenuClick('payroll', 'addEmployee', event)">Employee</a></li>
+            </ul>
+          </div>
+          <div class="menu-column">
+            <h4>Accounting</h4>
+            <ul>
+              <li><a href="#" onclick="handleMenuClick('bankClearing', 'uploadBankTransactions', event)">Upload Bank Transactions</a></li>
+              <li><a href="#" onclick="handleMenuClick('accounting', 'addGeneralJournal', event)">General Journal</a></li>
+              <li><a href="#" onclick="handleMenuClick('accounting', 'addDeposit', event)">Deposit</a></li>
+              <li><a href="#" onclick="handleMenuClick('accounting', 'addTransfer', event)">Transfer</a></li>
+              <li><a href="#" onclick="handleMenuClick('accounting', 'addProductsService', event)">Product or Service</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <div class="accordion-content" id="acc-create">
+        <div class="mobile-group-header">Sales</div>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'addSalesReceipt', event)">Sales Receipt</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'addSalesInvoice', event)">Sales Invoice</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'addARCollection', event)">AR Collection</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'createStatement', event)">Statement</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'addCustomer', event)">Customer</a>
+        
+        <div class="mobile-group-header">Purchases</div>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'addCashPurchase', event)">Cash Purchase</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'addPurchaseOrder', event)">Purchase Order</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'addReceivingReport', event)">Receiving Report</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'addAPPayments', event)">AP Payment</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'addCreditCardCharges', event)">Credit Card Charge</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('purchases', 'addVendor', event)">Vendor</a>
+
+        <div class="mobile-group-header">Payroll</div>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'addTimesheet', event)">Time Sheet</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('payroll', 'addEmployee', event)">Employee</a>
+
+        <div class="mobile-group-header">Accountant</div>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('bankClearing', 'uploadBankTransactions', event)">Upload Bank Transaction</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'addGeneralJournal', event)">General Journal</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'addDeposit', event)">Deposit</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'addTransfer', event)">Transfer</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('addnew', 'addProductService', event)">Product or Service</a>
+      </div>
+    </div>
+
+    <div class="nav-item-container">
+      <div class="nav-item create-trigger" onclick="handleMenuClick('sales', null, event)">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
+        </svg>
+        <span class="nav-text">Sales</span>
+        <svg class="accordion-arrow" id="arrow-sales" onclick="toggleAccordion('sales', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+
+        <div class="mega-menu">
+          <div class="menu-column">
+            <h4>Sales</h4>
+            <ul>
+              <li><a href="#" onclick="handleMenuClick('sales', 'salesReceipts', event)">Sales Receipts</a></li>
+              <li><a href="#" onclick="handleMenuClick('sales', 'salesInvoice', event)">Sales Invoices</a></li>
+              <li><a href="#" onclick="handleMenuClick('sales', 'arCollection', event)">Accounts Receivable Collections</a></li>
+              <li><a href="#" onclick="handleMenuClick('sales', 'statement', event)">Statements</a></li>
+              <li><a href="#" onclick="handleMenuClick('sales', 'customer', event)">Customers</a></li></ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-content" id="acc-sales">
+        <div class="mobile-group-header">Sales</div>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'salesReceipt', event)">Sales Receipts</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'salesInvoice', event)">Sales Invoices</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'arCollection', event)">Accounts Receivable Collections</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'statement', event)">Statements</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('sales', 'customer', event)">Customers</a>
+      </div>
+
+    </div>
+
+    <div class="nav-item-container">
+      <div class="nav-item create-trigger" onclick="handleMenuClick('purchases', null, event)">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
+        </svg>
+        <span class="nav-text">Purchases</span>
+        <svg class="accordion-arrow" id="arrow-purchases" onclick="toggleAccordion('purchases', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+
+        <div class="mega-menu">
+          <div class="menu-column">
+            <h4>Purchases</h4>
+            <ul>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'cash_purchases', event)">Cash Purchases</a></li>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'purchase_orders', event)">Purchase Orders</a></li>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'receiving_reports', event)">Receiving Reports</a></li>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'ap_payments', event)">AP Payments</a></li>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'credit_card_charges', event)">Credit Card Charges</a></li>
+              <li><a href="#" onclick="handleMenuClick('purchases', 'vendors', event)">Vendors</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <div class="accordion-content" id="acc-purchases">
+        <div class="mobile-group-header">Purchases</div>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('purchases', 'cash_purchases', event)">Cash Purchases</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('purchases', 'purchase_orders', event)">Purchase Orders</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('purchases', 'receiving_reports', event)">Receiving Reports</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('purchases', 'ap_payments', event)">AP Payments</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('purchases', 'credit_card_charges', event)">Credit Card Charges</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('purchases', 'vendors', event)">Vendors</a>
+      </div>
+    </div>
+
+    <div class="nav-item-container">
+      <div class="nav-item create-trigger" onclick="handleMenuClick('payroll', null, event)">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
+        </svg>
+        <span class="nav-text">Payroll</span>
+        <svg class="accordion-arrow" id="arrow-payroll" onclick="toggleAccordion('payroll', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+
+        <div class="mega-menu">
+          <div class="menu-column">
+            <h4>Payroll</h4>
+            <ul>
+              <li><a href="#" onclick="handleMenuClick('payroll', 'timesheets', event)">Time Sheet</a></li>
+              <li><a href="#" onclick="handleMenuClick('payroll', 'employees', event)">Employees</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <div class="accordion-content" id="acc-payroll">
+        <div class="mobile-group-header">Payroll</div>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('payroll', 'timesheets', event)">Time Sheet</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('payroll', 'employees', event)">Employees</a>
+      </div>
+    </div>
+
+    <div class="nav-item-container">
+      <div class="nav-item create-trigger" onclick="handleMenuClick('accountant', null, event)">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
+        </svg>
+        <span class="nav-text">Accountant</span>
+        <svg class="accordion-arrow" id="arrow-accountant" onclick="toggleAccordion('accountant', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+
+        <div class="mega-menu">
+          <div class="menu-column">
+            <h4>Others</h4>
+            <ul>
+              <li><a href="#" onclick="handleMenuClick('bankClearing', 'bankTransactions', event)">Bank Transactions</a></li>
+              <li><a href="#" onclick="handleMenuClick('accountant', 'general_journal', event)">General Journal</a></li>
+              <li><a href="#" onclick="handleMenuClick('accountant', 'deposit', event)">Deposit</a></li>
+              <li><a href="#" onclick="handleMenuClick('accountant', 'transfer', event)">Transfer</a></li>
+              <li><a href="#" onclick="handleMenuClick('accountant', 'products_services', event)">Products/Services</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <div class="accordion-content" id="acc-accountant">
+        <div class="mobile-group-header">Accounting</div>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('bankClearing', 'bankTransactions', event)">Bank Transactions</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('accounting', 'general_journal', event)">General Journal</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('accounting', 'deposit', event)">Deposit</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('accounting', 'transfer', event)">Transfer</a>
+        <a href="#" class="grouped-item" onclick="handleMenuClick('accounting', 'products_services', event)">Products/Services</a>
+      </div>
+    </div>
+
+    <div class="nav-item-container">
+      <div class="nav-item" onclick="handleMenuClick('reports', null, event)">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+        <span class="nav-text">Reports</span>
+        <svg class="accordion-arrow" id="arrow-reports" onclick="toggleAccordion('reports', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+      <div class="accordion-content desktop-popup" id="acc-reports">
+        <a href="#" onclick="handleMenuClick('reports', 'financial_statements', event)">Financial Statements</a>
+        <a href="#" onclick="handleMenuClick('reports', 'accounts_receivable', event)">Accounts Receivable</a>
+        <a href="#" onclick="handleMenuClick('reports', 'accounts_payable', event)">Accounts Payable</a>
+      </div>
+    </div>
+
+    <div class="nav-spacer"></div>
+
+    <div class="nav-item-container">
+      <div class="nav-item" onclick="handleMenuClick('settings', null, event)">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <span class="nav-text">Settings</span>
+        <svg class="accordion-arrow" id="arrow-settings" onclick="toggleAccordion('settings', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+      <div class="accordion-content desktop-popup popup-bottom" id="acc-settings">
+        <a href="#" onclick="handleMenuClick('settings', 'company_settings', event)">Company Settings</a>
+        <a href="#" onclick="handleMenuClick('settings', 'manage_users', event)">Manage Users</a>
+        <a href="#" onclick="handleMenuClick('settings', 'chart_of_accounts', event)">Chart of Accounts</a>
+        <a href="LICENSE" target="_blank" onclick="handleMenuClick('settings', 'license', event)">License</a>
+      </div>
+    </div>
+
+    <div class="nav-item-container" style="margin-bottom: 15px;">
+      <div class="nav-item" onclick="handleMenuClick('account', null, event)">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span class="nav-text">Account</span>
+        <svg class="accordion-arrow" id="arrow-account" onclick="toggleAccordion('account', event)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+      <div class="accordion-content desktop-popup popup-bottom" id="acc-account">
+        <a href="#" onclick="handleMenuClick('account', 'my_profile', event)">My Profile</a>
+        <a href="#" onclick="handleMenuClick('account', 'security_password', event)">Security & Password</a>
+        <a href="#" onclick="handleMenuClick('account', 'logout', event)">Logout</a>
+      </div>
+    </div>
+
+  </nav>
+
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-panel" id="searchPanel">
+      <div class="search-bar-container">
+        <button class="icon-btn" onclick="toggleSearch()" title="Close Search">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <input type="text" id="transactionSearch" class="search-input-box" placeholder="Search transactions..." onkeyup="mockSearchMatches()">
+      </div>
+      <div class="search-results" id="searchResultsContainer">
+        <p style="color: var(--text-muted); font-size: 14px;">Type to search for invoices, receipts, and clients...</p>
+      </div>
+    </div>
+  </div>
+
+  <main class="app-main" id="mainContainer">
+    <div class="dashboard-header"><h1>Dashboard</h1><p id="dashboardStatus">VNVBooks General Ledger Overview</p></div>
+    <div class="dashboard-card"><p>Welcome back. Your accounts are up to date.</p></div>
+  </main>
+
+  <script type="module">
+    // Make sure SVG loader logic exists to swap your custom icons
+    import { NavIcons } from './navIcons/navSVG.js';
+    
+    function injectIcons() {
+      document.querySelectorAll('.nav-item').forEach(item => {
+        const text = item.querySelector('.nav-text')?.innerText;
+        const iconContainer = item.querySelector('.icon');
+        if (!iconContainer) return;
+        switch(text) {
+          case 'Add New': iconContainer.outerHTML = NavIcons.addNew; break;
+          case 'Sales': iconContainer.outerHTML = NavIcons.sales; break;
+          case 'Purchases': iconContainer.outerHTML = NavIcons.purchase; break;
+          case 'Payroll': iconContainer.outerHTML = NavIcons.payroll; break;
+          case 'Accountant': iconContainer.outerHTML = NavIcons.accountant; break;
+        }
+      });
+    }
+    window.addEventListener('DOMContentLoaded', injectIcons);
+  </script>
+
+  <script>
+    // ----- CORE UI LOGIC -----
+    function selectClient(clientName, event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      const displaySpans = document.querySelectorAll('.client-name-display');
+      displaySpans.forEach(span => span.textContent = clientName);
+
+      const accClient = document.getElementById('acc-client');
+      const arrowClient = document.getElementById('arrow-client');
+      if (accClient && accClient.classList.contains('active')) {
+        accClient.classList.remove('active');
+        if (arrowClient) arrowClient.classList.remove('active');
+      }
+
+      if (window.innerWidth <= 768) {
+        document.getElementById('appSidebar').classList.remove('mobile-open');
+      }
+
+      const desktopPopup = document.querySelector('.popup-client');
+      if (desktopPopup) {
+        desktopPopup.style.visibility = 'hidden';
+        desktopPopup.style.opacity = '0';
+        setTimeout(() => {
+          desktopPopup.style.visibility = '';
+          desktopPopup.style.opacity = '';
+        }, 300);
+      }
+      document.getElementById('dashboardStatus').innerText = 'Viewing ledger for: ' + clientName;
+    }
+
+    function toggleSidebar() { 
+      document.getElementById('appSidebar').classList.toggle('mobile-open'); 
+    }
+
+    function toggleAccordion(id, event) {
+      // Prevents the click from bubbling up and loading the dashboard on the parent nav-item
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      
+      if (window.innerWidth > 768) return; 
+
+      const contentToToggle = document.getElementById('acc-' + id);
+      const arrowToToggle = document.getElementById('arrow-' + id);
+      
+      if (!contentToToggle) return;
+      const isOpening = !contentToToggle.classList.contains('active');
+
+      document.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.accordion-arrow').forEach(a => a.classList.remove('active'));
+
+      if (isOpening) {
+        contentToToggle.classList.add('active');
+        if (arrowToToggle) arrowToToggle.classList.add('active');
+      }
+    }
+
+    function toggleSearch() {
+      const overlay = document.getElementById('searchOverlay');
+      overlay.classList.toggle('active');
+      if(overlay.classList.contains('active')) setTimeout(() => document.getElementById('transactionSearch').focus(), 100);
+    }
+
+    function mockSearchMatches() {
+      const query = document.getElementById('transactionSearch').value;
+      const container = document.getElementById('searchResultsContainer');
+      if (query.length > 1) {
+        container.innerHTML = 
+          '<div class="result-item" onclick="handleSearchResultClick(\'Mock Transaction #102\')"><strong>' + query + '</strong> - Mock Transaction #102</div>' +
+          '<div class="result-item" onclick="handleSearchResultClick(\'Mock Client Acme\')"><strong>' + query + '</strong> - Mock Client Acme</div>';
+      } else {
+        container.innerHTML = '<p style="color: var(--text-muted); font-size: 14px;">Type to search...</p>';
+      }
+    }
+
+    function handleSearchResultClick(itemName) {
+      toggleSearch();
+      document.getElementById('dashboardStatus').innerText = 'Viewing details for: ' + itemName;
+    }
+
+    document.addEventListener('click', function(event) {
+      // 1. Search Overlay dismissal
+      const overlay = document.getElementById('searchOverlay');
+      const searchPanel = document.getElementById('searchPanel');
+      const searchBtn = document.getElementById('btnOpenSearch');
+      if (overlay.classList.contains('active')) {
+        if (!searchPanel.contains(event.target) && !searchBtn.contains(event.target)) {
+          toggleSearch();
+        }
+      }
+
+      // 2. Mobile Nav Panel dismiss on outside click
+      const sidebar = document.getElementById('appSidebar');
+      const hamburgerBtn = document.querySelector('.hamburger-btn');
+      if (window.innerWidth <= 768 && sidebar.classList.contains('mobile-open')) {
+        if (!sidebar.contains(event.target) && !hamburgerBtn.contains(event.target)) {
+          sidebar.classList.remove('mobile-open');
+        }
+      }
+    });
+
+    // ----- GENERIC MODULE ROUTER -----
+    function handleMenuClick(parentFolder, childFile, event) {
+      if (event) {
+        if (event.preventDefault) event.preventDefault();
+        if (event.stopPropagation) event.stopPropagation(); // <-- STOPS EVENT BUBBLING
+      }
+      
+      // Auto-hide mobile navigation panel upon selection
+      if (window.innerWidth <= 768) {
+        document.getElementById('appSidebar').classList.remove('mobile-open');
+      }
+      
+      const fileToLoad = childFile || parentFolder;
+      
+      // Update Dynamic Header Title by formatting the fileToLoad string
+      let displayTitle = fileToLoad.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2');
+      displayTitle = displayTitle.replace(/\b\w/g, char => char.toUpperCase());
+      
+      const headerTitle = document.getElementById('dynamicHeaderTitle');
+      if (headerTitle) headerTitle.innerText = displayTitle;
+
+      // This constructs: ./sales/salesReceipt.js
+      const modulePath = `./${parentFolder}/${fileToLoad}.js`;
+
+      const statusEl = document.getElementById('dashboardStatus');
+      if (statusEl) statusEl.innerText = "Loading " + fileToLoad + "...";
+
+      // Dynamic Import
+      import(modulePath)
+        .then(module => {
+          // If your file has an export function init(containerId)
+          if (module.init) {
+            module.init('mainContainer');
+          } else if (module.default) {
+            // Or if it uses export default
+            module.default('mainContainer');
+          }
+        })
+        .catch(err => {
+          console.error('Error loading module:', err);
+          if (statusEl) statusEl.innerText = "Error loading " + fileToLoad;
+        });
+    }
+  </script>
+</body>
+</html>
