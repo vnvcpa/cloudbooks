@@ -5,6 +5,8 @@ import {
     getFirestore, collection, addDoc, doc, updateDoc, getDoc, getDocs, query, where 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getLocalSession } from "../auth/authManager.js";
+// NEW: Import multicurrency utility
+import { populateCurrencyDropdown, getCurrencyConfig } from './multicurrency.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyAH-mM4QI_yLxJY1iUAmaJD-mQpEaxeugw",
@@ -13,15 +15,9 @@ const firebaseConfig = {
     storageBucket: "vnvcloudbook.firebasestorage.app"
 };
 
-// SAFE INITIALIZATION: Check if Firebase is already running before initializing
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const db = getFirestore(app);
 
-/**
- * Initializes the Add/Edit Chart of Accounts Modal
- * @param {string} containerId - The ID of the container
- * @param {string|null} accountId - If provided, opens in Edit Mode.
- */
 export function init(containerId, accountId = null) {
     let existing = document.getElementById('addCoaOverlay');
     if (existing) existing.remove();
@@ -108,6 +104,11 @@ export function init(containerId, accountId = null) {
                 <input type="text" class="coa-input-line" id="coa-name" required placeholder="e.g. Checking Account">
             </div>
 
+            <div class="coa-row" id="coa-currencyRow">
+                <label class="coa-label">Currency:*</label>
+                <select class="coa-select" id="coa-currency" required></select>
+            </div>
+
             <div class="coa-row">
                 <label class="coa-label">Account Type:*</label>
                 <select class="coa-select" id="coa-type" required>
@@ -132,7 +133,7 @@ export function init(containerId, accountId = null) {
                 <label class="coa-label">Sub-account of:</label>
                 <select class="coa-select" id="coa-subAccount">
                     <option value="">None (Parent Account)</option>
-                    </select>
+                </select>
             </div>
 
             <div class="coa-row">
@@ -159,19 +160,19 @@ export function init(containerId, accountId = null) {
 
     document.body.appendChild(overlay);
 
-    // DOM Elements
     const modalContent = overlay.querySelector('#coa-modalContent');
     const headerTitle = overlay.querySelector('#coa-headerTitle');
     const statusBadge = overlay.querySelector('#coa-statusBadge');
     
     const elCode = overlay.querySelector('#coa-code');
     const elName = overlay.querySelector('#coa-name');
+    const elCurrency = overlay.querySelector('#coa-currency'); // NEW
     const elType = overlay.querySelector('#coa-type');
     const elBalanceType = overlay.querySelector('#coa-balanceType');
     const elSubAccount = overlay.querySelector('#coa-subAccount');
     const elDesc = overlay.querySelector('#coa-description');
     
-    const requiredInputs = [elCode, elName, elType, elBalanceType];
+    const requiredInputs = [elCode, elName, elType, elBalanceType, elCurrency];
 
     const btnCloseX = overlay.querySelector('#coa-btnCloseX');
     const btnCancel = overlay.querySelector('#coa-btnCancel');
@@ -183,19 +184,19 @@ export function init(containerId, accountId = null) {
     const btnImportCsv = overlay.querySelector('#coa-btnImportCsv');
     const fileInputCsv = overlay.querySelector('#coa-csvUpload');
 
-    // State Variables
     let currentSaveMode = localStorage.getItem('vnv_coaSavePref') || 'saveClose';
     btnSaveAction.textContent = currentSaveMode === 'saveNew' ? 'Save & New' : 'Save & Close';
     let accountIsActive = true; 
 
-    // --- LOGIC: Auto-set Balance Type based on Account Type ---
+    // NEW: Initialize Currency Dropdown
+    if (!isEditMode) populateCurrencyDropdown(elCurrency);
+
     elType.addEventListener('change', (e) => {
         const val = e.target.value;
         if (val === 'Asset' || val === 'Expense') elBalanceType.value = 'Debit';
         else if (val === 'Liability' || val === 'Equity' || val === 'Revenue') elBalanceType.value = 'Credit';
     });
 
-    // --- LOGIC: Fetch Parent Accounts for Dropdown ---
     const loadParentAccounts = async () => {
         try {
             const q = query(collection(db, "chartOfAccounts"), where("companyId", "==", session.companyId));
@@ -213,7 +214,7 @@ export function init(containerId, accountId = null) {
     };
     loadParentAccounts();
 
-    // --- LOGIC: CSV Import Engine ---
+    // CSV IMPORT
     btnImportCsv.addEventListener('click', () => fileInputCsv.click());
     
     fileInputCsv.addEventListener('change', (e) => {
@@ -228,16 +229,15 @@ export function init(containerId, accountId = null) {
 
             btnImportCsv.textContent = "Importing...";
             btnImportCsv.disabled = true;
-
             let successCount = 0;
             
-            // Start from 1 to skip header row
+            // NEW: Fetch home currency to use as fallback
+            const homeCurrency = getCurrencyConfig().homeCurrency;
+
             for(let i = 1; i < lines.length; i++) {
                 const cols = lines[i].split(',').map(c => c.trim());
                 if(cols.length >= 3) {
                     const type = cols[2];
-                    
-                    // Assign from CSV, fallback to standard accounting rules if missing
                     const balanceType = cols[3] || ((type === 'Asset' || type === 'Expense') ? 'Debit' : 'Credit');
                     
                     const accData = {
@@ -247,6 +247,7 @@ export function init(containerId, accountId = null) {
                         balanceType: balanceType,
                         subAccountOf: cols[4] || '',
                         description: cols[5] || '',
+                        currency: cols[6] || homeCurrency, // NEW: Assigns 7th column or falls back
                         companyId: session.companyId,
                         createdBy: session.uid,
                         isActive: true,
@@ -265,7 +266,6 @@ export function init(containerId, accountId = null) {
         reader.readAsText(file);
     });
 
-    // --- LOGIC: Validation & Cleanup ---
     requiredInputs.forEach(input => input.addEventListener('input', (e) => e.target.classList.remove('coa-error')));
 
     const cleanupAndClose = () => {
@@ -293,7 +293,7 @@ export function init(containerId, accountId = null) {
         }
     };
 
-    // --- LOGIC: Fetch Data for Edit Mode ---
+    // FETCH DATA
     if (isEditMode) {
         headerTitle.textContent = "LOADING...";
         btnToggleActive.style.display = 'inline-block';
@@ -318,6 +318,9 @@ export function init(containerId, accountId = null) {
                     elBalanceType.value = data.balanceType || '';
                     elDesc.value = data.description || '';
                     
+                    // NEW: Populate currency with saved data
+                    populateCurrencyDropdown(elCurrency, data.currency);
+
                     setTimeout(() => elSubAccount.value = data.subAccountOf || '', 300);
                     updateUIState(data.isActive !== false); 
                 } else {
@@ -330,7 +333,7 @@ export function init(containerId, accountId = null) {
         })();
     }
 
-    // --- LOGIC: Save to Firebase ---
+    // SAVE DATA
     const handleSave = async () => {
         let isValid = true;
         requiredInputs.forEach(input => {
@@ -346,6 +349,7 @@ export function init(containerId, accountId = null) {
             name: elName.value.trim(),
             type: elType.value,
             balanceType: elBalanceType.value,
+            currency: elCurrency.value, // NEW: Saved to DB
             subAccountOf: elSubAccount.value,
             description: elDesc.value.trim(),
             companyId: session.companyId,
@@ -380,7 +384,6 @@ export function init(containerId, accountId = null) {
         }
     };
 
-    // --- EVENT LISTENERS ---
     btnCloseX.addEventListener('click', cleanupAndClose);
     btnCancel.addEventListener('click', cleanupAndClose);
     overlay.querySelector('.coa-modal').addEventListener('click', (e) => e.stopPropagation());
