@@ -1,6 +1,6 @@
 // settings/addChartOfAccounts.js
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { 
     getFirestore, collection, addDoc, doc, updateDoc, getDoc, getDocs, query, where 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -9,10 +9,12 @@ import { getLocalSession } from "../auth/authManager.js";
 const firebaseConfig = {
     apiKey: "AIzaSyAH-mM4QI_yLxJY1iUAmaJD-mQpEaxeugw",
     authDomain: "vnvcloudbook.firebaseapp.com",
-    projectId: "vnvcloudbook"
+    projectId: "vnvcloudbook",
+    storageBucket: "vnvcloudbook.firebasestorage.app" // Added to match authManager
 };
 
-const app = initializeApp(firebaseConfig);
+// SAFE INITIALIZATION: Check if Firebase is already running before initializing
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const db = getFirestore(app);
 
 /**
