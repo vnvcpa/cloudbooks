@@ -44,8 +44,8 @@ export function init(containerId, entityId = null) {
             .bt-batch-bar { display: none; padding: 10px 15px; background: #e3f2fd; border-radius: 4px; margin-bottom: 15px; align-items: center; gap: 12px; border: 1px solid #bbdefb; }
             
             /* Dynamic CSS Grid Table Layout */
-            .bt-table { --grid-cols: 40px 110px 300px 150px 150px; width: 100%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 6px; overflow-x: auto; }
-            .bt-table-inner { min-width: 600px; }
+            .bt-table { --grid-cols: 40px 100px 1fr 120px 130px; width: 100%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 6px; overflow-x: auto; }
+            .bt-table-inner { min-width: 100%; }
             .bt-thead { display: grid; grid-template-columns: var(--grid-cols); background: #f4f7f9; font-weight: 600; font-size: 12px; color: var(--primary-dark); border-bottom: 2px solid #eaedf1; position: relative; }
             .bt-th { padding: 12px 15px; display: flex; align-items: center; position: relative; }
             .bt-th-sortable { cursor: pointer; user-select: none; }
@@ -53,15 +53,13 @@ export function init(containerId, entityId = null) {
             .bt-resizer { position: absolute; right: 0; top: 0; bottom: 0; width: 5px; cursor: col-resize; z-index: 2; }
             .bt-resizer:hover { background: rgba(0,0,0,0.1); }
             
-            /* Row Status Colors & Hovers */
+            /* Row Colors */
             .bt-row-group { border-bottom: 1px solid #eaedf1; transition: background 0.2s; }
-            .bt-row-unreviewed { background: #ffffff; }
-            .bt-row-unreviewed:hover { background: #f4f6f8; }
-            .bt-row-reviewed { background: #f0fdf4; }
-            .bt-row-reviewed:hover { background: #e8f5e9; }
-            .bt-row-split { background: #fff8e1; }
-            .bt-row-split:hover { background: #ffecb3; }
-            
+            .row-unreviewed { background: #ffffff; }
+            .row-reviewed { background: #f4fbf4; } /* Friendly Green */
+            .row-split { background: #f4f8ff; } /* Friendly Blue */
+            .bt-row-group:hover { background: #f0f5fa !important; } /* Global Hover effect */
+
             .bt-row-main { display: grid; grid-template-columns: var(--grid-cols); align-items: center; }
             .bt-td { padding: 10px 15px; font-size: 13px; overflow: hidden; text-overflow: ellipsis; }
             .bt-row-sub { grid-column: 1 / -1; padding: 0 15px 12px 65px; font-size: 12px; color: #666; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -71,31 +69,27 @@ export function init(containerId, entityId = null) {
             .bt-bal-amt { padding: 12px 15px; text-align: right; }
             
             /* Categorization Controls */
-            .cat-controls { display: flex; gap: 6px; align-items: center; width: 100%; }
-            .cat-select { flex: 1; padding: 6px 0; border: none; border-bottom: 1px solid #ccc; border-radius: 0; font-size: 12px; background: transparent; outline: none; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 100%; background-position-y: center; background-size: 16px; padding-right: 20px; }
+            .cat-controls { display: flex; gap: 6px; align-items: center; width: 100%; flex-wrap: nowrap; }
+            .cat-select { flex: 1; min-width: 0; padding: 6px 0; border: none; border-bottom: 1px solid #ccc; border-radius: 0; font-size: 12px; background: transparent; outline: none; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 100%; background-position-y: center; background-size: 16px; padding-right: 20px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
             .cat-select:focus { border-bottom-color: var(--primary-dark); }
-            
-            .cat-btn-ok { background: #5cb85c; color: #fff; border: none; border-radius: 4px; width: 26px; height: 26px; padding: 0; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 14px; font-weight: bold; flex-shrink: 0; transition: background 0.2s; }
-            .cat-btn-ok:hover { background: #4cae4c; }
-            .cat-btn-split { background: #fff; color: #666; border: 1px solid #ccc; border-radius: 4px; padding: 4px 8px; cursor: pointer; font-size: 12px; flex-shrink: 0; height: 26px; }
+            .cat-btn-ok { background: #5cb85c; color: #fff; border: none; border-radius: 4px; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; cursor: pointer; font-size: 14px; font-weight: bold; flex-shrink: 0; }
+            .cat-btn-split { background: #fff; color: #666; border: 1px solid #ccc; border-radius: 4px; padding: 0 8px; height: 28px; cursor: pointer; font-size: 12px; flex-shrink: 0; }
             .cat-btn-split:hover { background: #f0f0f0; }
-            
             .cat-reviewed-text { font-size: 13px; font-weight: 500; color: #333; display: flex; align-items: center; gap: 10px; }
             .cat-btn-undo { background: none; border: none; color: #999; cursor: pointer; font-size: 12px; text-decoration: underline; }
             
             .txt-green { color: #2e7d32; font-weight: 500; }
             .txt-red { color: #d32f2f; font-weight: 500; }
 
+            /* Mobile Adjustments */
             @media (max-width: 768px) {
-                /* Reduced Category column by ~30%, adjusted total width */
-                .bt-table { --grid-cols: 30px 70px 140px 75px 75px; }
-                .bt-table-inner { min-width: 400px; }
+                .bt-table { --grid-cols: 28px 65px 1fr 75px 75px; }
                 .bt-th { padding: 8px 4px; font-size: 10px; }
                 .bt-td { padding: 8px 4px; font-size: 11px; }
-                .bt-row-sub { padding: 0 4px 8px 34px; }
-                .cat-btn-ok { width: 22px; height: 22px; font-size: 12px; }
-                .cat-btn-split { height: 22px; padding: 2px 6px; font-size: 10px; }
-                .cat-select { font-size: 11px; padding: 4px 0; }
+                .bt-row-sub { padding: 0 4px 8px 30px; }
+                .cat-btn-ok { width: 24px; height: 24px; font-size: 12px; }
+                .cat-btn-split { height: 24px; padding: 0 5px; font-size: 10px; }
+                .cat-select { font-size: 11px; background-size: 14px; padding-right: 16px; }
             }
         </style>
 
@@ -168,7 +162,7 @@ export function init(containerId, entityId = null) {
         const table = document.querySelector('.bt-table');
         const headers = table.querySelectorAll('.bt-th');
         let isMobile = window.innerWidth <= 768;
-        let colWidths = isMobile ? [30, 70, 140, 75, 75] : [40, 110, 300, 150, 150];
+        let colWidths = isMobile ? [28, 65, 200, 70, 75] : [40, 100, 300, 120, 130];
 
         headers.forEach((th, i) => {
             const resizer = th.querySelector('.bt-resizer');
@@ -271,9 +265,10 @@ export function init(containerId, entityId = null) {
 
         const isCC = bankAccountsMap[targetAccountId].type === 'Liability';
         
-        // BUG FIX: Accurate Time conversion for Date Filters
-        const startTimestamp = elStart.value ? new Date(elStart.value + 'T00:00:00').getTime() : null;
-        const endTimestamp = elEnd.value ? new Date(elEnd.value + 'T23:59:59').getTime() : null;
+        // Fix: Convert Filter strings to Date timestamps for accurate comparison
+        const startTime = elStart.value ? new Date(elStart.value + "T00:00:00").getTime() : null;
+        const endTime = elEnd.value ? new Date(elEnd.value + "T23:59:59").getTime() : null;
+        
         const searchTxt = elSearch.value.toLowerCase();
 
         try {
@@ -286,9 +281,7 @@ export function init(containerId, entityId = null) {
             
             let allTxs = [];
             snap.forEach(doc => { allTxs.push({ id: doc.id, ...doc.data() }); });
-            
-            // Sort chronologically using robust getTime()
-            allTxs.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+            allTxs.sort((a, b) => new Date(a.date) - new Date(b.date));
 
             let runningBalance = 0;
             let displayTxs = [];
@@ -296,15 +289,17 @@ export function init(containerId, entityId = null) {
 
             allTxs.forEach(tx => {
                 const txTime = new Date(tx.date).getTime();
-                
-                if (startTimestamp && txTime < startTimestamp) {
+
+                // Check Beginning Balance
+                if (startTime && txTime < startTime) {
                     runningBalance += tx.foreignAmount;
                     beginningBalance = runningBalance;
                 } else {
                     runningBalance += tx.foreignAmount;
                     tx.calculatedBalance = runningBalance;
                     
-                    if (endTimestamp && txTime > endTimestamp) return; // Skips pushing, acts as filter
+                    // Filter logic
+                    if (endTime && txTime > endTime) return;
                     
                     if (searchTxt) {
                         const amountStr = String(Math.abs(tx.foreignAmount));
@@ -348,7 +343,7 @@ export function init(containerId, entityId = null) {
                 }
 
                 let catHtml = '';
-                let rowClass = 'bt-row-unreviewed';
+                let rowStatusClass = 'row-unreviewed';
 
                 if (tx.status === 'Unreviewed') {
                     let defCatId = tx.postedCategoryId;
@@ -356,24 +351,23 @@ export function init(containerId, entityId = null) {
                         const matchedCat = chartOfAccounts.find(c => c.name === tx.suggestedCategory);
                         defCatId = matchedCat ? matchedCat.id : "";
                     }
-                    
                     catHtml = `
                         <div class="cat-controls">
                             <select class="cat-select" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>
-                            <button class="cat-btn-ok btn-post" data-id="${tx.id}" title="Post the Transaction">&#10003;</button>
+                            <button class="cat-btn-ok btn-post" data-id="${tx.id}" title="Post Transaction">&#10003;</button>
                             <button class="cat-btn-split btn-split" data-id="${tx.id}">Split</button>
                         </div>
                     `;
                 } else if (tx.status === 'Split') {
-                    rowClass = 'bt-row-split';
+                    rowStatusClass = 'row-split';
                     catHtml = `
                         <div class="cat-reviewed-text">
-                            <span style="color: #2e7d32;">&#10003;</span> Split (${tx.splits ? tx.splits.length : 0} categories)
+                            <span style="color: #2e7d32;">&#10003;</span> Split (${tx.splits ? tx.splits.length : 0} lines)
                             <button class="cat-btn-undo" data-id="${tx.id}">Undo</button>
                         </div>
                     `;
                 } else {
-                    rowClass = 'bt-row-reviewed';
+                    rowStatusClass = 'row-reviewed';
                     const postedName = chartOfAccounts.find(c => c.id === tx.postedCategoryId)?.name || 'Categorized';
                     catHtml = `
                         <div class="cat-reviewed-text">
@@ -384,7 +378,7 @@ export function init(containerId, entityId = null) {
                 }
 
                 html += `
-                    <div class="bt-row-group ${rowClass}">
+                    <div class="bt-row-group ${rowStatusClass}">
                         <div class="bt-row-main">
                             <div class="bt-td" style="text-align:center;"><input type="checkbox" class="bt-row-check" data-id="${tx.id}"></div>
                             <div class="bt-td">${tx.date}</div>
@@ -412,16 +406,12 @@ export function init(containerId, entityId = null) {
                 chk.addEventListener('change', updateBatchUI);
             });
 
-            // Bind Select Change -> Add Friendly Color for "Categorized" but not posted
+            // Bind Select Actions
             document.querySelectorAll('.cat-select').forEach(sel => {
                 sel.addEventListener('change', (e) => {
                     if (e.target.value === 'ADD_NEW') {
                         openAddCoaModal(containerId);
                         e.target.value = ''; 
-                    } else if (e.target.value) {
-                        e.target.closest('.bt-row-group').style.backgroundColor = '#e3f2fd'; // Friendly light blue
-                    } else {
-                        e.target.closest('.bt-row-group').style.backgroundColor = '';
                     }
                 });
             });
@@ -558,7 +548,7 @@ export function init(containerId, entityId = null) {
                     <button class="cat-btn-split" id="sp-btnAddRow">+ Add Line</button>
                     <div style="display:flex; gap: 10px;">
                         <button class="cat-btn-split" id="sp-btnCancel">Cancel</button>
-                        <button class="cat-btn-ok" id="sp-btnSave" style="width: auto; padding: 0 10px;">Save Split</button>
+                        <button class="cat-btn-ok" style="width:auto; padding: 0 15px;" id="sp-btnSave">Save Split</button>
                     </div>
                 </div>
             </div>
