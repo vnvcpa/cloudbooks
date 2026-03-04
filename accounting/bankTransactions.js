@@ -62,9 +62,9 @@ export function init(containerId, entityId = null) {
             .bt-row-main { display: grid; grid-template-columns: var(--grid-cols); align-items: center; }
             .bt-td { padding: 10px 10px; font-size: 13px; overflow: hidden; text-overflow: ellipsis; }
             
-            /* Enhanced Sub-Row Layout */
+            /* Enhanced Sub-Row Layout: Description starts under Date, Action stays under Balance */
             .bt-row-sub { display: flex; justify-content: space-between; padding: 0 10px 12px 0; }
-            .bt-desc-col { padding-left: 140px; font-size: 12px; color: #666; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; padding-right: 15px; }
+            .bt-desc-col { padding-left: 40px; font-size: 12px; color: #666; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; padding-right: 15px; }
             .bt-action-col { width: 120px; text-align: right; display: flex; justify-content: flex-end; align-items: center; gap: 6px; }
             
             .bt-bal-row { display: grid; grid-template-columns: var(--grid-cols); background: #fcfcfc; font-weight: 600; font-size: 13px; border-bottom: 1px solid #eaedf1; }
@@ -88,8 +88,8 @@ export function init(containerId, entityId = null) {
                 .bt-table { --grid-cols: 30px 75px 1fr 80px 80px; }
                 .bt-th { padding: 8px 5px; font-size: 10px; }
                 .bt-td { padding: 8px 5px; font-size: 11px; }
-                .bt-desc-col { padding-left: 105px; } /* Checkbox + Date */
-                .bt-action-col { width: 80px; }
+                .bt-desc-col { padding-left: 30px; } /* Start right after 30px checkbox */
+                .bt-action-col { width: 80px; } /* Align perfectly under 80px Balance col */
             }
         </style>
 
@@ -259,8 +259,6 @@ export function init(containerId, entityId = null) {
         }
 
         const isCC = bankAccountsMap[targetAccountId].type === 'Liability';
-        
-        // BUG FIX: Parse dates properly for filtering
         const startObj = elStart.value ? new Date(elStart.value) : null;
         const endObj = elEnd.value ? new Date(elEnd.value) : null;
         const searchTxt = elSearch.value.toLowerCase();
@@ -275,8 +273,6 @@ export function init(containerId, entityId = null) {
             
             let allTxs = [];
             snap.forEach(doc => { allTxs.push({ id: doc.id, ...doc.data() }); });
-            
-            // Sort chronologically to compute running balance
             allTxs.sort((a, b) => new Date(a.date) - new Date(b.date));
 
             let runningBalance = 0;
@@ -293,7 +289,6 @@ export function init(containerId, entityId = null) {
                     runningBalance += tx.foreignAmount;
                     tx.calculatedBalance = runningBalance;
                     
-                    // BUG FIX: Proper end date comparison
                     if (endObj && txDateObj > endObj) return;
 
                     if (searchTxt) {
@@ -341,7 +336,6 @@ export function init(containerId, entityId = null) {
                 let actionHtml = '';
                 let statusClass = '';
 
-                // Category & Actions Layout adjusted for Mobile/Sub-row
                 if (tx.status === 'Unreviewed') {
                     let defCatId = tx.postedCategoryId;
                     if(!defCatId) {
@@ -488,22 +482,23 @@ export function init(containerId, entityId = null) {
                 
                 .sp-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
                 .sp-th { text-align: left; font-size: 12px; color: #666; padding-bottom: 5px; border-bottom: 1px solid #ccc; }
-                .sp-row { background: #fff; }
-                .sp-row.dragging { opacity: 0.5; background: #f9f9f9; }
-                .sp-cell { padding: 8px 5px; position: relative; }
                 
+                /* TBODY as draggable group so rows stay together */
+                .sp-row-group { background: #fff; }
+                .sp-row-group.dragging { opacity: 0.5; background: #f9f9f9; }
+                
+                .sp-cell { padding: 8px 5px; vertical-align: top; }
                 .sp-input { width: 100%; border: none; border-bottom: 1px solid #ccc; padding: 6px 0; font-size: 13px; outline: none; background: transparent; }
                 .sp-input:focus { border-bottom: 2px solid var(--primary-dark); }
                 .sp-amt-input { width: 120px; text-align: right; }
                 
-                .sp-desc-input { display: none; width: 100%; resize: none; font-size: 12px; color: #555; padding: 4px 0; border: none; border-bottom: 1px solid #ccc; outline: none; background: transparent; margin-top: 5px; font-family: inherit; }
+                .sp-desc-input { display: none; width: 100%; resize: none; font-size: 12px; color: #555; padding: 4px 0; border: none; border-bottom: 1px solid #ccc; outline: none; background: transparent; font-family: inherit; }
                 .sp-desc-input:focus { border-bottom-color: var(--primary-dark); }
                 
                 .sp-handle { cursor: grab; color: #ccc; font-size: 16px; padding-right: 5px; user-select: none; }
                 
-                /* Hamburger Menu */
                 .sp-menu-btn { background: none; border: none; font-size: 18px; cursor: pointer; color: #999; padding: 0 5px; }
-                .sp-menu-dropdown { display: none; position: absolute; right: 10px; top: 30px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); border: 1px solid #ccc; border-radius: 4px; z-index: 10; width: 140px; }
+                .sp-menu-dropdown { display: none; position: absolute; right: 10px; top: 30px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); border: 1px solid #ccc; border-radius: 4px; z-index: 10; width: 140px; text-align: left; }
                 .sp-menu-item { padding: 10px 12px; font-size: 12px; cursor: pointer; border-bottom: 1px solid #eee; }
                 .sp-menu-item:hover { background: #f4f7f9; }
                 
@@ -511,7 +506,7 @@ export function init(containerId, entityId = null) {
                 .sp-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eaedf1; padding-top: 20px; }
 
                 @media (max-width: 768px) {
-                    .sp-amt-input { width: 85px; } /* Reduced by ~15% for mobile */
+                    .sp-amt-input { width: 85px; } 
                 }
             </style>
             <div class="sp-modal" id="sp-modalBox">
@@ -522,12 +517,11 @@ export function init(containerId, entityId = null) {
                 <div style="font-size: 13px; color: #666; margin-bottom: 5px;">Bank Description: ${tx.description}</div>
                 <textarea class="sp-desc-box" id="sp-customMemo" placeholder="Optional custom memo/description for this transaction..."></textarea>
                 
-                <table class="sp-table">
+                <table class="sp-table" id="sp-table-main">
                     <thead>
                         <tr><th style="width:20px;"></th><th class="sp-th">Category</th><th class="sp-th" style="text-align: right;">Amount</th><th style="width:30px;"></th></tr>
                     </thead>
-                    <tbody id="sp-tbody"></tbody>
-                    <tfoot>
+                    <tfoot id="sp-tfoot">
                         <tr>
                             <td colspan="2" class="sp-total-row">Total Assigned:</td>
                             <td class="sp-total-row" id="sp-totalAssigned">0.00</td>
@@ -552,7 +546,8 @@ export function init(containerId, entityId = null) {
         `;
         document.body.appendChild(overlay);
 
-        const tbody = document.getElementById('sp-tbody');
+        const spTable = document.getElementById('sp-table-main');
+        const tfoot = document.getElementById('sp-tfoot');
         const catOptions = buildCategoryDropdown('');
 
         const safeMathEval = (str) => {
@@ -566,7 +561,7 @@ export function init(containerId, entityId = null) {
 
         const calcTotals = () => {
             let sum = 0;
-            tbody.querySelectorAll('.sp-amt-input').forEach(inp => {
+            spTable.querySelectorAll('.sp-amt-input').forEach(inp => {
                 let val = parseFloat(inp.value);
                 if(!isNaN(val)) sum += val;
             });
@@ -578,80 +573,88 @@ export function init(containerId, entityId = null) {
         };
 
         const createRow = () => {
-            const tr = document.createElement('tr');
-            tr.className = 'sp-row';
-            tr.draggable = true;
-            tr.innerHTML = `
-                <td class="sp-cell"><span class="sp-handle">&#8942;&#8942;</span></td>
-                <td class="sp-cell">
-                    <select class="sp-input sp-cat-input">${catOptions}</select>
-                    <textarea class="sp-desc-input" rows="2" placeholder="Line description..."></textarea>
-                </td>
-                <td class="sp-cell" style="text-align: right;"><input type="text" class="sp-input sp-amt-input" placeholder="0.00"></td>
-                <td class="sp-cell" style="text-align: center;">
-                    <button class="sp-menu-btn">&#8942;</button>
-                    <div class="sp-menu-dropdown">
-                        <div class="sp-menu-item toggle-desc">Add Description</div>
-                        <div class="sp-menu-item del-row" style="color:#d32f2f;">Delete Row</div>
-                    </div>
-                </td>
+            const tbodyGroup = document.createElement('tbody');
+            tbodyGroup.className = 'sp-row-group';
+            tbodyGroup.draggable = true;
+            tbodyGroup.innerHTML = `
+                <tr class="sp-row">
+                    <td class="sp-cell" style="padding-top:12px;"><span class="sp-handle">&#8942;&#8942;</span></td>
+                    <td class="sp-cell">
+                        <select class="sp-input sp-cat-input">${catOptions}</select>
+                    </td>
+                    <td class="sp-cell" style="text-align: right;">
+                        <input type="text" class="sp-input sp-amt-input" placeholder="0.00">
+                    </td>
+                    <td class="sp-cell" style="text-align: center; position: relative;">
+                        <button class="sp-menu-btn">&#8942;</button>
+                        <div class="sp-menu-dropdown">
+                            <div class="sp-menu-item toggle-desc">Add Description</div>
+                            <div class="sp-menu-item del-row" style="color:#d32f2f;">Delete Row</div>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="sp-desc-row" style="display:none;">
+                    <td></td>
+                    <td colspan="2" style="padding: 0 5px 10px 5px;">
+                        <textarea class="sp-desc-input" rows="2" placeholder="Line description..."></textarea>
+                    </td>
+                    <td></td>
+                </tr>
             `;
             
-            const amtInp = tr.querySelector('.sp-amt-input');
+            const amtInp = tbodyGroup.querySelector('.sp-amt-input');
             amtInp.addEventListener('blur', (e) => {
                 let val = safeMathEval(e.target.value);
                 e.target.value = val ? val.toFixed(2) : '';
                 calcTotals();
             });
 
-            // Drag and Drop implementation
-            tr.addEventListener('dragstart', () => tr.classList.add('dragging'));
-            tr.addEventListener('dragend', () => tr.classList.remove('dragging'));
+            tbodyGroup.addEventListener('dragstart', () => tbodyGroup.classList.add('dragging'));
+            tbodyGroup.addEventListener('dragend', () => tbodyGroup.classList.remove('dragging'));
 
-            tbody.appendChild(tr);
+            spTable.insertBefore(tbodyGroup, tfoot);
         };
 
         createRow(); createRow();
 
-        // Drag over logic
-        tbody.addEventListener('dragover', e => {
+        spTable.addEventListener('dragover', e => {
             e.preventDefault();
-            const draggingRow = tbody.querySelector('.dragging');
-            const targetRow = e.target.closest('.sp-row');
-            if(targetRow && targetRow !== draggingRow) {
-                const rect = targetRow.getBoundingClientRect();
+            const draggingGroup = document.querySelector('.sp-row-group.dragging');
+            if(!draggingGroup) return;
+            const targetGroup = e.target.closest('.sp-row-group');
+            if(targetGroup && targetGroup !== draggingGroup) {
+                const rect = targetGroup.getBoundingClientRect();
                 const offset = e.clientY - rect.top;
-                if(offset > rect.height / 2) targetRow.after(draggingRow);
-                else targetRow.before(draggingRow);
+                if(offset > rect.height / 2) targetGroup.after(draggingGroup);
+                else targetGroup.before(draggingGroup);
             }
         });
 
-        // Event Delegation for Hamburger Menus in Split Modal
         document.getElementById('sp-modalBox').addEventListener('click', (e) => {
-            // Close all menus first
             document.querySelectorAll('.sp-menu-dropdown').forEach(m => {
                 if (m !== e.target.nextElementSibling) m.style.display = 'none';
             });
 
-            // Toggle menu
             if (e.target.classList.contains('sp-menu-btn')) {
                 const menu = e.target.nextElementSibling;
                 menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
             }
 
-            // Handle Menu Actions
             if (e.target.classList.contains('toggle-desc')) {
-                const tr = e.target.closest('.sp-row');
-                const descInput = tr.querySelector('.sp-desc-input');
+                const group = e.target.closest('.sp-row-group');
+                const descRow = group.querySelector('.sp-desc-row');
+                const descInput = group.querySelector('.sp-desc-input');
                 
-                if (descInput.style.display === 'block') {
+                if (descRow.style.display === 'table-row') {
                     if (descInput.value.trim() !== '') {
                         alert("Please clear the text before hiding the description box.");
                     } else {
+                        descRow.style.display = 'none';
                         descInput.style.display = 'none';
                         e.target.textContent = 'Add Description';
                     }
                 } else {
+                    descRow.style.display = 'table-row';
                     descInput.style.display = 'block';
                     descInput.focus();
                     e.target.textContent = 'Hide Description';
@@ -660,7 +663,7 @@ export function init(containerId, entityId = null) {
             }
 
             if (e.target.classList.contains('del-row')) {
-                e.target.closest('.sp-row').remove();
+                e.target.closest('.sp-row-group').remove();
                 calcTotals();
             }
         });
@@ -673,10 +676,10 @@ export function init(containerId, entityId = null) {
             let splits = [];
             let valid = true;
             
-            tbody.querySelectorAll('.sp-row').forEach(tr => {
-                const cat = tr.querySelector('.sp-cat-input').value;
-                const desc = tr.querySelector('.sp-desc-input').value.trim();
-                const amt = parseFloat(tr.querySelector('.sp-amt-input').value);
+            spTable.querySelectorAll('.sp-row-group').forEach(group => {
+                const cat = group.querySelector('.sp-cat-input').value;
+                const desc = group.querySelector('.sp-desc-input').value.trim();
+                const amt = parseFloat(group.querySelector('.sp-amt-input').value);
                 
                 if (amt && amt > 0) {
                     if (!cat || cat === 'ADD_NEW') valid = false;
