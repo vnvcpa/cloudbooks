@@ -17,13 +17,6 @@ const firebaseConfig = {
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const db = getFirestore(app);
 
-// Helper to safely parse dates regardless of formats like MM/DD/YYYY or YYYY-MM-DD
-const parseDateSafe = (dateStr) => {
-    if (!dateStr) return 0;
-    const parsed = new Date(dateStr);
-    return isNaN(parsed.getTime()) ? 0 : parsed.getTime();
-};
-
 export function init(containerId, entityId = null) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -51,59 +44,52 @@ export function init(containerId, entityId = null) {
             .bt-batch-bar { display: none; padding: 10px 15px; background: #e3f2fd; border-radius: 4px; margin-bottom: 15px; align-items: center; gap: 12px; border: 1px solid #bbdefb; }
             
             /* Dynamic CSS Grid Table Layout */
-            .bt-table { --grid-cols: 40px 110px 300px 150px 150px; width: 100%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 6px; overflow-x: auto; }
-            .bt-table-inner { min-width: 600px; }
+            .bt-table { --grid-cols: 40px 100px 1fr 120px 120px; width: 100%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 6px; overflow-x: auto; }
+            .bt-table-inner { min-width: 500px; }
             .bt-thead { display: grid; grid-template-columns: var(--grid-cols); background: #f4f7f9; font-weight: 600; font-size: 12px; color: var(--primary-dark); border-bottom: 2px solid #eaedf1; position: relative; }
-            .bt-th { padding: 12px 15px; display: flex; align-items: center; position: relative; }
+            .bt-th { padding: 12px 10px; display: flex; align-items: center; position: relative; }
             .bt-th-sortable { cursor: pointer; user-select: none; }
             .bt-th-sortable:hover { background: #eaedf1; }
             .bt-resizer { position: absolute; right: 0; top: 0; bottom: 0; width: 5px; cursor: col-resize; z-index: 2; }
             .bt-resizer:hover { background: rgba(0,0,0,0.1); }
             
-            .bt-row-group { border-bottom: 1px solid #eaedf1; transition: background 0.2s; border-left: 4px solid transparent; }
-            .bt-row-group:hover { background: #f0f7ff !important; }
-            .bt-row-group.status-Reviewed { background: #f4fdf4; border-left-color: #5cb85c; }
-            .bt-row-group.status-Split { background: #f4fdf4; border-left-color: #5cb85c; }
-            
+            /* Row Colors & Hover */
+            .bt-row-group { border-bottom: 1px solid #eaedf1; transition: background 0.2s; background-color: #fff; }
+            .bt-row-group:hover { background-color: #f1f8ff !important; }
+            .row-reviewed { background-color: #f4fbf4; }
+            .row-split { background-color: #f0f7ff; }
+
             .bt-row-main { display: grid; grid-template-columns: var(--grid-cols); align-items: center; }
-            .bt-td { padding: 10px 15px; font-size: 13px; overflow: hidden; text-overflow: ellipsis; }
+            .bt-td { padding: 10px 10px; font-size: 13px; overflow: hidden; text-overflow: ellipsis; }
             
-            .bt-row-sub { grid-column: 1 / -1; padding: 0 15px 12px 65px; font-size: 12px; color: #666; display: flex; justify-content: space-between; align-items: flex-start; }
-            .bt-desc-text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex: 1; padding-right: 15px; }
+            /* Enhanced Sub-Row Layout */
+            .bt-row-sub { display: flex; justify-content: space-between; padding: 0 10px 12px 0; }
+            .bt-desc-col { padding-left: 140px; font-size: 12px; color: #666; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; padding-right: 15px; }
+            .bt-action-col { width: 120px; text-align: right; display: flex; justify-content: flex-end; align-items: center; gap: 6px; }
             
             .bt-bal-row { display: grid; grid-template-columns: var(--grid-cols); background: #fcfcfc; font-weight: 600; font-size: 13px; border-bottom: 1px solid #eaedf1; }
-            .bt-bal-label { grid-column: 1 / 5; padding: 12px 15px; text-align: right; color: #666; }
-            .bt-bal-amt { padding: 12px 15px; text-align: right; }
+            .bt-bal-label { grid-column: 1 / 5; padding: 12px 10px; text-align: right; color: #666; }
+            .bt-bal-amt { padding: 12px 10px; text-align: right; }
             
             /* Categorization Controls */
-            .cat-controls { display: flex; gap: 6px; align-items: center; width: 100%; }
-            .cat-select { flex: 1; padding: 6px 0; border: none; border-bottom: 1px solid #ccc; border-radius: 0; font-size: 12px; background: transparent; outline: none; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 100%; background-position-y: center; background-size: 16px; padding-right: 20px; }
+            .cat-select { width: 100%; padding: 6px 0; border: none; border-bottom: 1px solid #ccc; border-radius: 0; font-size: 12px; background: transparent; outline: none; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 100%; background-position-y: center; background-size: 16px; padding-right: 20px; }
             .cat-select:focus { border-bottom-color: var(--primary-dark); }
             
-            .cat-btn-ok { background: #5cb85c; color: #fff; border: none; border-radius: 4px; display: inline-flex; justify-content: center; align-items: center; width: 28px; height: 28px; cursor: pointer; font-size: 14px; font-weight: bold; flex-shrink: 0; }
-            .cat-btn-split { background: #fff; color: #666; border: 1px solid #ccc; border-radius: 4px; padding: 0 10px; height: 28px; display: inline-flex; align-items: center; cursor: pointer; font-size: 12px; flex-shrink: 0; }
+            /* Square Post Button & Split Button */
+            .btn-post-sq { background: #5cb85c; color: #fff; border: none; border-radius: 4px; width: 28px; height: 28px; cursor: pointer; font-size: 14px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+            .cat-btn-split { background: #fff; color: #666; border: 1px solid #ccc; border-radius: 4px; padding: 0 10px; height: 28px; cursor: pointer; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
             .cat-btn-split:hover { background: #f0f0f0; }
-            
-            .cat-reviewed-text { font-size: 13px; font-weight: 500; color: #333; display: flex; align-items: center; gap: 10px; }
             .cat-btn-undo { background: none; border: none; color: #999; cursor: pointer; font-size: 12px; text-decoration: underline; }
             
             .txt-green { color: #2e7d32; font-weight: 500; }
             .txt-red { color: #d32f2f; font-weight: 500; }
-            
-            /* Action containers to handle mobile reflow */
-            .act-desktop { display: flex; gap: 6px; }
-            .act-mobile { display: none; gap: 6px; margin-top: 5px; }
 
             @media (max-width: 768px) {
-                .bt-table { --grid-cols: 30px 75px 1fr 85px 85px; }
-                .bt-table-inner { min-width: 100%; }
+                .bt-table { --grid-cols: 30px 75px 1fr 80px 80px; }
                 .bt-th { padding: 8px 5px; font-size: 10px; }
                 .bt-td { padding: 8px 5px; font-size: 11px; }
-                .bt-row-sub { padding: 0 5px 8px 35px; flex-direction: column; }
-                .act-desktop { display: none; }
-                .act-mobile { display: flex; align-self: flex-end; }
-                .cat-select { font-size: 11px; }
-                .bt-desc-text { padding-right: 0; }
+                .bt-desc-col { padding-left: 105px; } /* Checkbox + Date */
+                .bt-action-col { width: 80px; }
             }
         </style>
 
@@ -136,7 +122,7 @@ export function init(containerId, entityId = null) {
 
         <div class="bt-batch-bar" id="bt-batchBar">
             <span style="font-size: 13px; font-weight: 600; color: var(--primary-dark);" id="bt-batchCount">0 selected</span>
-            <button class="cat-btn-ok" id="bt-btnBatchPost" style="width: auto; padding: 0 10px;">Post Selected</button>
+            <button class="btn-post-sq" id="bt-btnBatchPost" style="width:auto; padding: 0 10px;">Post Selected</button>
             <button class="cat-btn-split" id="bt-btnBatchUndo">Undo Selected</button>
             <button class="cat-btn-split" id="bt-btnBatchDelete" style="color: #d32f2f; border-color: #d32f2f;">Delete Selected</button>
         </div>
@@ -171,32 +157,29 @@ export function init(containerId, entityId = null) {
     let bankAccountsMap = {};
     let currentTransactions = []; 
 
-    // --- Column Resizer Logic ---
     const initResizer = () => {
         const table = document.querySelector('.bt-table');
         const headers = table.querySelectorAll('.bt-th');
         let isMobile = window.innerWidth <= 768;
-        let colWidths = isMobile ? [30, 75, 200, 85, 85] : [40, 110, 300, 150, 150];
+        let colWidths = isMobile ? [30, 75, 200, 80, 80] : [40, 100, 350, 120, 120];
 
         headers.forEach((th, i) => {
             const resizer = th.querySelector('.bt-resizer');
             if (!resizer) return;
             let startX, startWidth;
-            
-            const onMouseMove = (e) => {
-                const diff = e.pageX - startX;
-                colWidths[i] = Math.max(30, startWidth + diff);
-                let gridStr = colWidths.map((w, idx) => idx === 2 ? '1fr' : w + 'px').join(' ');
-                table.style.setProperty('--grid-cols', gridStr);
-            };
-            const onMouseUp = () => {
-                document.removeEventListener('mousemove', onMouseMove);
-                document.removeEventListener('mouseup', onMouseUp);
-            };
-            
             resizer.addEventListener('mousedown', (e) => {
                 startX = e.pageX;
                 startWidth = colWidths[i];
+                const onMouseMove = (e) => {
+                    const diff = e.pageX - startX;
+                    colWidths[i] = Math.max(30, startWidth + diff);
+                    let gridStr = colWidths.map((w, idx) => idx === 2 ? '1fr' : w + 'px').join(' ');
+                    table.style.setProperty('--grid-cols', gridStr);
+                };
+                const onMouseUp = () => {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                };
                 document.addEventListener('mousemove', onMouseMove);
                 document.addEventListener('mouseup', onMouseUp);
             });
@@ -204,7 +187,6 @@ export function init(containerId, entityId = null) {
     };
     initResizer();
 
-    // --- Header Actions ---
     const primaryBtn = document.getElementById('bt-btnPrimaryDropdown');
     const primaryMenu = document.getElementById('bt-primaryMenu');
     primaryBtn.addEventListener('click', (e) => {
@@ -214,7 +196,6 @@ export function init(containerId, entityId = null) {
     document.addEventListener('click', () => primaryMenu.style.display = 'none');
     document.getElementById('bt-optUpload').addEventListener('click', () => openUploadModal(containerId));
 
-    // --- Fetch Dependencies ---
     const loadDependencies = async () => {
         try {
             chartOfAccounts = [];
@@ -238,14 +219,13 @@ export function init(containerId, entityId = null) {
     const buildCategoryDropdown = (selectedCatId) => {
         let options = `<option value="">Select Category...</option>`;
         chartOfAccounts.forEach(acc => {
-            const isSelected = selectedCatId === acc.id || selectedCatId === acc.name ? 'selected' : '';
+            const isSelected = selectedCatId === acc.id ? 'selected' : '';
             options += `<option value="${acc.id}" ${isSelected}>${acc.code} - ${acc.name}</option>`;
         });
         options += `<option value="ADD_NEW" style="font-weight: bold; color: var(--primary-dark);">+ Add New Account</option>`;
         return options;
     };
 
-    // --- Batch UI Updater ---
     const updateBatchUI = () => {
         const checked = document.querySelectorAll('.bt-row-check:checked');
         if (checked.length > 0) {
@@ -269,7 +249,6 @@ export function init(containerId, entityId = null) {
         window.refreshBankTransactionsTable();
     });
 
-    // --- Main Render Logic ---
     window.refreshBankTransactionsTable = async () => {
         const targetAccountId = elAccount.value;
         if (!targetAccountId) {
@@ -280,8 +259,10 @@ export function init(containerId, entityId = null) {
         }
 
         const isCC = bankAccountsMap[targetAccountId].type === 'Liability';
-        const startFilter = elStart.value;
-        const endFilter = elEnd.value;
+        
+        // BUG FIX: Parse dates properly for filtering
+        const startObj = elStart.value ? new Date(elStart.value) : null;
+        const endObj = elEnd.value ? new Date(elEnd.value) : null;
         const searchTxt = elSearch.value.toLowerCase();
 
         try {
@@ -302,21 +283,18 @@ export function init(containerId, entityId = null) {
             let displayTxs = [];
             let beginningBalance = 0;
 
-            const startTime = parseDateSafe(startFilter);
-            const endTime = parseDateSafe(endFilter);
-
             allTxs.forEach(tx => {
-                const txTime = parseDateSafe(tx.date);
-                
-                if (startTime && txTime < startTime) {
-                    runningBalance += tx.homeAmount;
+                const txDateObj = new Date(tx.date);
+
+                if (startObj && txDateObj < startObj) {
+                    runningBalance += tx.foreignAmount;
                     beginningBalance = runningBalance;
                 } else {
-                    runningBalance += tx.homeAmount;
+                    runningBalance += tx.foreignAmount;
                     tx.calculatedBalance = runningBalance;
                     
-                    // The Fix: proper date range inclusion
-                    if (endTime && txTime > endTime) return; 
+                    // BUG FIX: Proper end date comparison
+                    if (endObj && txDateObj > endObj) return;
 
                     if (searchTxt) {
                         const amountStr = String(Math.abs(tx.foreignAmount));
@@ -359,24 +337,31 @@ export function init(containerId, entityId = null) {
                     amountClass = tx.foreignAmount > 0 ? 'txt-red' : 'txt-green';
                 }
 
-                let catSelectHtml = '';
-                let actionsHtml = '';
-                let statusClass = `status-${tx.status}`;
+                let catHtml = '';
+                let actionHtml = '';
+                let statusClass = '';
 
+                // Category & Actions Layout adjusted for Mobile/Sub-row
                 if (tx.status === 'Unreviewed') {
-                    let defCatId = tx.postedCategoryId || tx.suggestedCategory;
-                    catSelectHtml = `<select class="cat-select" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>`;
-                    actionsHtml = `
-                        <button class="cat-btn-ok btn-post" data-id="${tx.id}" title="Post Transaction">&#10003;</button>
+                    let defCatId = tx.postedCategoryId;
+                    if(!defCatId) {
+                        const matchedCat = chartOfAccounts.find(c => c.name === tx.suggestedCategory);
+                        defCatId = matchedCat ? matchedCat.id : "";
+                    }
+                    catHtml = `<select class="cat-select" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>`;
+                    actionHtml = `
+                        <button class="btn-post-sq btn-post" data-id="${tx.id}" title="Post the Transaction">&#10003;</button>
                         <button class="cat-btn-split btn-split" data-id="${tx.id}">Split</button>
                     `;
                 } else if (tx.status === 'Split') {
-                    catSelectHtml = `<span style="font-size:12px; color:#555;">Split (${tx.splits ? tx.splits.length : 0} lines)</span>`;
-                    actionsHtml = `<button class="cat-btn-undo" data-id="${tx.id}">Undo</button>`;
+                    statusClass = 'row-split';
+                    catHtml = `<span style="color: #2e7d32; font-weight: 500; font-size: 13px;">&#10003; Split (${tx.splits ? tx.splits.length : 0})</span>`;
+                    actionHtml = `<button class="cat-btn-undo" data-id="${tx.id}">Undo</button>`;
                 } else {
+                    statusClass = 'row-reviewed';
                     const postedName = chartOfAccounts.find(c => c.id === tx.postedCategoryId)?.name || 'Categorized';
-                    catSelectHtml = `<span style="font-size:12px; color:#333;">${postedName}</span>`;
-                    actionsHtml = `<button class="cat-btn-undo" data-id="${tx.id}">Undo</button>`;
+                    catHtml = `<span style="color: #2e7d32; font-weight: 500; font-size: 13px;">&#10003; ${postedName}</span>`;
+                    actionHtml = `<button class="cat-btn-undo" data-id="${tx.id}">Undo</button>`;
                 }
 
                 html += `
@@ -384,12 +369,7 @@ export function init(containerId, entityId = null) {
                         <div class="bt-row-main">
                             <div class="bt-td" style="text-align:center;"><input type="checkbox" class="bt-row-check" data-id="${tx.id}"></div>
                             <div class="bt-td">${tx.date}</div>
-                            <div class="bt-td">
-                                <div class="cat-controls">
-                                    ${catSelectHtml}
-                                    <div class="act-desktop">${actionsHtml}</div>
-                                </div>
-                            </div>
+                            <div class="bt-td">${catHtml}</div>
                             <div class="bt-td ${amountClass}" style="text-align: right;">
                                 <div>${formatCurrency(Math.abs(tx.foreignAmount), tx.currency)}</div>
                                 <div style="font-size: 11px; color: #999;">${amountLabel}</div>
@@ -397,8 +377,8 @@ export function init(containerId, entityId = null) {
                             <div class="bt-td" style="text-align: right;">${formatCurrency(tx.calculatedBalance, tx.currency)}</div>
                         </div>
                         <div class="bt-row-sub">
-                            <div class="bt-desc-text">${tx.description} ${tx.checkNo ? '(Ref: ' + tx.checkNo + ')' : ''}</div>
-                            <div class="act-mobile">${actionsHtml}</div>
+                            <div class="bt-desc-col">${tx.description} ${tx.checkNo ? '(Ref: ' + tx.checkNo + ')' : ''}</div>
+                            <div class="bt-action-col">${actionHtml}</div>
                         </div>
                     </div>
                 `;
@@ -455,7 +435,6 @@ export function init(containerId, entityId = null) {
         }
     };
 
-    // --- BATCH ACTIONS ---
     document.getElementById('bt-btnBatchPost').addEventListener('click', async () => {
         const checked = document.querySelectorAll('.bt-row-check:checked');
         for (let chk of checked) {
@@ -507,28 +486,35 @@ export function init(containerId, entityId = null) {
                 .sp-amt-display { font-size: 18px; font-weight: bold; color: ${tx.foreignAmount > 0 ? '#2e7d32' : '#d32f2f'}; }
                 .sp-desc-box { width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 10px; font-size: 13px; font-family: inherit; resize: vertical; min-height: 60px; margin-bottom: 20px; box-sizing: border-box; }
                 
-                .sp-grid-wrapper { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-                .sp-grid-row { display: grid; grid-template-columns: 20px 1fr 100px 30px; gap: 5px; align-items: start; border-bottom: 1px solid #eee; padding-bottom: 8px; background: #fff; }
-                .sp-grid-row.dragging { opacity: 0.5; background: #f9f9f9; }
+                .sp-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                .sp-th { text-align: left; font-size: 12px; color: #666; padding-bottom: 5px; border-bottom: 1px solid #ccc; }
+                .sp-row { background: #fff; }
+                .sp-row.dragging { opacity: 0.5; background: #f9f9f9; }
+                .sp-cell { padding: 8px 5px; position: relative; }
                 
                 .sp-input { width: 100%; border: none; border-bottom: 1px solid #ccc; padding: 6px 0; font-size: 13px; outline: none; background: transparent; }
                 .sp-input:focus { border-bottom: 2px solid var(--primary-dark); }
-                .sp-handle { cursor: grab; color: #ccc; font-size: 16px; padding-top: 5px; user-select: none; }
+                .sp-amt-input { width: 120px; text-align: right; }
                 
-                .sp-total-row { display: flex; justify-content: flex-end; font-weight: bold; font-size: 14px; padding: 10px 40px 10px 0; }
-                .sp-diff-row { display: flex; justify-content: flex-end; font-size: 12px; padding: 0 40px 10px 0; }
+                .sp-desc-input { display: none; width: 100%; resize: none; font-size: 12px; color: #555; padding: 4px 0; border: none; border-bottom: 1px solid #ccc; outline: none; background: transparent; margin-top: 5px; font-family: inherit; }
+                .sp-desc-input:focus { border-bottom-color: var(--primary-dark); }
                 
+                .sp-handle { cursor: grab; color: #ccc; font-size: 16px; padding-right: 5px; user-select: none; }
+                
+                /* Hamburger Menu */
+                .sp-menu-btn { background: none; border: none; font-size: 18px; cursor: pointer; color: #999; padding: 0 5px; }
+                .sp-menu-dropdown { display: none; position: absolute; right: 10px; top: 30px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); border: 1px solid #ccc; border-radius: 4px; z-index: 10; width: 140px; }
+                .sp-menu-item { padding: 10px 12px; font-size: 12px; cursor: pointer; border-bottom: 1px solid #eee; }
+                .sp-menu-item:hover { background: #f4f7f9; }
+                
+                .sp-total-row { font-weight: bold; font-size: 14px; text-align: right; padding: 15px 5px; }
                 .sp-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eaedf1; padding-top: 20px; }
-                
-                .sp-dropdown-menu { display: none; position: absolute; right: 0; top: 100%; background: #fff; border: 1px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10; border-radius: 4px; overflow: hidden; }
-                .sp-dropdown-item { padding: 8px 15px; font-size: 12px; cursor: pointer; white-space: nowrap; }
-                .sp-dropdown-item:hover { background: #f4f7f9; }
 
                 @media (max-width: 768px) {
-                    .sp-grid-row { grid-template-columns: 15px 1fr 75px 25px; } /* Amount reduced by 25% */
+                    .sp-amt-input { width: 85px; } /* Reduced by ~15% for mobile */
                 }
             </style>
-            <div class="sp-modal">
+            <div class="sp-modal" id="sp-modalBox">
                 <div class="sp-header">
                     <div class="sp-title">Split Transaction: ${tx.date} (${typeLabel})</div>
                     <div class="sp-amt-display">${formatCurrency(targetAmount, tx.currency)}</div>
@@ -536,22 +522,30 @@ export function init(containerId, entityId = null) {
                 <div style="font-size: 13px; color: #666; margin-bottom: 5px;">Bank Description: ${tx.description}</div>
                 <textarea class="sp-desc-box" id="sp-customMemo" placeholder="Optional custom memo/description for this transaction..."></textarea>
                 
-                <div class="sp-grid-wrapper" id="sp-tbody"></div>
-                
-                <div class="sp-total-row">
-                    <span style="margin-right: 15px;">Total Assigned:</span>
-                    <span id="sp-totalAssigned" style="width: 100px; text-align: right; display: inline-block;">0.00</span>
-                </div>
-                <div class="sp-diff-row">
-                    <span style="margin-right: 15px; color: #666;">Remaining:</span>
-                    <span id="sp-difference" style="width: 100px; text-align: right; color: #d32f2f; display: inline-block;">${targetAmount.toFixed(2)}</span>
-                </div>
+                <table class="sp-table">
+                    <thead>
+                        <tr><th style="width:20px;"></th><th class="sp-th">Category</th><th class="sp-th" style="text-align: right;">Amount</th><th style="width:30px;"></th></tr>
+                    </thead>
+                    <tbody id="sp-tbody"></tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2" class="sp-total-row">Total Assigned:</td>
+                            <td class="sp-total-row" id="sp-totalAssigned">0.00</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="text-align: right; font-size: 12px; color: #666; padding-right: 5px;">Remaining:</td>
+                            <td style="font-size: 12px; color: #d32f2f; text-align: right; padding: 0 5px;" id="sp-difference">${targetAmount.toFixed(2)}</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
                 
                 <div class="sp-footer">
                     <button class="cat-btn-split" id="sp-btnAddRow">+ Add Split Row</button>
                     <div style="display:flex; gap: 10px;">
                         <button class="cat-btn-split" id="sp-btnCancel">Cancel</button>
-                        <button class="cat-btn-ok" id="sp-btnSave" style="width: auto; padding: 0 15px;">Save Split</button>
+                        <button class="btn-post-sq" id="sp-btnSave" style="width: auto; padding: 0 15px;">Save Split</button>
                     </div>
                 </div>
             </div>
@@ -584,72 +578,46 @@ export function init(containerId, entityId = null) {
         };
 
         const createRow = () => {
-            const row = document.createElement('div');
-            row.className = 'sp-grid-row';
-            row.draggable = true;
-            row.innerHTML = `
-                <div class="sp-handle">&#8942;&#8942;</div>
-                <div style="display:flex; flex-direction:column;">
+            const tr = document.createElement('tr');
+            tr.className = 'sp-row';
+            tr.draggable = true;
+            tr.innerHTML = `
+                <td class="sp-cell"><span class="sp-handle">&#8942;&#8942;</span></td>
+                <td class="sp-cell">
                     <select class="sp-input sp-cat-input">${catOptions}</select>
-                    <input type="text" class="sp-input sp-desc-input" placeholder="Line description (optional)" style="display:none; margin-top:5px;">
-                </div>
-                <div><input type="text" class="sp-input sp-amt-input" placeholder="0.00" style="text-align: right;"></div>
-                <div style="position: relative; padding-top: 5px; text-align: center;">
-                    <button class="sp-menu-btn" style="background:none; border:none; cursor:pointer; font-size:18px; color:#666;">&#8942;</button>
-                    <div class="sp-dropdown-menu">
-                        <div class="sp-dropdown-item sp-opt-desc">Add Line Description</div>
-                        <div class="sp-dropdown-item sp-opt-del" style="color: #d9534f;">Delete Row</div>
+                    <textarea class="sp-desc-input" rows="2" placeholder="Line description..."></textarea>
+                </td>
+                <td class="sp-cell" style="text-align: right;"><input type="text" class="sp-input sp-amt-input" placeholder="0.00"></td>
+                <td class="sp-cell" style="text-align: center;">
+                    <button class="sp-menu-btn">&#8942;</button>
+                    <div class="sp-menu-dropdown">
+                        <div class="sp-menu-item toggle-desc">Add Description</div>
+                        <div class="sp-menu-item del-row" style="color:#d32f2f;">Delete Row</div>
                     </div>
-                </div>
+                </td>
             `;
             
-            // Dropdown Handlers
-            const menuBtn = row.querySelector('.sp-menu-btn');
-            const menuDrop = row.querySelector('.sp-dropdown-menu');
-            const descInput = row.querySelector('.sp-desc-input');
-            const catSelect = row.querySelector('.sp-cat-input');
-            
-            menuBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                document.querySelectorAll('.sp-dropdown-menu').forEach(m => { if(m !== menuDrop) m.style.display = 'none'; });
-                menuDrop.style.display = menuDrop.style.display === 'block' ? 'none' : 'block';
-            });
-
-            row.querySelector('.sp-opt-desc').addEventListener('click', () => {
-                descInput.style.display = 'block';
-                descInput.focus();
-                // Spanning effect using grid column
-                descInput.parentElement.style.gridColumn = '2 / 4';
-                catSelect.style.width = 'calc(100% - 105px)'; // visually adjust
-                menuDrop.style.display = 'none';
-            });
-
-            row.querySelector('.sp-opt-del').addEventListener('click', () => { 
-                row.remove(); 
-                calcTotals(); 
-            });
-            
-            // Math Handler
-            const amtInp = row.querySelector('.sp-amt-input');
+            const amtInp = tr.querySelector('.sp-amt-input');
             amtInp.addEventListener('blur', (e) => {
                 let val = safeMathEval(e.target.value);
                 e.target.value = val ? val.toFixed(2) : '';
                 calcTotals();
             });
 
-            // Drag and Drop
-            row.addEventListener('dragstart', () => row.classList.add('dragging'));
-            row.addEventListener('dragend', () => row.classList.remove('dragging'));
+            // Drag and Drop implementation
+            tr.addEventListener('dragstart', () => tr.classList.add('dragging'));
+            tr.addEventListener('dragend', () => tr.classList.remove('dragging'));
 
-            tbody.appendChild(row);
+            tbody.appendChild(tr);
         };
 
         createRow(); createRow();
 
+        // Drag over logic
         tbody.addEventListener('dragover', e => {
             e.preventDefault();
             const draggingRow = tbody.querySelector('.dragging');
-            const targetRow = e.target.closest('.sp-grid-row');
+            const targetRow = e.target.closest('.sp-row');
             if(targetRow && targetRow !== draggingRow) {
                 const rect = targetRow.getBoundingClientRect();
                 const offset = e.clientY - rect.top;
@@ -658,8 +626,43 @@ export function init(containerId, entityId = null) {
             }
         });
 
-        document.addEventListener('click', () => {
-            document.querySelectorAll('.sp-dropdown-menu').forEach(m => m.style.display = 'none');
+        // Event Delegation for Hamburger Menus in Split Modal
+        document.getElementById('sp-modalBox').addEventListener('click', (e) => {
+            // Close all menus first
+            document.querySelectorAll('.sp-menu-dropdown').forEach(m => {
+                if (m !== e.target.nextElementSibling) m.style.display = 'none';
+            });
+
+            // Toggle menu
+            if (e.target.classList.contains('sp-menu-btn')) {
+                const menu = e.target.nextElementSibling;
+                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+            }
+
+            // Handle Menu Actions
+            if (e.target.classList.contains('toggle-desc')) {
+                const tr = e.target.closest('.sp-row');
+                const descInput = tr.querySelector('.sp-desc-input');
+                
+                if (descInput.style.display === 'block') {
+                    if (descInput.value.trim() !== '') {
+                        alert("Please clear the text before hiding the description box.");
+                    } else {
+                        descInput.style.display = 'none';
+                        e.target.textContent = 'Add Description';
+                    }
+                } else {
+                    descInput.style.display = 'block';
+                    descInput.focus();
+                    e.target.textContent = 'Hide Description';
+                }
+                e.target.parentElement.style.display = 'none';
+            }
+
+            if (e.target.classList.contains('del-row')) {
+                e.target.closest('.sp-row').remove();
+                calcTotals();
+            }
         });
 
         document.getElementById('sp-btnAddRow').addEventListener('click', createRow);
@@ -670,10 +673,10 @@ export function init(containerId, entityId = null) {
             let splits = [];
             let valid = true;
             
-            tbody.querySelectorAll('.sp-grid-row').forEach(row => {
-                const cat = row.querySelector('.sp-cat-input').value;
-                const desc = row.querySelector('.sp-desc-input').value;
-                const amt = parseFloat(row.querySelector('.sp-amt-input').value);
+            tbody.querySelectorAll('.sp-row').forEach(tr => {
+                const cat = tr.querySelector('.sp-cat-input').value;
+                const desc = tr.querySelector('.sp-desc-input').value.trim();
+                const amt = parseFloat(tr.querySelector('.sp-amt-input').value);
                 
                 if (amt && amt > 0) {
                     if (!cat || cat === 'ADD_NEW') valid = false;
@@ -683,7 +686,7 @@ export function init(containerId, entityId = null) {
             });
 
             if (!valid) return alert("Please select a valid category for all lines with amounts.");
-            if (Math.abs(targetAmount - sum) > 0.01) return alert("The split total must exactly equal the transaction amount.");
+            if (Math.abs(targetAmount - sum) > 0.01) return alert("The split total must equal the transaction amount.");
 
             const btn = document.getElementById('sp-btnSave');
             btn.textContent = "Saving..."; btn.disabled = true;
