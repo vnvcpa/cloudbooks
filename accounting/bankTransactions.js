@@ -41,10 +41,8 @@ export function init(containerId, entityId = null) {
             .bt-dropdown div { padding: 10px 15px; font-size: 13px; cursor: pointer; color: #333; }
             .bt-dropdown div:hover { background: #f4f7f9; color: var(--primary-dark); }
             
-            /* Batch Action Bar */
             .bt-batch-bar { display: none; padding: 10px 15px; background: #e3f2fd; border-radius: 4px; margin-bottom: 15px; align-items: center; gap: 12px; border: 1px solid #bbdefb; }
             
-            /* CSS Grid Table Layout */
             .bt-table { width: 100%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 6px; overflow: hidden; }
             .bt-thead { display: grid; grid-template-columns: 40px 110px 300px 150px 150px; background: #f4f7f9; font-weight: 600; font-size: 12px; color: var(--primary-dark); border-bottom: 2px solid #eaedf1; }
             .bt-th { padding: 12px 15px; display: flex; align-items: center; }
@@ -56,15 +54,12 @@ export function init(containerId, entityId = null) {
             .bt-row-main { display: grid; grid-template-columns: 40px 110px 300px 150px 150px; align-items: center; }
             .bt-td { padding: 10px 15px; font-size: 13px; }
             
-            /* Sub-Row perfectly aligned below the main content */
             .bt-row-sub { grid-column: 1 / -1; padding: 0 15px 12px 65px; font-size: 12px; color: #666; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
             
-            /* Balance Rows matching Grid */
             .bt-bal-row { display: grid; grid-template-columns: 40px 110px 300px 150px 150px; background: #fcfcfc; font-weight: 600; font-size: 13px; border-bottom: 1px solid #eaedf1; }
             .bt-bal-label { grid-column: 1 / 5; padding: 12px 15px; text-align: right; color: #666; }
             .bt-bal-amt { padding: 12px 15px; text-align: right; }
             
-            /* UI Controls */
             .cat-controls { display: flex; gap: 6px; align-items: center; }
             .cat-select { flex: 1; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
             .cat-btn-ok { background: #5cb85c; color: #fff; border: none; border-radius: 4px; padding: 6px 10px; cursor: pointer; font-size: 12px; font-weight: bold; }
@@ -75,6 +70,25 @@ export function init(containerId, entityId = null) {
             
             .txt-green { color: #2e7d32; font-weight: 500; }
             .txt-red { color: #d32f2f; font-weight: 500; }
+
+            /* Mobile Responsiveness - Column width and 80% spacing reduction */
+            @media (max-width: 768px) {
+                .bt-thead, .bt-row-main, .bt-bal-row {
+                    grid-template-columns: 25px 65px 1fr 75px 75px; 
+                }
+                .bt-th, .bt-td, .bt-bal-label, .bt-bal-amt {
+                    padding: 4px 3px; 
+                    font-size: 11px;
+                }
+                .bt-row-sub { padding: 0 4px 8px 30px; font-size: 11px; }
+                .cat-controls { flex-direction: column; align-items: stretch; gap: 4px; }
+                .cat-select { font-size: 10px; padding: 4px; }
+                .cat-btn-ok, .cat-btn-split { font-size: 10px; padding: 4px; }
+                .cat-reviewed-text { font-size: 11px; flex-direction: column; align-items: flex-start; gap: 2px; }
+                .txt-green, .txt-red { font-size: 11px; }
+                .bt-controls { flex-direction: column; align-items: stretch; }
+                .bt-select { min-width: 100%; }
+            }
         </style>
 
         <div class="bt-header">
@@ -131,11 +145,10 @@ export function init(containerId, entityId = null) {
     const elSearch = document.getElementById('bt-search');
     const listContainer = document.getElementById('bt-listContainer');
     
-    let sortOrder = 'desc'; // default newest first
+    let sortOrder = 'desc'; 
     const headerDate = document.getElementById('bt-headerDate');
     const sortArrow = document.getElementById('bt-sortArrow');
 
-    // Header Actions
     const primaryBtn = document.getElementById('bt-btnPrimaryDropdown');
     const primaryMenu = document.getElementById('bt-primaryMenu');
     primaryBtn.addEventListener('click', (e) => {
@@ -153,7 +166,6 @@ export function init(containerId, entityId = null) {
 
     const loadDependencies = async () => {
         try {
-            // Reset to prevent duplicates if re-injected
             chartOfAccounts = [];
             elAccount.innerHTML = '<option value="">Select Account...</option>';
             
@@ -183,13 +195,75 @@ export function init(containerId, entityId = null) {
         return options;
     };
 
-    // Helper: Sort Toggle
     headerDate.addEventListener('click', () => {
         sortOrder = sortOrder === 'desc' ? 'asc' : 'desc';
         sortArrow.innerHTML = sortOrder === 'desc' ? '&#8595;' : '&#8593;';
         window.refreshBankTransactionsTable();
     });
 
+    // --- BATCH UI CONTROLLER ---
+    // Defined outside the refresh function so it can be called cleanly
+    const updateBatchUI = () => {
+        const checked = document.querySelectorAll('.bt-row-check:checked');
+        const batchBar = document.getElementById('bt-batchBar');
+        const batchCount = document.getElementById('bt-batchCount');
+        const selectAll = document.getElementById('bt-selectAll');
+
+        if (checked.length > 0) {
+            batchBar.style.display = 'flex';
+            batchCount.textContent = `${checked.length} selected`;
+        } else {
+            batchBar.style.display = 'none';
+            if (selectAll) selectAll.checked = false;
+        }
+    };
+
+    // Global Select All Listener (Only bound once)
+    document.getElementById('bt-selectAll').addEventListener('change', (e) => {
+        const rowChecks = document.querySelectorAll('.bt-row-check');
+        rowChecks.forEach(chk => chk.checked = e.target.checked);
+        updateBatchUI();
+    });
+
+    // Global Batch Action Listeners (Only bound once)
+    document.getElementById('bt-btnBatchPost').addEventListener('click', async () => {
+        const checked = document.querySelectorAll('.bt-row-check:checked');
+        for (let chk of checked) {
+            const txId = chk.getAttribute('data-id');
+            const sel = document.getElementById(`sel-${txId}`);
+            if (sel && sel.value) {
+                await updateDoc(doc(db, "bankTransactions", txId), {
+                    status: 'Reviewed',
+                    postedCategoryId: sel.value
+                });
+            }
+        }
+        window.refreshBankTransactionsTable();
+    });
+
+    document.getElementById('bt-btnBatchUndo').addEventListener('click', async () => {
+        const checked = document.querySelectorAll('.bt-row-check:checked');
+        for (let chk of checked) {
+            const txId = chk.getAttribute('data-id');
+            await updateDoc(doc(db, "bankTransactions", txId), {
+                status: 'Unreviewed',
+                postedCategoryId: null
+            });
+        }
+        window.refreshBankTransactionsTable();
+    });
+
+    document.getElementById('bt-btnBatchDelete').addEventListener('click', async () => {
+        if(!confirm("Are you sure you want to permanently delete the selected transactions?")) return;
+        const checked = document.querySelectorAll('.bt-row-check:checked');
+        for (let chk of checked) {
+            const txId = chk.getAttribute('data-id');
+            await deleteDoc(doc(db, "bankTransactions", txId));
+        }
+        window.refreshBankTransactionsTable();
+    });
+
+    // --- MAIN RENDER CYCLE ---
     window.refreshBankTransactionsTable = async () => {
         const targetAccountId = elAccount.value;
         if (!targetAccountId) {
@@ -204,7 +278,6 @@ export function init(containerId, entityId = null) {
         const searchTxt = elSearch.value.toLowerCase();
 
         try {
-            // Fetch all for this account to safely calculate the running balance
             const q = query(
                 collection(db, "bankTransactions"), 
                 where("companyId", "==", session.companyId),
@@ -215,7 +288,6 @@ export function init(containerId, entityId = null) {
             let allTxs = [];
             snap.forEach(doc => { allTxs.push({ id: doc.id, ...doc.data() }); });
 
-            // Sort chronologically (oldest first) to compute running balance
             allTxs.sort((a, b) => new Date(a.date) - new Date(b.date));
 
             let runningBalance = 0;
@@ -223,19 +295,15 @@ export function init(containerId, entityId = null) {
             let beginningBalance = 0;
 
             allTxs.forEach(tx => {
-                // Determine if this transaction is BEFORE the start filter to calc beginning balance
                 if (startFilter && tx.date < startFilter) {
                     runningBalance += tx.foreignAmount;
                     beginningBalance = runningBalance;
                 } else {
-                    // Update running balance and tag transaction
                     runningBalance += tx.foreignAmount;
                     tx.calculatedBalance = runningBalance;
                     
-                    // Apply End Date Filter
                     if (endFilter && tx.date > endFilter) return;
 
-                    // Apply Search Text Filter
                     if (searchTxt) {
                         const amountStr = String(Math.abs(tx.foreignAmount));
                         const match = tx.date.includes(searchTxt) || 
@@ -248,17 +316,16 @@ export function init(containerId, entityId = null) {
                 }
             });
 
-            // Apply UI Sort Order
             if (sortOrder === 'desc') displayTxs.reverse();
 
             if (displayTxs.length === 0) {
                 listContainer.innerHTML = `<div style="padding: 40px; text-align: center; color: #666;">No matching transactions found.</div>`;
+                updateBatchUI(); // Hide batch bar and reset select all
                 return;
             }
 
-            // Render Rows
             let html = '';
-            const currencyCode = displayTxs[0].currency; // Base on first filtered tx
+            const currencyCode = displayTxs[0].currency; 
 
             const begBalHtml = `
                 <div class="bt-bal-row">
@@ -266,8 +333,6 @@ export function init(containerId, entityId = null) {
                     <div class="bt-bal-amt">${formatCurrency(beginningBalance, currencyCode)}</div>
                 </div>`;
             
-            // Note: The true ending balance of the filtered set is the calculatedBalance of the chronologically last item.
-            // If sort is 'desc', the first item in displayTxs is the newest.
             const closingBal = sortOrder === 'desc' ? displayTxs[0].calculatedBalance : displayTxs[displayTxs.length-1].calculatedBalance;
             const endBalHtml = `
                 <div class="bt-bal-row">
@@ -282,7 +347,6 @@ export function init(containerId, entityId = null) {
                 let amountLabel = '';
                 let amountClass = '';
                 
-                // Accounting Signs Logic
                 if (!isCC) {
                     amountLabel = tx.foreignAmount > 0 ? 'Deposit' : 'Withdrawal';
                     amountClass = tx.foreignAmount > 0 ? 'txt-green' : 'txt-red';
@@ -332,19 +396,27 @@ export function init(containerId, entityId = null) {
 
             listContainer.innerHTML = html;
 
-            // --- BIND EVENTS ---
+            // Reset selectAll status to unchecked when rendering new data
+            document.getElementById('bt-selectAll').checked = false;
+            updateBatchUI();
+
+            // --- BIND ROW-LEVEL EVENTS ---
             
-            // "Add New Account" Category Interceptor
+            // Checkbox tracking
+            document.querySelectorAll('.bt-row-check').forEach(chk => {
+                chk.addEventListener('change', updateBatchUI);
+            });
+
+            // Add New Category Interceptor
             document.querySelectorAll('.cat-select').forEach(sel => {
                 sel.addEventListener('change', (e) => {
                     if (e.target.value === 'ADD_NEW') {
                         openAddCoaModal(containerId);
-                        e.target.value = ''; // Reset
+                        e.target.value = ''; 
                     }
                 });
             });
 
-            // Single Post
             document.querySelectorAll('.btn-post').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
                     const txId = e.target.getAttribute('data-id');
@@ -360,7 +432,6 @@ export function init(containerId, entityId = null) {
                 });
             });
 
-            // Single Undo
             document.querySelectorAll('.cat-btn-undo').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
                     const txId = e.target.getAttribute('data-id');
@@ -370,71 +441,6 @@ export function init(containerId, entityId = null) {
                     });
                     window.refreshBankTransactionsTable();
                 });
-            });
-
-            // --- BATCH ACTION LOGIC ---
-            const selectAll = document.getElementById('bt-selectAll');
-            const rowChecks = document.querySelectorAll('.bt-row-check');
-            const batchBar = document.getElementById('bt-batchBar');
-            const batchCount = document.getElementById('bt-batchCount');
-
-            const updateBatchUI = () => {
-                const checked = document.querySelectorAll('.bt-row-check:checked');
-                if (checked.length > 0) {
-                    batchBar.style.display = 'flex';
-                    batchCount.textContent = `${checked.length} selected`;
-                } else {
-                    batchBar.style.display = 'none';
-                    selectAll.checked = false;
-                }
-            };
-
-            selectAll.addEventListener('change', (e) => {
-                rowChecks.forEach(chk => chk.checked = e.target.checked);
-                updateBatchUI();
-            });
-
-            rowChecks.forEach(chk => chk.addEventListener('change', updateBatchUI));
-
-            // Batch Post
-            document.getElementById('bt-btnBatchPost').addEventListener('click', async () => {
-                const checked = document.querySelectorAll('.bt-row-check:checked');
-                for (let chk of checked) {
-                    const txId = chk.getAttribute('data-id');
-                    const sel = document.getElementById(`sel-${txId}`);
-                    // Only process Unreviewed items that have a category selected
-                    if (sel && sel.value) {
-                        await updateDoc(doc(db, "bankTransactions", txId), {
-                            status: 'Reviewed',
-                            postedCategoryId: sel.value
-                        });
-                    }
-                }
-                window.refreshBankTransactionsTable();
-            });
-
-            // Batch Undo
-            document.getElementById('bt-btnBatchUndo').addEventListener('click', async () => {
-                const checked = document.querySelectorAll('.bt-row-check:checked');
-                for (let chk of checked) {
-                    const txId = chk.getAttribute('data-id');
-                    await updateDoc(doc(db, "bankTransactions", txId), {
-                        status: 'Unreviewed',
-                        postedCategoryId: null
-                    });
-                }
-                window.refreshBankTransactionsTable();
-            });
-
-            // Batch Delete
-            document.getElementById('bt-btnBatchDelete').addEventListener('click', async () => {
-                if(!confirm("Are you sure you want to permanently delete the selected transactions?")) return;
-                const checked = document.querySelectorAll('.bt-row-check:checked');
-                for (let chk of checked) {
-                    const txId = chk.getAttribute('data-id');
-                    await deleteDoc(doc(db, "bankTransactions", txId));
-                }
-                window.refreshBankTransactionsTable();
             });
 
         } catch (e) {
