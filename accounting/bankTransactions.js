@@ -30,6 +30,9 @@ export function init(containerId, entityId = null) {
     container.innerHTML = `
         <style>
             .bt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+            .bt-header h3 { margin: 0; font-size: 20px; color: var(--primary-dark); }
+            .bt-header p { margin: 4px 0 0 0; font-size: 13px; color: #666; }
+            
             .bt-controls { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; flex-wrap: wrap; }
             .bt-select { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; outline: none; min-width: 160px; }
             .bt-search { flex: 1; min-width: 250px; }
@@ -45,7 +48,7 @@ export function init(containerId, entityId = null) {
             
             /* Dynamic CSS Grid Table Layout */
             .bt-table { --grid-cols: 40px 100px 1fr 120px 120px; width: 100%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 6px; overflow-x: auto; }
-            .bt-table-inner { min-width: 500px; }
+            .bt-table-inner { min-width: 600px; }
             .bt-thead { display: grid; grid-template-columns: var(--grid-cols); background: #f4f7f9; font-weight: 600; font-size: 12px; color: var(--primary-dark); border-bottom: 2px solid #eaedf1; position: relative; }
             .bt-th { padding: 12px 10px; display: flex; align-items: center; position: relative; }
             .bt-th-sortable { cursor: pointer; user-select: none; }
@@ -53,29 +56,35 @@ export function init(containerId, entityId = null) {
             .bt-resizer { position: absolute; right: 0; top: 0; bottom: 0; width: 5px; cursor: col-resize; z-index: 2; }
             .bt-resizer:hover { background: rgba(0,0,0,0.1); }
             
-            /* Row Colors & Hover */
-            .bt-row-group { border-bottom: 1px solid #eaedf1; transition: background 0.2s; background-color: #fff; }
+            /* Enhanced Row Layout using Grid */
+            .bt-row-group { display: grid; grid-template-columns: var(--grid-cols); border-bottom: 1px solid #c0c7d0; background-color: #fff; transition: background-color 0.2s; }
             .bt-row-group:hover { background-color: #f1f8ff !important; }
             .row-reviewed { background-color: #f4fbf4; }
             .row-split { background-color: #f0f7ff; }
 
-            .bt-row-main { display: grid; grid-template-columns: var(--grid-cols); align-items: center; }
-            .bt-td { padding: 10px 10px; font-size: 13px; overflow: hidden; text-overflow: ellipsis; }
+            .bt-cell { padding: 10px 10px; font-size: 13px; align-self: center; overflow: hidden; text-overflow: ellipsis; }
+            .bt-cell-chk { grid-column: 1; grid-row: 1; text-align: center; }
+            .bt-cell-date { grid-column: 2; grid-row: 1; }
+            .bt-cell-cat { grid-column: 3; grid-row: 1; display: flex; align-items: center; }
+            .bt-cell-amt { grid-column: 4; grid-row: 1; text-align: right; }
+            .bt-cell-bal { grid-column: 5; grid-row: 1; text-align: right; }
             
-            /* Enhanced Sub-Row Layout: Description starts under Date, Action stays under Balance */
-            .bt-row-sub { display: flex; justify-content: space-between; padding: 0 10px 12px 0; }
-            .bt-desc-col { padding-left: 40px; font-size: 12px; color: #666; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; padding-right: 15px; }
-            .bt-action-col { width: 120px; text-align: right; display: flex; justify-content: flex-end; align-items: center; gap: 6px; }
+            .bt-cell-desc { grid-column: 1 / 5; grid-row: 2; padding: 0 10px 12px 40px; font-size: 12px; color: #666; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+            .bt-cell-acts { grid-column: 5; grid-row: 2; display: flex; justify-content: flex-end; gap: 6px; padding: 0 10px 12px 0; }
             
-            .bt-bal-row { display: grid; grid-template-columns: var(--grid-cols); background: #fcfcfc; font-weight: 600; font-size: 13px; border-bottom: 1px solid #eaedf1; }
+            .mobile-label { display: none; }
+            
+            /* Dashed bottom borders for posted items */
+            .dashed-border { border-bottom: 1px dashed #81c784; padding-bottom: 2px; display: inline-block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+            .bt-cell-desc .dashed-border { white-space: normal; }
+
+            .bt-bal-row { display: grid; grid-template-columns: var(--grid-cols); background: #fcfcfc; font-weight: 600; font-size: 13px; border-bottom: 1px solid #c0c7d0; }
             .bt-bal-label { grid-column: 1 / 5; padding: 12px 10px; text-align: right; color: #666; }
             .bt-bal-amt { padding: 12px 10px; text-align: right; }
             
-            /* Categorization Controls */
             .cat-select { width: 100%; padding: 6px 0; border: none; border-bottom: 1px solid #ccc; border-radius: 0; font-size: 12px; background: transparent; outline: none; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 100%; background-position-y: center; background-size: 16px; padding-right: 20px; }
             .cat-select:focus { border-bottom-color: var(--primary-dark); }
             
-            /* Square Post Button & Split Button */
             .btn-post-sq { background: #5cb85c; color: #fff; border: none; border-radius: 4px; width: 28px; height: 28px; cursor: pointer; font-size: 14px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
             .cat-btn-split { background: #fff; color: #666; border: 1px solid #ccc; border-radius: 4px; padding: 0 10px; height: 28px; cursor: pointer; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
             .cat-btn-split:hover { background: #f0f0f0; }
@@ -84,12 +93,28 @@ export function init(containerId, entityId = null) {
             .txt-green { color: #2e7d32; font-weight: 500; }
             .txt-red { color: #d32f2f; font-weight: 500; }
 
+            /* MOBILE LAYOUT overrides */
             @media (max-width: 768px) {
-                .bt-table { --grid-cols: 30px 75px 1fr 80px 80px; }
-                .bt-th { padding: 8px 5px; font-size: 10px; }
-                .bt-td { padding: 8px 5px; font-size: 11px; }
-                .bt-desc-col { padding-left: 30px; } /* Start right after 30px checkbox */
-                .bt-action-col { width: 80px; } /* Align perfectly under 80px Balance col */
+                .bt-table { --grid-cols: 30px 1fr 80px 80px; }
+                .bt-table-inner { min-width: 100%; }
+                
+                .bt-th:nth-child(3) { display: none; }
+                .bt-th:nth-child(4) { grid-column: 3; justify-content: flex-end; }
+                .bt-th:nth-child(5) { grid-column: 4; justify-content: flex-end; }
+                
+                .bt-cell-chk { grid-column: 1; grid-row: 1; padding: 8px 5px; }
+                .bt-cell-date { grid-column: 2; grid-row: 1; padding: 8px 5px; font-size: 11px; }
+                .bt-cell-amt { grid-column: 3; grid-row: 1; padding: 8px 5px; font-size: 11px; }
+                .bt-cell-bal { grid-column: 4; grid-row: 1; padding: 8px 5px; font-size: 11px; }
+                
+                .bt-cell-cat { grid-column: 1 / 4; grid-row: 2; padding: 5px 5px 5px 30px; display: flex; align-items: center; }
+                .mobile-label { display: block; font-size: 11px; color: #666; margin-right: 5px; }
+                
+                .bt-cell-acts { display: contents; }
+                .btn-post-wrapper { grid-column: 4; grid-row: 2; padding: 5px 5px 5px 0; display: flex; justify-content: flex-end; align-items: center; }
+                .btn-split-wrapper { grid-column: 4; grid-row: 3; padding: 5px 5px 12px 0; display: flex; justify-content: flex-end; align-items: flex-start; }
+                
+                .bt-cell-desc { grid-column: 1 / 4; grid-row: 3; padding: 5px 5px 12px 30px; }
             }
         </style>
 
@@ -161,7 +186,7 @@ export function init(containerId, entityId = null) {
         const table = document.querySelector('.bt-table');
         const headers = table.querySelectorAll('.bt-th');
         let isMobile = window.innerWidth <= 768;
-        let colWidths = isMobile ? [30, 75, 200, 80, 80] : [40, 100, 350, 120, 120];
+        let colWidths = isMobile ? [30, 80, 200, 80, 80] : [40, 100, 350, 120, 120];
 
         headers.forEach((th, i) => {
             const resizer = th.querySelector('.bt-resizer');
@@ -259,8 +284,10 @@ export function init(containerId, entityId = null) {
         }
 
         const isCC = bankAccountsMap[targetAccountId].type === 'Liability';
-        const startObj = elStart.value ? new Date(elStart.value) : null;
-        const endObj = elEnd.value ? new Date(elEnd.value) : null;
+        
+        // BUG FIX: Format dates consistently for string comparison (YYYY-MM-DD)
+        const startStr = elStart.value; 
+        const endStr = elEnd.value;
         const searchTxt = elSearch.value.toLowerCase();
 
         try {
@@ -280,16 +307,15 @@ export function init(containerId, entityId = null) {
             let beginningBalance = 0;
 
             allTxs.forEach(tx => {
-                const txDateObj = new Date(tx.date);
-
-                if (startObj && txDateObj < startObj) {
+                // String comparison works perfectly for ISO dates and avoids UTC timezone bugs
+                if (startStr && tx.date < startStr) {
                     runningBalance += tx.foreignAmount;
                     beginningBalance = runningBalance;
                 } else {
                     runningBalance += tx.foreignAmount;
                     tx.calculatedBalance = runningBalance;
                     
-                    if (endObj && txDateObj > endObj) return;
+                    if (endStr && tx.date > endStr) return;
 
                     if (searchTxt) {
                         const amountStr = String(Math.abs(tx.foreignAmount));
@@ -333,8 +359,10 @@ export function init(containerId, entityId = null) {
                 }
 
                 let catHtml = '';
-                let actionHtml = '';
+                let actionHtmlPost = '';
+                let actionHtmlSplit = '';
                 let statusClass = '';
+                let dashedClass = tx.status !== 'Unreviewed' ? 'dashed-border' : '';
 
                 if (tx.status === 'Unreviewed') {
                     let defCatId = tx.postedCategoryId;
@@ -343,36 +371,37 @@ export function init(containerId, entityId = null) {
                         defCatId = matchedCat ? matchedCat.id : "";
                     }
                     catHtml = `<select class="cat-select" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>`;
-                    actionHtml = `
-                        <button class="btn-post-sq btn-post" data-id="${tx.id}" title="Post the Transaction">&#10003;</button>
-                        <button class="cat-btn-split btn-split" data-id="${tx.id}">Split</button>
-                    `;
+                    actionHtmlPost = `<button class="btn-post-sq btn-post" data-id="${tx.id}" title="Post the Transaction">&#10003;</button>`;
+                    actionHtmlSplit = `<button class="cat-btn-split btn-split" data-id="${tx.id}">Split</button>`;
                 } else if (tx.status === 'Split') {
                     statusClass = 'row-split';
                     catHtml = `<span style="color: #2e7d32; font-weight: 500; font-size: 13px;">&#10003; Split (${tx.splits ? tx.splits.length : 0})</span>`;
-                    actionHtml = `<button class="cat-btn-undo" data-id="${tx.id}">Undo</button>`;
+                    actionHtmlPost = `<button class="cat-btn-undo" data-id="${tx.id}">Undo</button>`;
                 } else {
                     statusClass = 'row-reviewed';
                     const postedName = chartOfAccounts.find(c => c.id === tx.postedCategoryId)?.name || 'Categorized';
                     catHtml = `<span style="color: #2e7d32; font-weight: 500; font-size: 13px;">&#10003; ${postedName}</span>`;
-                    actionHtml = `<button class="cat-btn-undo" data-id="${tx.id}">Undo</button>`;
+                    actionHtmlPost = `<button class="cat-btn-undo" data-id="${tx.id}">Undo</button>`;
                 }
 
                 html += `
                     <div class="bt-row-group ${statusClass}">
-                        <div class="bt-row-main">
-                            <div class="bt-td" style="text-align:center;"><input type="checkbox" class="bt-row-check" data-id="${tx.id}"></div>
-                            <div class="bt-td">${tx.date}</div>
-                            <div class="bt-td">${catHtml}</div>
-                            <div class="bt-td ${amountClass}" style="text-align: right;">
-                                <div>${formatCurrency(Math.abs(tx.foreignAmount), tx.currency)}</div>
-                                <div style="font-size: 11px; color: #999;">${amountLabel}</div>
-                            </div>
-                            <div class="bt-td" style="text-align: right;">${formatCurrency(tx.calculatedBalance, tx.currency)}</div>
+                        <div class="bt-cell bt-cell-chk"><input type="checkbox" class="bt-row-check" data-id="${tx.id}"></div>
+                        <div class="bt-cell bt-cell-date"><span class="${dashedClass}">${tx.date}</span></div>
+                        <div class="bt-cell bt-cell-cat">
+                            <span class="mobile-label">Cat:</span>
+                            <span class="${dashedClass}" style="flex:1;">${catHtml}</span>
                         </div>
-                        <div class="bt-row-sub">
-                            <div class="bt-desc-col">${tx.description} ${tx.checkNo ? '(Ref: ' + tx.checkNo + ')' : ''}</div>
-                            <div class="bt-action-col">${actionHtml}</div>
+                        <div class="bt-cell bt-cell-amt ${amountClass}">
+                            <div class="${dashedClass}">${formatCurrency(Math.abs(tx.foreignAmount), tx.currency)}</div>
+                            <div style="font-size: 11px; color: #999;">${amountLabel}</div>
+                        </div>
+                        <div class="bt-cell bt-cell-bal"><span class="${dashedClass}">${formatCurrency(tx.calculatedBalance, tx.currency)}</span></div>
+                        
+                        <div class="bt-cell bt-cell-desc"><span class="${dashedClass}">${tx.description} ${tx.checkNo ? '(Ref: ' + tx.checkNo + ')' : ''}</span></div>
+                        <div class="bt-cell bt-cell-acts">
+                            <div class="btn-post-wrapper">${actionHtmlPost}</div>
+                            <div class="btn-split-wrapper">${actionHtmlSplit}</div>
                         </div>
                     </div>
                 `;
@@ -483,7 +512,6 @@ export function init(containerId, entityId = null) {
                 .sp-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
                 .sp-th { text-align: left; font-size: 12px; color: #666; padding-bottom: 5px; border-bottom: 1px solid #ccc; }
                 
-                /* TBODY as draggable group so rows stay together */
                 .sp-row-group { background: #fff; }
                 .sp-row-group.dragging { opacity: 0.5; background: #f9f9f9; }
                 
