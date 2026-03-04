@@ -43,27 +43,32 @@ export function init(containerId, entityId = null) {
             
             .bt-batch-bar { display: none; padding: 10px 15px; background: #e3f2fd; border-radius: 4px; margin-bottom: 15px; align-items: center; gap: 12px; border: 1px solid #bbdefb; }
             
-            .bt-table { width: 100%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 6px; overflow: hidden; }
-            .bt-thead { display: grid; grid-template-columns: 40px 110px 300px 150px 150px; background: #f4f7f9; font-weight: 600; font-size: 12px; color: var(--primary-dark); border-bottom: 2px solid #eaedf1; }
-            .bt-th { padding: 12px 15px; display: flex; align-items: center; }
+            /* Dynamic CSS Grid Table Layout */
+            .bt-table { --grid-cols: 40px 110px 300px 150px 150px; width: 100%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 6px; overflow-x: auto; }
+            .bt-table-inner { min-width: 600px; }
+            .bt-thead { display: grid; grid-template-columns: var(--grid-cols); background: #f4f7f9; font-weight: 600; font-size: 12px; color: var(--primary-dark); border-bottom: 2px solid #eaedf1; position: relative; }
+            .bt-th { padding: 12px 15px; display: flex; align-items: center; position: relative; }
             .bt-th-sortable { cursor: pointer; user-select: none; }
             .bt-th-sortable:hover { background: #eaedf1; }
+            .bt-resizer { position: absolute; right: 0; top: 0; bottom: 0; width: 5px; cursor: col-resize; z-index: 2; }
+            .bt-resizer:hover { background: rgba(0,0,0,0.1); }
             
             .bt-row-group { border-bottom: 1px solid #eaedf1; transition: background 0.2s; }
             .bt-row-group:hover { background: #fafbfc; }
-            .bt-row-main { display: grid; grid-template-columns: 40px 110px 300px 150px 150px; align-items: center; }
-            .bt-td { padding: 10px 15px; font-size: 13px; }
-            
+            .bt-row-main { display: grid; grid-template-columns: var(--grid-cols); align-items: center; }
+            .bt-td { padding: 10px 15px; font-size: 13px; overflow: hidden; text-overflow: ellipsis; }
             .bt-row-sub { grid-column: 1 / -1; padding: 0 15px 12px 65px; font-size: 12px; color: #666; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
             
-            .bt-bal-row { display: grid; grid-template-columns: 40px 110px 300px 150px 150px; background: #fcfcfc; font-weight: 600; font-size: 13px; border-bottom: 1px solid #eaedf1; }
+            .bt-bal-row { display: grid; grid-template-columns: var(--grid-cols); background: #fcfcfc; font-weight: 600; font-size: 13px; border-bottom: 1px solid #eaedf1; }
             .bt-bal-label { grid-column: 1 / 5; padding: 12px 15px; text-align: right; color: #666; }
             .bt-bal-amt { padding: 12px 15px; text-align: right; }
             
-            .cat-controls { display: flex; gap: 6px; align-items: center; }
-            .cat-select { flex: 1; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
-            .cat-btn-ok { background: #5cb85c; color: #fff; border: none; border-radius: 4px; padding: 6px 10px; cursor: pointer; font-size: 12px; font-weight: bold; }
-            .cat-btn-split { background: #fff; color: #666; border: 1px solid #ccc; border-radius: 4px; padding: 6px 10px; cursor: pointer; font-size: 12px; }
+            /* Categorization Controls */
+            .cat-controls { display: flex; gap: 6px; align-items: center; width: 100%; }
+            .cat-select { flex: 1; padding: 6px 0; border: none; border-bottom: 1px solid #ccc; border-radius: 0; font-size: 12px; background: transparent; outline: none; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 100%; background-position-y: center; background-size: 16px; padding-right: 20px; }
+            .cat-select:focus { border-bottom-color: var(--primary-dark); }
+            .cat-btn-ok { background: #5cb85c; color: #fff; border: none; border-radius: 4px; padding: 6px 10px; cursor: pointer; font-size: 12px; font-weight: bold; flex-shrink: 0; }
+            .cat-btn-split { background: #fff; color: #666; border: 1px solid #ccc; border-radius: 4px; padding: 6px 10px; cursor: pointer; font-size: 12px; flex-shrink: 0; }
             .cat-btn-split:hover { background: #f0f0f0; }
             .cat-reviewed-text { font-size: 13px; font-weight: 500; color: #333; display: flex; align-items: center; gap: 10px; }
             .cat-btn-undo { background: none; border: none; color: #999; cursor: pointer; font-size: 12px; text-decoration: underline; }
@@ -71,23 +76,13 @@ export function init(containerId, entityId = null) {
             .txt-green { color: #2e7d32; font-weight: 500; }
             .txt-red { color: #d32f2f; font-weight: 500; }
 
-            /* Mobile Responsiveness - Column width and 80% spacing reduction */
             @media (max-width: 768px) {
-                .bt-thead, .bt-row-main, .bt-bal-row {
-                    grid-template-columns: 25px 65px 1fr 75px 75px; 
-                }
-                .bt-th, .bt-td, .bt-bal-label, .bt-bal-amt {
-                    padding: 4px 3px; 
-                    font-size: 11px;
-                }
-                .bt-row-sub { padding: 0 4px 8px 30px; font-size: 11px; }
-                .cat-controls { flex-direction: column; align-items: stretch; gap: 4px; }
-                .cat-select { font-size: 10px; padding: 4px; }
-                .cat-btn-ok, .cat-btn-split { font-size: 10px; padding: 4px; }
-                .cat-reviewed-text { font-size: 11px; flex-direction: column; align-items: flex-start; gap: 2px; }
-                .txt-green, .txt-red { font-size: 11px; }
-                .bt-controls { flex-direction: column; align-items: stretch; }
-                .bt-select { min-width: 100%; }
+                .bt-table { --grid-cols: 30px 80px 1fr 80px 80px; }
+                .bt-th { padding: 8px 5px; font-size: 10px; }
+                .bt-td { padding: 8px 5px; font-size: 11px; }
+                .bt-row-sub { padding: 0 5px 8px 35px; }
+                .cat-btn-ok, .cat-btn-split { padding: 6px 6px; font-size: 10px; }
+                .cat-select { font-size: 11px; }
             }
         </style>
 
@@ -126,15 +121,17 @@ export function init(containerId, entityId = null) {
         </div>
 
         <div class="bt-table">
-            <div class="bt-thead">
-                <div class="bt-th" style="justify-content:center;"><input type="checkbox" id="bt-selectAll"></div>
-                <div class="bt-th bt-th-sortable" id="bt-headerDate">DATE <span id="bt-sortArrow" style="margin-left:5px;">&#8595;</span></div>
-                <div class="bt-th">CATEGORY</div>
-                <div class="bt-th" style="justify-content: flex-end;">AMOUNT</div>
-                <div class="bt-th" style="justify-content: flex-end;">BALANCE</div>
-            </div>
-            <div id="bt-listContainer">
-                <div style="padding: 40px; text-align: center; color: #666;">Select an account to view transactions.</div>
+            <div class="bt-table-inner">
+                <div class="bt-thead" id="bt-thead">
+                    <div class="bt-th" style="justify-content:center;"><input type="checkbox" id="bt-selectAll"><div class="bt-resizer"></div></div>
+                    <div class="bt-th bt-th-sortable" id="bt-headerDate">DATE <span id="bt-sortArrow" style="margin-left:5px;">&#8595;</span><div class="bt-resizer"></div></div>
+                    <div class="bt-th">CATEGORY<div class="bt-resizer"></div></div>
+                    <div class="bt-th" style="justify-content: flex-end;">AMOUNT<div class="bt-resizer"></div></div>
+                    <div class="bt-th" style="justify-content: flex-end;">BALANCE</div>
+                </div>
+                <div id="bt-listContainer">
+                    <div style="padding: 40px; text-align: center; color: #666;">Select an account to view transactions.</div>
+                </div>
             </div>
         </div>
     `;
@@ -144,11 +141,48 @@ export function init(containerId, entityId = null) {
     const elEnd = document.getElementById('bt-filterEnd');
     const elSearch = document.getElementById('bt-search');
     const listContainer = document.getElementById('bt-listContainer');
+    const selectAll = document.getElementById('bt-selectAll');
+    const batchBar = document.getElementById('bt-batchBar');
+    const batchCount = document.getElementById('bt-batchCount');
     
     let sortOrder = 'desc'; 
-    const headerDate = document.getElementById('bt-headerDate');
-    const sortArrow = document.getElementById('bt-sortArrow');
+    let chartOfAccounts = [];
+    let bankAccountsMap = {};
+    let currentTransactions = []; // Store currently displayed txs for split reference
 
+    // --- Column Resizer Logic ---
+    const initResizer = () => {
+        const table = document.querySelector('.bt-table');
+        const headers = table.querySelectorAll('.bt-th');
+        let isMobile = window.innerWidth <= 768;
+        let colWidths = isMobile ? [30, 80, 200, 80, 80] : [40, 110, 300, 150, 150];
+
+        headers.forEach((th, i) => {
+            const resizer = th.querySelector('.bt-resizer');
+            if (!resizer) return;
+            let startX, startWidth;
+            resizer.addEventListener('mousedown', (e) => {
+                startX = e.pageX;
+                startWidth = colWidths[i];
+                const onMouseMove = (e) => {
+                    const diff = e.pageX - startX;
+                    colWidths[i] = Math.max(30, startWidth + diff);
+                    // The last column takes remaining space so we don't resize it explicitly
+                    let gridStr = colWidths.map((w, idx) => idx === 2 ? '1fr' : w + 'px').join(' ');
+                    table.style.setProperty('--grid-cols', gridStr);
+                };
+                const onMouseUp = () => {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                };
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+        });
+    };
+    initResizer();
+
+    // --- Header Actions ---
     const primaryBtn = document.getElementById('bt-btnPrimaryDropdown');
     const primaryMenu = document.getElementById('bt-primaryMenu');
     primaryBtn.addEventListener('click', (e) => {
@@ -156,19 +190,13 @@ export function init(containerId, entityId = null) {
         primaryMenu.style.display = primaryMenu.style.display === 'block' ? 'none' : 'block';
     });
     document.addEventListener('click', () => primaryMenu.style.display = 'none');
-    
-    document.getElementById('bt-optUpload').addEventListener('click', () => {
-        openUploadModal(containerId);
-    });
+    document.getElementById('bt-optUpload').addEventListener('click', () => openUploadModal(containerId));
 
-    let chartOfAccounts = [];
-    let bankAccountsMap = {};
-
+    // --- Fetch Dependencies ---
     const loadDependencies = async () => {
         try {
             chartOfAccounts = [];
             elAccount.innerHTML = '<option value="">Select Account...</option>';
-            
             const q = query(collection(db, "chartOfAccounts"), where("companyId", "==", session.companyId));
             const snap = await getDocs(q);
             snap.forEach(doc => {
@@ -185,90 +213,47 @@ export function init(containerId, entityId = null) {
         } catch(e) { console.error(e); }
     };
 
-    const buildCategoryDropdown = (selectedCat) => {
+    const buildCategoryDropdown = (selectedCatId) => {
         let options = `<option value="">Select Category...</option>`;
         chartOfAccounts.forEach(acc => {
-            const isSelected = selectedCat === acc.name ? 'selected' : '';
+            const isSelected = selectedCatId === acc.id ? 'selected' : '';
             options += `<option value="${acc.id}" ${isSelected}>${acc.code} - ${acc.name}</option>`;
         });
         options += `<option value="ADD_NEW" style="font-weight: bold; color: var(--primary-dark);">+ Add New Account</option>`;
         return options;
     };
 
-    headerDate.addEventListener('click', () => {
-        sortOrder = sortOrder === 'desc' ? 'asc' : 'desc';
-        sortArrow.innerHTML = sortOrder === 'desc' ? '&#8595;' : '&#8593;';
-        window.refreshBankTransactionsTable();
-    });
-
-    // --- BATCH UI CONTROLLER ---
-    // Defined outside the refresh function so it can be called cleanly
+    // --- Batch UI Updater ---
     const updateBatchUI = () => {
         const checked = document.querySelectorAll('.bt-row-check:checked');
-        const batchBar = document.getElementById('bt-batchBar');
-        const batchCount = document.getElementById('bt-batchCount');
-        const selectAll = document.getElementById('bt-selectAll');
-
         if (checked.length > 0) {
             batchBar.style.display = 'flex';
             batchCount.textContent = `${checked.length} selected`;
         } else {
             batchBar.style.display = 'none';
-            if (selectAll) selectAll.checked = false;
+            selectAll.checked = false;
         }
     };
 
-    // Global Select All Listener (Only bound once)
-    document.getElementById('bt-selectAll').addEventListener('change', (e) => {
+    selectAll.addEventListener('change', (e) => {
         const rowChecks = document.querySelectorAll('.bt-row-check');
         rowChecks.forEach(chk => chk.checked = e.target.checked);
         updateBatchUI();
     });
 
-    // Global Batch Action Listeners (Only bound once)
-    document.getElementById('bt-btnBatchPost').addEventListener('click', async () => {
-        const checked = document.querySelectorAll('.bt-row-check:checked');
-        for (let chk of checked) {
-            const txId = chk.getAttribute('data-id');
-            const sel = document.getElementById(`sel-${txId}`);
-            if (sel && sel.value) {
-                await updateDoc(doc(db, "bankTransactions", txId), {
-                    status: 'Reviewed',
-                    postedCategoryId: sel.value
-                });
-            }
-        }
+    document.getElementById('bt-headerDate').addEventListener('click', () => {
+        sortOrder = sortOrder === 'desc' ? 'asc' : 'desc';
+        document.getElementById('bt-sortArrow').innerHTML = sortOrder === 'desc' ? '&#8595;' : '&#8593;';
         window.refreshBankTransactionsTable();
     });
 
-    document.getElementById('bt-btnBatchUndo').addEventListener('click', async () => {
-        const checked = document.querySelectorAll('.bt-row-check:checked');
-        for (let chk of checked) {
-            const txId = chk.getAttribute('data-id');
-            await updateDoc(doc(db, "bankTransactions", txId), {
-                status: 'Unreviewed',
-                postedCategoryId: null
-            });
-        }
-        window.refreshBankTransactionsTable();
-    });
-
-    document.getElementById('bt-btnBatchDelete').addEventListener('click', async () => {
-        if(!confirm("Are you sure you want to permanently delete the selected transactions?")) return;
-        const checked = document.querySelectorAll('.bt-row-check:checked');
-        for (let chk of checked) {
-            const txId = chk.getAttribute('data-id');
-            await deleteDoc(doc(db, "bankTransactions", txId));
-        }
-        window.refreshBankTransactionsTable();
-    });
-
-    // --- MAIN RENDER CYCLE ---
+    // --- Main Render Logic ---
     window.refreshBankTransactionsTable = async () => {
         const targetAccountId = elAccount.value;
         if (!targetAccountId) {
             listContainer.innerHTML = `<div style="padding: 40px; text-align: center; color: #666;">Select an account to view transactions.</div>`;
-            document.getElementById('bt-batchBar').style.display = 'none';
+            batchBar.style.display = 'none';
+            selectAll.checked = false;
             return;
         }
 
@@ -287,7 +272,6 @@ export function init(containerId, entityId = null) {
             
             let allTxs = [];
             snap.forEach(doc => { allTxs.push({ id: doc.id, ...doc.data() }); });
-
             allTxs.sort((a, b) => new Date(a.date) - new Date(b.date));
 
             let runningBalance = 0;
@@ -303,7 +287,6 @@ export function init(containerId, entityId = null) {
                     tx.calculatedBalance = runningBalance;
                     
                     if (endFilter && tx.date > endFilter) return;
-
                     if (searchTxt) {
                         const amountStr = String(Math.abs(tx.foreignAmount));
                         const match = tx.date.includes(searchTxt) || 
@@ -311,34 +294,24 @@ export function init(containerId, entityId = null) {
                                       amountStr.includes(searchTxt);
                         if (!match) return;
                     }
-                    
                     displayTxs.push(tx);
                 }
             });
 
+            currentTransactions = displayTxs; // Cache for split modal
             if (sortOrder === 'desc') displayTxs.reverse();
 
             if (displayTxs.length === 0) {
                 listContainer.innerHTML = `<div style="padding: 40px; text-align: center; color: #666;">No matching transactions found.</div>`;
-                updateBatchUI(); // Hide batch bar and reset select all
                 return;
             }
 
             let html = '';
             const currencyCode = displayTxs[0].currency; 
-
-            const begBalHtml = `
-                <div class="bt-bal-row">
-                    <div class="bt-bal-label">Beginning Balance</div>
-                    <div class="bt-bal-amt">${formatCurrency(beginningBalance, currencyCode)}</div>
-                </div>`;
-            
             const closingBal = sortOrder === 'desc' ? displayTxs[0].calculatedBalance : displayTxs[displayTxs.length-1].calculatedBalance;
-            const endBalHtml = `
-                <div class="bt-bal-row">
-                    <div class="bt-bal-label">Ending Balance</div>
-                    <div class="bt-bal-amt">${formatCurrency(closingBal, currencyCode)}</div>
-                </div>`;
+            
+            const begBalHtml = `<div class="bt-bal-row"><div class="bt-bal-label">Beginning Balance</div><div class="bt-bal-amt">${formatCurrency(beginningBalance, currencyCode)}</div></div>`;
+            const endBalHtml = `<div class="bt-bal-row"><div class="bt-bal-label">Ending Balance</div><div class="bt-bal-amt">${formatCurrency(closingBal, currencyCode)}</div></div>`;
 
             if (sortOrder === 'asc') html += begBalHtml;
             else html += endBalHtml;
@@ -357,11 +330,25 @@ export function init(containerId, entityId = null) {
 
                 let catHtml = '';
                 if (tx.status === 'Unreviewed') {
+                    // Try to match suggested text to ID if not already an ID
+                    let defCatId = tx.postedCategoryId;
+                    if(!defCatId) {
+                        const matchedCat = chartOfAccounts.find(c => c.name === tx.suggestedCategory);
+                        defCatId = matchedCat ? matchedCat.id : "";
+                    }
+                    
                     catHtml = `
                         <div class="cat-controls">
-                            <select class="cat-select" id="sel-${tx.id}">${buildCategoryDropdown(tx.suggestedCategory)}</select>
-                            <button class="cat-btn-ok btn-post" data-id="${tx.id}" title="Post Transaction to Ledger">&#10003;</button>
-                            <button class="cat-btn-split">Split</button>
+                            <select class="cat-select" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>
+                            <button class="cat-btn-ok btn-post" data-id="${tx.id}" title="Post the Transaction">&#10003;</button>
+                            <button class="cat-btn-split btn-split" data-id="${tx.id}">Split</button>
+                        </div>
+                    `;
+                } else if (tx.status === 'Split') {
+                    catHtml = `
+                        <div class="cat-reviewed-text">
+                            <span style="color: #2e7d32;">&#10003;</span> Split (${tx.splits ? tx.splits.length : 0} categories)
+                            <button class="cat-btn-undo" data-id="${tx.id}">Undo</button>
                         </div>
                     `;
                 } else {
@@ -395,19 +382,15 @@ export function init(containerId, entityId = null) {
             else html += begBalHtml;
 
             listContainer.innerHTML = html;
-
-            // Reset selectAll status to unchecked when rendering new data
-            document.getElementById('bt-selectAll').checked = false;
+            selectAll.checked = false;
             updateBatchUI();
 
-            // --- BIND ROW-LEVEL EVENTS ---
-            
-            // Checkbox tracking
+            // Bind Row Checkboxes for Batch UI
             document.querySelectorAll('.bt-row-check').forEach(chk => {
                 chk.addEventListener('change', updateBatchUI);
             });
 
-            // Add New Category Interceptor
+            // Bind Select Actions
             document.querySelectorAll('.cat-select').forEach(sel => {
                 sel.addEventListener('change', (e) => {
                     if (e.target.value === 'ADD_NEW') {
@@ -417,28 +400,32 @@ export function init(containerId, entityId = null) {
                 });
             });
 
+            // Bind Post
             document.querySelectorAll('.btn-post').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
                     const txId = e.target.getAttribute('data-id');
                     const selVal = document.getElementById(`sel-${txId}`).value;
                     if (!selVal) return alert("Select a category first.");
-                    
                     e.target.textContent = "...";
-                    await updateDoc(doc(db, "bankTransactions", txId), {
-                        status: 'Reviewed',
-                        postedCategoryId: selVal
-                    });
+                    await updateDoc(doc(db, "bankTransactions", txId), { status: 'Reviewed', postedCategoryId: selVal });
                     window.refreshBankTransactionsTable();
                 });
             });
 
+            // Bind Split
+            document.querySelectorAll('.btn-split').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const txId = e.target.getAttribute('data-id');
+                    const tx = currentTransactions.find(t => t.id === txId);
+                    openSplitModal(tx, isCC);
+                });
+            });
+
+            // Bind Undo
             document.querySelectorAll('.cat-btn-undo').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
                     const txId = e.target.getAttribute('data-id');
-                    await updateDoc(doc(db, "bankTransactions", txId), {
-                        status: 'Unreviewed',
-                        postedCategoryId: null
-                    });
+                    await updateDoc(doc(db, "bankTransactions", txId), { status: 'Unreviewed', postedCategoryId: null, splits: null });
                     window.refreshBankTransactionsTable();
                 });
             });
@@ -447,6 +434,219 @@ export function init(containerId, entityId = null) {
             console.error(e);
             listContainer.innerHTML = `<div style="padding: 40px; text-align: center; color: #d9534f;">Error loading data.</div>`;
         }
+    };
+
+    // --- BATCH ACTIONS ---
+    document.getElementById('bt-btnBatchPost').addEventListener('click', async () => {
+        const checked = document.querySelectorAll('.bt-row-check:checked');
+        for (let chk of checked) {
+            const txId = chk.getAttribute('data-id');
+            const sel = document.getElementById(`sel-${txId}`);
+            if (sel && sel.value && sel.value !== 'ADD_NEW') {
+                await updateDoc(doc(db, "bankTransactions", txId), { status: 'Reviewed', postedCategoryId: sel.value });
+            }
+        }
+        window.refreshBankTransactionsTable();
+    });
+
+    document.getElementById('bt-btnBatchUndo').addEventListener('click', async () => {
+        const checked = document.querySelectorAll('.bt-row-check:checked');
+        for (let chk of checked) {
+            const txId = chk.getAttribute('data-id');
+            await updateDoc(doc(db, "bankTransactions", txId), { status: 'Unreviewed', postedCategoryId: null, splits: null });
+        }
+        window.refreshBankTransactionsTable();
+    });
+
+    document.getElementById('bt-btnBatchDelete').addEventListener('click', async () => {
+        if(!confirm("Are you sure you want to permanently delete the selected transactions?")) return;
+        const checked = document.querySelectorAll('.bt-row-check:checked');
+        for (let chk of checked) {
+            const txId = chk.getAttribute('data-id');
+            await deleteDoc(doc(db, "bankTransactions", txId));
+        }
+        window.refreshBankTransactionsTable();
+    });
+
+    // --- SPLIT TRANSACTION MODAL ---
+    const openSplitModal = (tx, isCC) => {
+        let existing = document.getElementById('splitModalOverlay');
+        if (existing) existing.remove();
+
+        const typeLabel = !isCC ? (tx.foreignAmount > 0 ? 'Deposit' : 'Withdrawal') : (tx.foreignAmount > 0 ? 'CC Charge' : 'CC Credit');
+        const targetAmount = Math.abs(tx.foreignAmount);
+
+        const overlay = document.createElement('div');
+        overlay.id = 'splitModalOverlay';
+        overlay.style.cssText = `position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; justify-content: center; align-items: flex-start; padding-top: 50px; overflow-y: auto;`;
+
+        overlay.innerHTML = `
+            <style>
+                .sp-modal { background: #fff; width: 700px; max-width: 95%; border-radius: 4px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); padding: 30px; font-family: 'Segoe UI', Arial, sans-serif; color: #333; margin-bottom: 50px;}
+                .sp-header { display: flex; justify-content: space-between; border-bottom: 2px solid var(--primary-dark); padding-bottom: 10px; margin-bottom: 20px; }
+                .sp-title { font-size: 18px; font-weight: 600; color: var(--primary-dark); }
+                .sp-amt-display { font-size: 18px; font-weight: bold; color: ${tx.foreignAmount > 0 ? '#2e7d32' : '#d32f2f'}; }
+                .sp-desc-box { width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 10px; font-size: 13px; font-family: inherit; resize: vertical; min-height: 60px; margin-bottom: 20px; box-sizing: border-box; }
+                
+                .sp-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                .sp-th { text-align: left; font-size: 12px; color: #666; padding-bottom: 5px; border-bottom: 1px solid #ccc; }
+                .sp-row { background: #fff; }
+                .sp-row.dragging { opacity: 0.5; background: #f9f9f9; }
+                .sp-cell { padding: 8px 5px; }
+                .sp-input { width: 100%; border: none; border-bottom: 1px solid #ccc; padding: 6px 0; font-size: 13px; outline: none; background: transparent; }
+                .sp-input:focus { border-bottom: 2px solid var(--primary-dark); }
+                .sp-handle { cursor: grab; color: #ccc; font-size: 16px; padding-right: 10px; user-select: none; }
+                .sp-del { cursor: pointer; color: #d9534f; font-size: 16px; background: none; border: none; padding: 5px; }
+                
+                .sp-total-row { font-weight: bold; font-size: 14px; }
+                .sp-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eaedf1; padding-top: 20px; }
+            </style>
+            <div class="sp-modal">
+                <div class="sp-header">
+                    <div class="sp-title">Split Transaction: ${tx.date} (${typeLabel})</div>
+                    <div class="sp-amt-display">${formatCurrency(targetAmount, tx.currency)}</div>
+                </div>
+                <div style="font-size: 13px; color: #666; margin-bottom: 5px;">Bank Description: ${tx.description}</div>
+                <textarea class="sp-desc-box" id="sp-customMemo" placeholder="Optional custom memo/description for this transaction..."></textarea>
+                
+                <table class="sp-table">
+                    <thead>
+                        <tr><th style="width:30px;"></th><th class="sp-th">Category</th><th class="sp-th">Description</th><th class="sp-th" style="width:120px;">Amount</th><th style="width:30px;"></th></tr>
+                    </thead>
+                    <tbody id="sp-tbody"></tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="sp-total-row" style="text-align: right; padding: 15px 5px;">Total Assigned:</td>
+                            <td class="sp-total-row" style="padding: 15px 5px;" id="sp-totalAssigned">0.00</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align: right; font-size: 12px; color: #666; padding-right: 5px;">Remaining:</td>
+                            <td style="font-size: 12px; color: #d32f2f; padding-left: 5px;" id="sp-difference">${targetAmount.toFixed(2)}</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+                <div class="sp-footer">
+                    <button class="cat-btn-split" id="sp-btnAddRow">+ Add Line</button>
+                    <div style="display:flex; gap: 10px;">
+                        <button class="cat-btn-split" id="sp-btnCancel">Cancel</button>
+                        <button class="cat-btn-ok" id="sp-btnSave">Save Split</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        const tbody = document.getElementById('sp-tbody');
+        const catOptions = buildCategoryDropdown('');
+
+        const safeMathEval = (str) => {
+            try {
+                let sanitized = str.replace(/[^0-9+\-*/().]/g, '');
+                if (!sanitized) return 0;
+                let result = Function(`'use strict'; return (${sanitized})`)();
+                return isNaN(result) ? 0 : Number(result);
+            } catch(e) { return 0; }
+        };
+
+        const calcTotals = () => {
+            let sum = 0;
+            tbody.querySelectorAll('.sp-amt-input').forEach(inp => {
+                let val = parseFloat(inp.value);
+                if(!isNaN(val)) sum += val;
+            });
+            document.getElementById('sp-totalAssigned').textContent = sum.toFixed(2);
+            const diff = targetAmount - sum;
+            const diffEl = document.getElementById('sp-difference');
+            diffEl.textContent = diff.toFixed(2);
+            diffEl.style.color = Math.abs(diff) < 0.01 ? '#2e7d32' : '#d32f2f';
+        };
+
+        const createRow = () => {
+            const tr = document.createElement('tr');
+            tr.className = 'sp-row';
+            tr.draggable = true;
+            tr.innerHTML = `
+                <td class="sp-cell"><span class="sp-handle">&#8942;&#8942;</span></td>
+                <td class="sp-cell"><select class="sp-input sp-cat-input">${catOptions}</select></td>
+                <td class="sp-cell"><input type="text" class="sp-input sp-desc-input" placeholder="Line description"></td>
+                <td class="sp-cell"><input type="text" class="sp-input sp-amt-input" placeholder="0.00"></td>
+                <td class="sp-cell"><button class="sp-del">&times;</button></td>
+            `;
+            
+            tr.querySelector('.sp-del').addEventListener('click', () => { tr.remove(); calcTotals(); });
+            
+            const amtInp = tr.querySelector('.sp-amt-input');
+            amtInp.addEventListener('blur', (e) => {
+                let val = safeMathEval(e.target.value);
+                e.target.value = val ? val.toFixed(2) : '';
+                calcTotals();
+            });
+
+            // Drag and Drop
+            tr.addEventListener('dragstart', () => tr.classList.add('dragging'));
+            tr.addEventListener('dragend', () => tr.classList.remove('dragging'));
+
+            tbody.appendChild(tr);
+        };
+
+        // Init 2 rows
+        createRow(); createRow();
+
+        tbody.addEventListener('dragover', e => {
+            e.preventDefault();
+            const draggingRow = tbody.querySelector('.dragging');
+            const targetRow = e.target.closest('.sp-row');
+            if(targetRow && targetRow !== draggingRow) {
+                const rect = targetRow.getBoundingClientRect();
+                const offset = e.clientY - rect.top;
+                if(offset > rect.height / 2) targetRow.after(draggingRow);
+                else targetRow.before(draggingRow);
+            }
+        });
+
+        document.getElementById('sp-btnAddRow').addEventListener('click', createRow);
+        document.getElementById('sp-btnCancel').addEventListener('click', () => overlay.remove());
+        
+        document.getElementById('sp-btnSave').addEventListener('click', async () => {
+            let sum = 0;
+            let splits = [];
+            let valid = true;
+            
+            tbody.querySelectorAll('.sp-row').forEach(tr => {
+                const cat = tr.querySelector('.sp-cat-input').value;
+                const desc = tr.querySelector('.sp-desc-input').value;
+                const amt = parseFloat(tr.querySelector('.sp-amt-input').value);
+                
+                if (amt && amt > 0) {
+                    if (!cat || cat === 'ADD_NEW') valid = false;
+                    sum += amt;
+                    splits.push({ categoryId: cat, description: desc, amount: amt });
+                }
+            });
+
+            if (!valid) return alert("Please select a valid category for all lines with amounts.");
+            if (Math.abs(targetAmount - sum) > 0.01) return alert("The split total must equal the transaction amount.");
+
+            const btn = document.getElementById('sp-btnSave');
+            btn.textContent = "Saving..."; btn.disabled = true;
+
+            try {
+                await updateDoc(doc(db, "bankTransactions", tx.id), {
+                    status: 'Split',
+                    postedCategoryId: 'SPLIT',
+                    customMemo: document.getElementById('sp-customMemo').value.trim(),
+                    splits: splits
+                });
+                overlay.remove();
+                window.refreshBankTransactionsTable();
+            } catch(e) {
+                console.error(e); alert("Failed to save split.");
+                btn.textContent = "Save Split"; btn.disabled = false;
+            }
+        });
     };
 
     elAccount.addEventListener('change', window.refreshBankTransactionsTable);
