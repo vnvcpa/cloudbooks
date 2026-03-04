@@ -95,7 +95,7 @@ export function init(containerId, entityId = null) {
 
         <div class="bt-header">
             <div>
-                <h1>Bank Transactions</h1>
+                <h3>Bank Transactions</h3>
                 <p>Categorize and review your connected feeds.</p>
             </div>
             <div class="bt-split-btn">
