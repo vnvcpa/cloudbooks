@@ -401,7 +401,6 @@ export function init(containerId, entityId = null) {
                         <div class="bt-cell bt-cell-chk"><input type="checkbox" class="bt-row-check" data-id="${tx.id}"></div>
                         <div class="bt-cell bt-cell-date"><span class="${dashedClass}">${tx.date}</span></div>
                         <div class="bt-cell bt-cell-cat">
-                            <span class="mobile-label">Cat:</span>
                             <div style="flex:1;">${catHtml}</div>
                         </div>
                         <div class="bt-cell bt-cell-amt ${amountClass}">
