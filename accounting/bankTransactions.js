@@ -56,21 +56,22 @@ export function init(containerId, entityId = null) {
             .bt-resizer { position: absolute; right: 0; top: 0; bottom: 0; width: 5px; cursor: col-resize; z-index: 2; }
             .bt-resizer:hover { background: rgba(0,0,0,0.1); }
             
-            /* Enhanced Row Layout using Grid */
+            /* Row Colors & Hover */
             .bt-row-group { display: grid; grid-template-columns: var(--grid-cols); border-bottom: 1px solid #c0c7d0; background-color: #fff; transition: background-color 0.2s; }
             .bt-row-group:hover { background-color: #f1f8ff !important; }
             .row-reviewed { background-color: #f4fbf4; }
             .row-split { background-color: #f0f7ff; }
 
-            .bt-cell { padding: 10px 10px; font-size: 13px; align-self: center; overflow: hidden; text-overflow: ellipsis; }
+            .bt-cell { padding: 12px 10px; font-size: 13px; align-self: start; }
             .bt-cell-chk { grid-column: 1; grid-row: 1; text-align: center; }
             .bt-cell-date { grid-column: 2; grid-row: 1; }
-            .bt-cell-cat { grid-column: 3; grid-row: 1; display: flex; align-items: center; }
+            .bt-cell-cat { grid-column: 3; grid-row: 1; display: flex; align-items: flex-start; }
             .bt-cell-amt { grid-column: 4; grid-row: 1; text-align: right; }
             .bt-cell-bal { grid-column: 5; grid-row: 1; text-align: right; }
             
-            .bt-cell-desc { grid-column: 1 / 5; grid-row: 2; padding: 0 10px 12px 40px; font-size: 12px; color: #666; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-            .bt-cell-acts { grid-column: 5; grid-row: 2; display: flex; justify-content: flex-end; gap: 6px; padding: 0 10px 12px 0; }
+            /* Enhanced Sub-Row Layout */
+            .bt-cell-desc { grid-column: 1 / 5; grid-row: 2; padding: 0 10px 12px 40px; font-size: 12px; color: #666; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+            .bt-cell-acts { grid-column: 5; grid-row: 2; display: flex; justify-content: flex-end; gap: 12px; padding: 0 10px 12px 0; align-items: baseline; }
             
             .mobile-label { display: none; }
             
@@ -78,17 +79,22 @@ export function init(containerId, entityId = null) {
             .dashed-border { border-bottom: 1px dashed #81c784; padding-bottom: 2px; display: inline-block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
             .bt-cell-desc .dashed-border { white-space: normal; }
 
+            /* Perfectly Aligned Balance Row */
             .bt-bal-row { display: grid; grid-template-columns: var(--grid-cols); background: #fcfcfc; font-weight: 600; font-size: 13px; border-bottom: 1px solid #c0c7d0; }
             .bt-bal-label { grid-column: 1 / 5; padding: 12px 10px; text-align: right; color: #666; }
-            .bt-bal-amt { padding: 12px 10px; text-align: right; }
+            .bt-bal-amt { grid-column: 5; padding: 12px 10px; text-align: right; }
             
-            .cat-select { width: 100%; padding: 6px 0; border: none; border-bottom: 1px solid #ccc; border-radius: 0; font-size: 12px; background: transparent; outline: none; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 100%; background-position-y: center; background-size: 16px; padding-right: 20px; }
+            .cat-select { width: 100%; padding: 4px 0; border: none; border-bottom: 1px solid #ccc; border-radius: 0; font-size: 12px; background: transparent; outline: none; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 100%; background-position-y: center; background-size: 16px; padding-right: 20px; margin-top: -4px;}
             .cat-select:focus { border-bottom-color: var(--primary-dark); }
             
-            .btn-post-sq { background: #5cb85c; color: #fff; border: none; border-radius: 4px; width: 28px; height: 28px; cursor: pointer; font-size: 14px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
-            .cat-btn-split { background: #fff; color: #666; border: 1px solid #ccc; border-radius: 4px; padding: 0 10px; height: 28px; cursor: pointer; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
-            .cat-btn-split:hover { background: #f0f0f0; }
-            .cat-btn-undo { background: none; border: none; color: #999; cursor: pointer; font-size: 12px; text-decoration: underline; }
+            /* Text Links instead of bulky buttons */
+            .bt-action-link { font-weight: 600; font-size: 13px; text-decoration: none; cursor: pointer; transition: opacity 0.2s; color: var(--primary-dark); }
+            .bt-action-link:hover { text-decoration: underline; opacity: 0.8; }
+            .bt-action-link.post { color: #2e7d32; }
+            .bt-action-link.undo { color: #999; font-size: 12px; font-weight: normal; }
+            
+            /* Allow Full Category Text wrapping */
+            .cat-reviewed-text { font-size: 13px; font-weight: 500; color: #333; display: flex; align-items: flex-start; gap: 8px; white-space: normal; line-height: 1.3; }
             
             .txt-green { color: #2e7d32; font-weight: 500; }
             .txt-red { color: #d32f2f; font-weight: 500; }
@@ -102,19 +108,23 @@ export function init(containerId, entityId = null) {
                 .bt-th:nth-child(4) { grid-column: 3; justify-content: flex-end; }
                 .bt-th:nth-child(5) { grid-column: 4; justify-content: flex-end; }
                 
-                .bt-cell-chk { grid-column: 1; grid-row: 1; padding: 8px 5px; }
-                .bt-cell-date { grid-column: 2; grid-row: 1; padding: 8px 5px; font-size: 11px; }
-                .bt-cell-amt { grid-column: 3; grid-row: 1; padding: 8px 5px; font-size: 11px; }
-                .bt-cell-bal { grid-column: 4; grid-row: 1; padding: 8px 5px; font-size: 11px; }
+                .bt-cell-chk { grid-column: 1; grid-row: 1; padding: 10px 5px; }
+                .bt-cell-date { grid-column: 2; grid-row: 1; padding: 10px 5px; font-size: 12px; }
+                .bt-cell-amt { grid-column: 3; grid-row: 1; padding: 10px 5px; font-size: 12px; }
+                .bt-cell-bal { grid-column: 4; grid-row: 1; padding: 10px 5px; font-size: 12px; }
                 
-                .bt-cell-cat { grid-column: 1 / 4; grid-row: 2; padding: 5px 5px 5px 30px; display: flex; align-items: center; }
-                .mobile-label { display: block; font-size: 11px; color: #666; margin-right: 5px; }
+                .bt-cell-cat { grid-column: 1 / 4; grid-row: 2; padding: 2px 5px 6px 30px; display: flex; align-items: flex-start; }
+                .mobile-label { display: block; font-size: 11px; color: #666; margin-right: 5px; margin-top: 1px;}
                 
                 .bt-cell-acts { display: contents; }
-                .btn-post-wrapper { grid-column: 4; grid-row: 2; padding: 5px 5px 5px 0; display: flex; justify-content: flex-end; align-items: center; }
-                .btn-split-wrapper { grid-column: 4; grid-row: 3; padding: 5px 5px 12px 0; display: flex; justify-content: flex-end; align-items: flex-start; }
+                .btn-post-wrapper { grid-column: 4; grid-row: 2; padding: 2px 5px 6px 0; display: flex; justify-content: flex-end; align-items: flex-start; }
+                .btn-split-wrapper { grid-column: 4; grid-row: 3; padding: 2px 5px 12px 0; display: flex; justify-content: flex-end; align-items: flex-start; }
                 
-                .bt-cell-desc { grid-column: 1 / 4; grid-row: 3; padding: 5px 5px 12px 30px; }
+                .bt-cell-desc { grid-column: 1 / 4; grid-row: 3; padding: 2px 5px 12px 30px; }
+                
+                /* Perfect Mobile Balance Alignment */
+                .bt-bal-label { grid-column: 1 / 4; }
+                .bt-bal-amt { grid-column: 4; }
             }
         </style>
 
@@ -147,9 +157,9 @@ export function init(containerId, entityId = null) {
 
         <div class="bt-batch-bar" id="bt-batchBar">
             <span style="font-size: 13px; font-weight: 600; color: var(--primary-dark);" id="bt-batchCount">0 selected</span>
-            <button class="btn-post-sq" id="bt-btnBatchPost" style="width:auto; padding: 0 10px;">Post Selected</button>
-            <button class="cat-btn-split" id="bt-btnBatchUndo">Undo Selected</button>
-            <button class="cat-btn-split" id="bt-btnBatchDelete" style="color: #d32f2f; border-color: #d32f2f;">Delete Selected</button>
+            <button class="bt-action-link post" id="bt-btnBatchPost" style="border:1px solid #ccc; padding:4px 8px;">Post Selected</button>
+            <button class="bt-action-link undo" id="bt-btnBatchUndo">Undo Selected</button>
+            <button class="bt-action-link undo" id="bt-btnBatchDelete" style="color: #d32f2f;">Delete Selected</button>
         </div>
 
         <div class="bt-table">
@@ -284,8 +294,6 @@ export function init(containerId, entityId = null) {
         }
 
         const isCC = bankAccountsMap[targetAccountId].type === 'Liability';
-        
-        // BUG FIX: Format dates consistently for string comparison (YYYY-MM-DD)
         const startStr = elStart.value; 
         const endStr = elEnd.value;
         const searchTxt = elSearch.value.toLowerCase();
@@ -307,7 +315,6 @@ export function init(containerId, entityId = null) {
             let beginningBalance = 0;
 
             allTxs.forEach(tx => {
-                // String comparison works perfectly for ISO dates and avoids UTC timezone bugs
                 if (startStr && tx.date < startStr) {
                     runningBalance += tx.foreignAmount;
                     beginningBalance = runningBalance;
@@ -347,14 +354,11 @@ export function init(containerId, entityId = null) {
             else html += endBalHtml;
 
             displayTxs.forEach(tx => {
-                let amountLabel = '';
                 let amountClass = '';
                 
                 if (!isCC) {
-                    amountLabel = tx.foreignAmount > 0 ? 'Deposit' : 'Withdrawal';
                     amountClass = tx.foreignAmount > 0 ? 'txt-green' : 'txt-red';
                 } else {
-                    amountLabel = tx.foreignAmount > 0 ? 'CC Charge' : 'CC Credit';
                     amountClass = tx.foreignAmount > 0 ? 'txt-red' : 'txt-green';
                 }
 
@@ -371,17 +375,25 @@ export function init(containerId, entityId = null) {
                         defCatId = matchedCat ? matchedCat.id : "";
                     }
                     catHtml = `<select class="cat-select" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>`;
-                    actionHtmlPost = `<button class="btn-post-sq btn-post" data-id="${tx.id}" title="Post the Transaction">&#10003;</button>`;
-                    actionHtmlSplit = `<button class="cat-btn-split btn-split" data-id="${tx.id}">Split</button>`;
+                    actionHtmlPost = `<a href="#" class="bt-action-link post btn-post" data-id="${tx.id}">Post</a>`;
+                    actionHtmlSplit = `<a href="#" class="bt-action-link btn-split" data-id="${tx.id}">Split</a>`;
                 } else if (tx.status === 'Split') {
                     statusClass = 'row-split';
-                    catHtml = `<span style="color: #2e7d32; font-weight: 500; font-size: 13px;">&#10003; Split (${tx.splits ? tx.splits.length : 0})</span>`;
-                    actionHtmlPost = `<button class="cat-btn-undo" data-id="${tx.id}">Undo</button>`;
+                    catHtml = `
+                        <div class="cat-reviewed-text">
+                            <span style="color: #2e7d32;">&#10003;</span> 
+                            <span class="${dashedClass}">Split (${tx.splits ? tx.splits.length : 0})</span>
+                        </div>`;
+                    actionHtmlPost = `<a href="#" class="bt-action-link undo cat-btn-undo" data-id="${tx.id}">Undo</a>`;
                 } else {
                     statusClass = 'row-reviewed';
                     const postedName = chartOfAccounts.find(c => c.id === tx.postedCategoryId)?.name || 'Categorized';
-                    catHtml = `<span style="color: #2e7d32; font-weight: 500; font-size: 13px;">&#10003; ${postedName}</span>`;
-                    actionHtmlPost = `<button class="cat-btn-undo" data-id="${tx.id}">Undo</button>`;
+                    catHtml = `
+                        <div class="cat-reviewed-text">
+                            <span style="color: #2e7d32;">&#10003;</span> 
+                            <span class="${dashedClass}">${postedName}</span>
+                        </div>`;
+                    actionHtmlPost = `<a href="#" class="bt-action-link undo cat-btn-undo" data-id="${tx.id}">Undo</a>`;
                 }
 
                 html += `
@@ -390,16 +402,15 @@ export function init(containerId, entityId = null) {
                         <div class="bt-cell bt-cell-date"><span class="${dashedClass}">${tx.date}</span></div>
                         <div class="bt-cell bt-cell-cat">
                             <span class="mobile-label">Cat:</span>
-                            <span class="${dashedClass}" style="flex:1;">${catHtml}</span>
+                            <div style="flex:1;">${catHtml}</div>
                         </div>
                         <div class="bt-cell bt-cell-amt ${amountClass}">
-                            <div class="${dashedClass}">${formatCurrency(Math.abs(tx.foreignAmount), tx.currency)}</div>
-                            <div style="font-size: 11px; color: #999;">${amountLabel}</div>
+                            <span class="${dashedClass}">${formatCurrency(Math.abs(tx.foreignAmount), tx.currency)}</span>
                         </div>
                         <div class="bt-cell bt-cell-bal"><span class="${dashedClass}">${formatCurrency(tx.calculatedBalance, tx.currency)}</span></div>
                         
-                        <div class="bt-cell bt-cell-desc"><span class="${dashedClass}">${tx.description} ${tx.checkNo ? '(Ref: ' + tx.checkNo + ')' : ''}</span></div>
-                        <div class="bt-cell bt-cell-acts">
+                        <div class="bt-cell-desc"><span class="${dashedClass}">${tx.description} ${tx.checkNo ? '(Ref: ' + tx.checkNo + ')' : ''}</span></div>
+                        <div class="bt-cell-acts">
                             <div class="btn-post-wrapper">${actionHtmlPost}</div>
                             <div class="btn-split-wrapper">${actionHtmlSplit}</div>
                         </div>
@@ -425,12 +436,14 @@ export function init(containerId, entityId = null) {
                 });
             });
 
+            // Prevent default href jumping on link clicks
             document.querySelectorAll('.btn-post').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
+                    e.preventDefault();
                     const txId = e.target.getAttribute('data-id');
                     const selVal = document.getElementById(`sel-${txId}`).value;
                     if (!selVal) return alert("Select a category first.");
-                    e.target.textContent = "...";
+                    e.target.textContent = "Saving...";
                     await updateDoc(doc(db, "bankTransactions", txId), { status: 'Reviewed', postedCategoryId: selVal });
                     window.refreshBankTransactionsTable();
                 });
@@ -438,6 +451,7 @@ export function init(containerId, entityId = null) {
 
             document.querySelectorAll('.btn-split').forEach(btn => {
                 btn.addEventListener('click', (e) => {
+                    e.preventDefault();
                     const txId = e.target.getAttribute('data-id');
                     const tx = currentTransactions.find(t => t.id === txId);
                     openSplitModal(tx, isCC);
@@ -446,7 +460,9 @@ export function init(containerId, entityId = null) {
 
             document.querySelectorAll('.cat-btn-undo').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
+                    e.preventDefault();
                     const txId = e.target.getAttribute('data-id');
+                    e.target.textContent = "Undo...";
                     await updateDoc(doc(db, "bankTransactions", txId), { status: 'Unreviewed', postedCategoryId: null, splits: null });
                     window.refreshBankTransactionsTable();
                 });
@@ -458,7 +474,8 @@ export function init(containerId, entityId = null) {
         }
     };
 
-    document.getElementById('bt-btnBatchPost').addEventListener('click', async () => {
+    document.getElementById('bt-btnBatchPost').addEventListener('click', async (e) => {
+        e.preventDefault();
         const checked = document.querySelectorAll('.bt-row-check:checked');
         for (let chk of checked) {
             const txId = chk.getAttribute('data-id');
@@ -470,7 +487,8 @@ export function init(containerId, entityId = null) {
         window.refreshBankTransactionsTable();
     });
 
-    document.getElementById('bt-btnBatchUndo').addEventListener('click', async () => {
+    document.getElementById('bt-btnBatchUndo').addEventListener('click', async (e) => {
+        e.preventDefault();
         const checked = document.querySelectorAll('.bt-row-check:checked');
         for (let chk of checked) {
             const txId = chk.getAttribute('data-id');
@@ -479,7 +497,8 @@ export function init(containerId, entityId = null) {
         window.refreshBankTransactionsTable();
     });
 
-    document.getElementById('bt-btnBatchDelete').addEventListener('click', async () => {
+    document.getElementById('bt-btnBatchDelete').addEventListener('click', async (e) => {
+        e.preventDefault();
         if(!confirm("Are you sure you want to permanently delete the selected transactions?")) return;
         const checked = document.querySelectorAll('.bt-row-check:checked');
         for (let chk of checked) {
@@ -489,7 +508,7 @@ export function init(containerId, entityId = null) {
         window.refreshBankTransactionsTable();
     });
 
-    // --- SPLIT TRANSACTION MODAL ---
+    // --- SPLIT TRANSACTION MODAL (Untouched from previous iteration) ---
     const openSplitModal = (tx, isCC) => {
         let existing = document.getElementById('splitModalOverlay');
         if (existing) existing.remove();
@@ -564,10 +583,10 @@ export function init(containerId, entityId = null) {
                 </table>
                 
                 <div class="sp-footer">
-                    <button class="cat-btn-split" id="sp-btnAddRow">+ Add Split Row</button>
+                    <button class="bt-btn-main" id="sp-btnAddRow" style="background:#fff; color:#666; border:1px solid #ccc; font-size:12px; padding:6px 10px;">+ Add Split Row</button>
                     <div style="display:flex; gap: 10px;">
-                        <button class="cat-btn-split" id="sp-btnCancel">Cancel</button>
-                        <button class="btn-post-sq" id="sp-btnSave" style="width: auto; padding: 0 15px;">Save Split</button>
+                        <button class="bt-action-link undo" id="sp-btnCancel">Cancel</button>
+                        <button class="bt-btn-main" id="sp-btnSave" style="background:#5cb85c; padding:6px 15px;">Save Split</button>
                     </div>
                 </div>
             </div>
@@ -697,9 +716,10 @@ export function init(containerId, entityId = null) {
         });
 
         document.getElementById('sp-btnAddRow').addEventListener('click', createRow);
-        document.getElementById('sp-btnCancel').addEventListener('click', () => overlay.remove());
+        document.getElementById('sp-btnCancel').addEventListener('click', (e) => { e.preventDefault(); overlay.remove(); });
         
-        document.getElementById('sp-btnSave').addEventListener('click', async () => {
+        document.getElementById('sp-btnSave').addEventListener('click', async (e) => {
+            e.preventDefault();
             let sum = 0;
             let splits = [];
             let valid = true;
@@ -731,8 +751,8 @@ export function init(containerId, entityId = null) {
                 });
                 overlay.remove();
                 window.refreshBankTransactionsTable();
-            } catch(e) {
-                console.error(e); alert("Failed to save split.");
+            } catch(err) {
+                console.error(err); alert("Failed to save split.");
                 btn.textContent = "Save Split"; btn.disabled = false;
             }
         });
