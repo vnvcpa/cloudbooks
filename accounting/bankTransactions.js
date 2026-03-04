@@ -171,7 +171,7 @@ export function init(containerId, entityId = null) {
 
         try {
             const q = query(
-                collection(db, "bank_transactions"), 
+                collection(db, "bankTransactions"), 
                 where("companyId", "==", session.companyId),
                 where("bankAccountId", "==", targetAccountId)
             );
@@ -265,7 +265,7 @@ export function init(containerId, entityId = null) {
                     if (!selVal) return alert("Select a category first.");
                     
                     e.target.textContent = "...";
-                    await updateDoc(doc(db, "bank_transactions", txId), {
+                    await updateDoc(doc(db, "bankTransactions", txId), {
                         status: 'Reviewed',
                         postedCategoryId: selVal
                     });
@@ -276,7 +276,7 @@ export function init(containerId, entityId = null) {
             document.querySelectorAll('.cat-btn-undo').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
                     const txId = e.target.getAttribute('data-id');
-                    await updateDoc(doc(db, "bank_transactions", txId), {
+                    await updateDoc(doc(db, "bankTransactions", txId), {
                         status: 'Unreviewed',
                         postedCategoryId: null
                     });
