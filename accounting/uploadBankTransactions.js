@@ -234,7 +234,7 @@ export function init(containerId, entityId = null) {
                     };
 
                     try {
-                        await addDoc(collection(db, "bank_transactions"), txData);
+                        await addDoc(collection(db, "bankTransactions"), txData);
                         importedCount++;
                     } catch (err) { console.error("Row fail", err); }
                 }
