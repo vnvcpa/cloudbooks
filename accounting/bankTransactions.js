@@ -33,18 +33,19 @@ export function init(containerId, entityId = null) {
             .bt-header h3 { margin: 0; font-size: 20px; color: var(--primary-dark); }
             .bt-header p { margin: 4px 0 0 0; font-size: 13px; color: #666; }
             
-            /* Vertical Controls Stack */
+            /* Vertical Controls Stack with Fluidity */
             .bt-controls-stack { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
-            .bt-control-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; min-height: 32px; }
+            .bt-control-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; min-height: 32px; }
             
-            /* Line-Input UI for Controls (No left/right/top borders) */
+            /* Line-Input UI for Controls */
             .bt-line-input { padding: 6px 0; border: none; border-bottom: 1px solid #ccc; border-radius: 0; font-size: 13px; outline: none; color: #000; background: transparent; transition: border-bottom-color 0.2s; appearance: none; -webkit-appearance: none; }
             .bt-line-input:focus { border-bottom: 2px solid var(--primary-dark); padding-bottom: 5px; }
-            select.bt-line-input { background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 100%; background-position-y: center; background-size: 16px; padding-right: 20px; }
+            select.bt-line-input { background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 100%; background-position-y: center; background-size: 16px; padding-right: 18px; }
             
             #bt-filterAccount { min-width: 250px; }
-            #bt-dateMode { width: max-content; min-width: 140px; padding-left: 0; padding-right: 20px; }
-            .bt-date-box { width: 110px; padding-left: 0; padding-right: 0; }
+            /* Adjusted Date Widths to prevent wrapping */
+            #bt-dateMode { width: 115px; min-width: 115px; }
+            .bt-date-box { width: 88px; }
             
             /* Search Box */
             .bt-search { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; outline: none; flex: 1; max-width: 400px; color: #000; }
@@ -59,10 +60,10 @@ export function init(containerId, entityId = null) {
             .bt-batch-bar { display: none; padding: 10px 15px; background: #e3f2fd; border-radius: 4px; margin-bottom: 15px; align-items: center; gap: 12px; border: 1px solid #bbdefb; }
             
             /* ========================================= */
-            /* RESPONSIVE CASCADING GRID LOGIC           */
+            /* PERFECTLY ALIGNED CASCADING GRID SYSTEM   */
             /* ========================================= */
             .bt-table { 
-                --col-chk: 30px;
+                --col-chk: 24px;
                 --col-date: 4.5rem;
                 --col-vend: 18rem;
                 --col-cat: 18rem;
@@ -70,64 +71,80 @@ export function init(containerId, entityId = null) {
                 --col-bal: 7rem;
                 --col-post: 2.25rem;
                 --col-split: 2.8125rem;
-                --gap: 1rem;
+                --gap: 0.5rem;
                 width: 100%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 6px 6px 0 0; overflow-x: auto; 
             }
-            .bt-table-inner { min-width: 100%; }
+            .bt-table-inner { min-width: 65rem; }
             
-            /* Base Grid Properties */
-            .bt-thead { display: grid; gap: 0 var(--gap); background: #f4f7f9; border-bottom: 2px solid #eaedf1; }
-            .bt-th { padding: 12px 0; display: flex; align-items: center; font-weight: 600; font-size: 12px; color: var(--primary-dark); text-transform: uppercase; }
+            /* Absolute Padding Synchronization */
+            .bt-thead, .bt-row-group, .bt-bal-row { 
+                display: grid; gap: 0 var(--gap); padding: 10px 15px;
+            }
+
+            /* The Header */
+            .bt-thead { background: #f4f7f9; border-bottom: 2px solid #c0c7d0; }
+            .bt-th { padding: 0; display: flex; align-items: center; font-weight: 600; font-size: 12px; color: var(--primary-dark); text-transform: uppercase; position: relative; }
             .bt-th-sortable { cursor: pointer; user-select: none; }
-            .bt-th-sortable:hover { background: #eaedf1; }
+            .bt-th-sortable:hover { opacity: 0.8; }
+            .bt-resizer { position: absolute; right: -6px; top: 0; bottom: 0; width: 8px; cursor: col-resize; z-index: 2; }
+            .bt-resizer:hover { background: rgba(0,0,0,0.1); }
             
-            .bt-row-group { display: grid; gap: 0 var(--gap); border-bottom: 1px solid #c0c7d0; padding: 10px 0; transition: background 0.2s; background-color: #fff; align-items: end; }
+            /* The Rows */
+            .bt-row-group { border-bottom: 1px solid #dcdcdc; transition: background-color 0.2s; background-color: #fff; align-items: end; }
             .bt-row-group:hover { background-color: #f1f8ff !important; }
             .row-reviewed { background-color: #f4fbf4; }
+            .row-split { background-color: #f0f7ff; }
 
-            .bt-cell { font-size: 13px; color: #000; display: flex; flex-direction: column; justify-content: flex-end; }
-            .bt-cell-chk { text-align: center; }
-            .bt-cell-amt, .bt-cell-bal { text-align: right; }
-            .bt-cell-post, .bt-cell-split { text-align: right; align-items: flex-end; }
-            .bt-cell-desc { line-height: 1.3; }
+            /* Cell Reset */
+            .bt-cell { padding: 0; font-size: 13px; color: #000; align-self: start; display: flex; flex-direction: column; justify-content: flex-end; }
+            
+            /* The Balances */
+            .bt-bal-row { background: #fcfcfc; border-bottom: 2px solid #c0c7d0; font-weight: 600; font-size: 13px; align-items: center; }
+            .bt-bal-label { padding: 0; text-align: right; color: #666; }
+            .bt-bal-amt { padding: 0; text-align: right; color: #000; }
 
-            .bt-bal-row { display: grid; gap: 0 var(--gap); background: #fcfcfc; border-bottom: 2px solid #c0c7d0; font-weight: 600; font-size: 13px; align-items: center; }
-            .bt-bal-label { padding: 12px 0; text-align: right; color: #666; }
-            .bt-bal-amt { padding: 12px 0; text-align: right; color: #000; }
+            /* Default Desktop Matrix */
+            .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) var(--col-vend) var(--col-cat) 1fr var(--col-amt) var(--col-bal) var(--col-post) var(--col-split); }
+            
+            .bt-cell-chk { grid-column: 1; text-align: center; }
+            .bt-cell-date { grid-column: 2; }
+            .bt-cell-vend { grid-column: 3; display: flex; align-items: baseline; }
+            .bt-cell-cat { grid-column: 4; display: flex; align-items: baseline; }
+            .bt-cell-desc { grid-column: 5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; }
+            .bt-cell-amt { grid-column: 6; text-align: right; }
+            .bt-cell-bal { grid-column: 7; text-align: right; }
+            .bt-cell-post { grid-column: 8; text-align: right; align-items: flex-end; }
+            .bt-cell-split { grid-column: 9; text-align: right; align-items: flex-end; }
+            
+            .bt-bal-label { grid-column: 1 / 7; }
+            .bt-bal-amt { grid-column: 7; }
 
-            /* Inline Labels (Hidden in Desktop) */
-            .inline-lbl { display: none; font-weight: 600; font-size: 11px; color: var(--primary-dark); text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px; }
-
-            /* Input Elements */
+            /* Internal Styles */
+            .inline-lbl { display: none; font-weight: 600; font-size: 11px; color: var(--primary-dark); text-transform: uppercase; margin-right: 8px; letter-spacing: 0.5px; white-space: nowrap; margin-bottom: 4px; }
+            .solid-border { border-bottom: 1px solid #ccc; width: 100%; display: inline-block; padding-bottom: 2px; min-height: 20px; }
+            .dashed-border { border-bottom: 1px dashed #81c784; width: 100%; display: inline-block; padding-bottom: 2px; min-height: 20px; white-space: normal; word-break: break-word; }
             .cat-select { width: 100%; padding: 2px 0; border: none; border-radius: 0; font-size: 13px; background: transparent; outline: none; appearance: none; color: #000; }
             .cat-select.is-empty { color: #999; }
             .cat-select option { color: #000; }
             .cat-select option[value=""] { color: #999; }
             
-            .solid-border { border-bottom: 1px solid #ccc; width: 100%; padding-bottom: 2px; }
-            .dashed-border { border-bottom: 1px dashed #81c784; width: 100%; padding-bottom: 2px; white-space: normal; word-break: break-word;}
-            
-            .txt-link { font-weight: 600; font-size: 13px; cursor: pointer; color: var(--primary-dark); text-decoration: none; }
+            .txt-link { font-weight: 600; font-size: 13px; cursor: pointer; color: var(--primary-dark); text-decoration: none; transition: opacity 0.2s; }
+            .txt-link:hover { text-decoration: underline; opacity: 0.8; }
             .txt-link.post { color: #2e7d32; }
             .txt-link.undo { color: #999; font-weight: normal; }
             .txt-green { color: #2e7d32; font-weight: 500; font-size: 16px; }
+            .txt-red { color: #d32f2f; font-weight: 500; font-size: 13px; }
 
-            /* STATE 1: Desktop (> 1400px) - Ultra Wide 1 Line */
-            @media (min-width: 1401px) {
-                .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) var(--col-vend) var(--col-cat) 1fr var(--col-amt) var(--col-bal) var(--col-post) var(--col-split); }
-                .bt-cell-chk { grid-column: 1; grid-row: 1; }
-                .bt-cell-date { grid-column: 2; grid-row: 1; }
-                .bt-cell-vend { grid-column: 3; grid-row: 1; }
-                .bt-cell-cat { grid-column: 4; grid-row: 1; }
-                .bt-cell-desc { grid-column: 5; grid-row: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-                .bt-cell-amt { grid-column: 6; grid-row: 1; }
-                .bt-cell-bal { grid-column: 7; grid-row: 1; }
-                .bt-cell-post { grid-column: 8; grid-row: 1; }
-                .bt-cell-split { grid-column: 9; grid-row: 1; }
-                
-                .bt-bal-label { grid-column: 1 / 7; }
-                .bt-bal-amt { grid-column: 7; }
-            }
+            /* Pagination Controls */
+            .bt-pagination { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #fff; border: 1px solid #eaedf1; border-top: none; border-radius: 0 0 6px 6px; font-size: 13px; color: #666; }
+            .bt-page-controls { display: flex; align-items: center; gap: 15px; }
+            .bt-page-btn { background: #f4f7f9; border: 1px solid #ccc; padding: 5px 12px; border-radius: 4px; cursor: pointer; color: #333; transition: background 0.2s; font-size: 13px; }
+            .bt-page-btn:hover:not(:disabled) { background: #e2e6ea; }
+            .bt-page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+            /* ========================================= */
+            /* MULTI-STAGE CASCADING LOGIC               */
+            /* ========================================= */
 
             /* STATE 2: Medium Desktop (1101px - 1400px) - Desc to Line 2 */
             @media (max-width: 1400px) and (min-width: 1101px) {
@@ -135,15 +152,7 @@ export function init(containerId, entityId = null) {
                 .bt-th:nth-child(5) { display: none; }
                 .lbl-desc { display: block; }
                 
-                .bt-cell-chk { grid-column: 1; grid-row: 1; }
-                .bt-cell-date { grid-column: 2; grid-row: 1; }
-                .bt-cell-vend { grid-column: 3; grid-row: 1; }
-                .bt-cell-cat { grid-column: 4; grid-row: 1; }
-                .bt-cell-amt { grid-column: 5; grid-row: 1; }
-                .bt-cell-bal { grid-column: 6; grid-row: 1; }
-                .bt-cell-post { grid-column: 7; grid-row: 1; }
-                .bt-cell-split { grid-column: 8; grid-row: 1; }
-                
+                .bt-row-group { grid-template-rows: auto auto; }
                 .bt-cell-desc { grid-column: 3 / 7; grid-row: 2; margin-top: 8px; }
                 .bt-bal-label { grid-column: 1 / 6; }
                 .bt-bal-amt { grid-column: 6; }
@@ -155,74 +164,70 @@ export function init(containerId, entityId = null) {
                 .bt-th:nth-child(5), .bt-th:nth-child(8), .bt-th:nth-child(9) { display: none; }
                 .lbl-desc { display: block; }
                 
-                .bt-cell-chk { grid-column: 1; grid-row: 1; }
-                .bt-cell-date { grid-column: 2; grid-row: 1; }
-                .bt-cell-vend { grid-column: 3; grid-row: 1; }
-                .bt-cell-cat { grid-column: 4; grid-row: 1; }
-                .bt-cell-amt { grid-column: 5; grid-row: 1; }
-                .bt-cell-bal { grid-column: 6; grid-row: 1; }
-                
+                .bt-row-group { grid-template-rows: auto auto; }
                 .bt-cell-desc { grid-column: 3 / 5; grid-row: 2; margin-top: 8px; }
-                .bt-cell-post { grid-column: 5; grid-row: 2; margin-top: 8px; justify-content: flex-end; }
-                .bt-cell-split { grid-column: 6; grid-row: 2; margin-top: 8px; justify-content: flex-end; }
+                .bt-cell-post { grid-column: 5; grid-row: 2; margin-top: 8px; }
+                .bt-cell-split { grid-column: 6; grid-row: 2; margin-top: 8px; }
                 
                 .bt-bal-label { grid-column: 1 / 6; }
                 .bt-bal-amt { grid-column: 6; }
             }
 
-            /* STATE 4: Tablet Narrow (769px - 900px) - Cat to Line 2 */
+            /* STATE 4: Tablet Narrow (769px - 900px) - Cat to Line 3 */
             @media (max-width: 900px) and (min-width: 769px) {
+                .bt-table-inner { min-width: 100%; }
                 .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) 1fr var(--col-amt) var(--col-bal); }
                 .bt-th:nth-child(4), .bt-th:nth-child(5), .bt-th:nth-child(8), .bt-th:nth-child(9) { display: none; }
                 .lbl-cat, .lbl-desc { display: block; }
                 
-                .bt-cell-chk { grid-column: 1; grid-row: 1; }
-                .bt-cell-date { grid-column: 2; grid-row: 1; }
-                .bt-cell-vend { grid-column: 3; grid-row: 1; }
-                .bt-cell-amt { grid-column: 4; grid-row: 1; }
-                .bt-cell-bal { grid-column: 5; grid-row: 1; }
+                .bt-row-group { grid-template-rows: auto auto auto; }
                 
                 .bt-cell-cat { grid-column: 3; grid-row: 2; margin-top: 8px; }
-                .bt-cell-post { grid-column: 5; grid-row: 2; margin-top: 8px; justify-content: flex-end; }
+                .bt-cell-post { grid-column: 5; grid-row: 2; margin-top: 8px; }
                 
                 .bt-cell-desc { grid-column: 3; grid-row: 3; margin-top: 8px; }
-                .bt-cell-split { grid-column: 5; grid-row: 3; margin-top: 8px; justify-content: flex-end; }
+                .bt-cell-split { grid-column: 5; grid-row: 3; margin-top: 8px; }
                 
                 .bt-bal-label { grid-column: 1 / 5; }
                 .bt-bal-amt { grid-column: 5; }
             }
 
-            /* STATE 5: Mobile (< 768px) - Vend to Line 2 */
+            /* STATE 5: Mobile (< 768px) - Vend to Line 2, Desc to 4 */
             @media (max-width: 768px) {
                 .bt-table { --gap: 0.5rem; }
-                /* 1fr separates Date from Amt/Bal to push them to right edge */
-                .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) 1fr var(--col-amt) var(--col-bal); }
-                .bt-th:nth-child(3), .bt-th:nth-child(4), .bt-th:nth-child(5), .bt-th:nth-child(8), .bt-th:nth-child(9) { display: none; }
+                .bt-table-inner { min-width: 100%; }
+                
+                /* Keep Header completely intact & aligned for sorting */
+                .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: 24px 1fr 6rem 6rem; padding: 10px 8px; }
+                .bt-th:nth-child(3), .bt-th:nth-child(4), .bt-th:nth-child(5), .bt-th:nth-child(8), .bt-th:nth-child(9) { display: none !important; }
+                .bt-th:nth-child(6) { grid-column: 3; justify-content: flex-end; }
+                .bt-th:nth-child(7) { grid-column: 4; justify-content: flex-end; }
+                
                 .lbl-vend, .lbl-cat, .lbl-desc { display: block; }
                 
+                .bt-row-group { grid-template-rows: auto auto auto auto; }
+                
+                /* Line 1 */
                 .bt-cell-chk { grid-column: 1; grid-row: 1; }
-                .bt-cell-date { grid-column: 2; grid-row: 1; }
-                .bt-cell-amt { grid-column: 4; grid-row: 1; }
-                .bt-cell-bal { grid-column: 5; grid-row: 1; }
+                .bt-cell-date { grid-column: 2; grid-row: 1; font-size: 12px; }
+                .bt-cell-amt { grid-column: 3; grid-row: 1; font-size: 12px; }
+                .bt-cell-bal { grid-column: 4; grid-row: 1; font-size: 12px; }
                 
-                .bt-cell-vend { grid-column: 2 / 5; grid-row: 2; margin-top: 8px; }
-                .bt-cell-post { grid-column: 5; grid-row: 2; margin-top: 8px; justify-content: flex-end; }
+                /* Line 2 */
+                .bt-cell-vend { grid-column: 2 / 4; grid-row: 2; margin-top: 6px; }
+                .bt-cell-post { grid-column: 4; grid-row: 2; margin-top: 6px; }
                 
-                .bt-cell-cat { grid-column: 2 / 5; grid-row: 3; margin-top: 8px; }
-                .bt-cell-split { grid-column: 5; grid-row: 3; margin-top: 8px; justify-content: flex-end; }
+                /* Line 3 */
+                .bt-cell-cat { grid-column: 2 / 4; grid-row: 3; margin-top: 6px; }
+                .bt-cell-split { grid-column: 4; grid-row: 3; margin-top: 6px; }
                 
-                .bt-cell-desc { grid-column: 2 / 6; grid-row: 4; margin-top: 8px; }
-                
-                .bt-bal-label { grid-column: 1 / 5; }
-                .bt-bal-amt { grid-column: 5; }
+                /* Line 4 */
+                .bt-cell-desc { grid-column: 2 / 5; grid-row: 4; margin-top: 6px; font-size: 11px; }
+
+                .bt-bal-label { grid-column: 1 / 4; padding-right: 10px; }
+                .bt-bal-amt { grid-column: 4; }
                 .bt-pagination { flex-direction: column; gap: 15px; }
             }
-
-            .bt-pagination { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #fff; border: 1px solid #eaedf1; border-top: none; border-radius: 0 0 6px 6px; font-size: 13px; color: #666; }
-            .bt-page-controls { display: flex; align-items: center; gap: 15px; }
-            .bt-page-btn { background: #f4f7f9; border: 1px solid #ccc; padding: 5px 12px; border-radius: 4px; cursor: pointer; color: #333; transition: background 0.2s; font-size: 13px; }
-            .bt-page-btn:hover:not(:disabled) { background: #e2e6ea; }
-            .bt-page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         </style>
 
         <div class="bt-header">
@@ -245,7 +250,7 @@ export function init(containerId, entityId = null) {
 
         <div class="bt-controls-stack">
             <div class="bt-control-row">
-                <select class="bt-line-input" id="bt-filterAccount" style="min-width: 250px;">
+                <select class="bt-line-input" id="bt-filterAccount">
                     <option value="">Select Account...</option>
                 </select>
             </div>
@@ -264,7 +269,7 @@ export function init(containerId, entityId = null) {
                 </select>
                 
                 <input type="date" id="bt-date1" class="bt-line-input bt-date-box" style="display:none;">
-                <span id="bt-date-and" style="display:none; font-size:13px; color:#666; font-weight:500; padding: 0 4px;">and</span>
+                <span id="bt-date-and" style="display:none; font-size:13px; color:#666; font-weight:500;">and</span>
                 <input type="date" id="bt-date2" class="bt-line-input bt-date-box" style="display:none;" title="End Date">
                 
                 <div id="bt-date-display-container" style="display:none; align-items:center; gap:8px;">
@@ -420,7 +425,6 @@ export function init(containerId, entityId = null) {
         window.refreshBankTransactionsTable();
     };
 
-    // --- Dynamic Date Control UI Logic ---
     const updateDateUI = () => {
         const mode = dateMode.value;
         const d1 = elDate1.value;
@@ -491,7 +495,6 @@ export function init(containerId, entityId = null) {
         resetFiltersAndFetch();
     });
 
-    // Pagination Logic Hooks
     document.getElementById('bt-rowsPerPage').addEventListener('change', (e) => {
         rowsPerPage = parseInt(e.target.value);
         currentPage = 1;
@@ -507,7 +510,6 @@ export function init(containerId, entityId = null) {
         if (currentPage < totalPages) { currentPage++; renderTablePage(); }
     });
 
-    // Core DB Fetch Engine
     window.refreshBankTransactionsTable = async () => {
         const targetAccountId = elAccount.value;
         if (!targetAccountId) {
@@ -567,7 +569,6 @@ export function init(containerId, entityId = null) {
         }
     };
 
-    // DOM Renderer Engine
     const renderTablePage = () => {
         if (currentTransactions.length === 0) {
             listContainer.innerHTML = `<div style="padding: 40px; text-align: center; color: #666;">No matching transactions found.</div>`;
@@ -617,14 +618,8 @@ export function init(containerId, entityId = null) {
                 const vendEmptyCls = tx.vendorId ? '' : 'is-empty';
                 const catEmptyCls = defCatId ? '' : 'is-empty';
                 
-                vendHtml = `
-                    <span class="inline-lbl lbl-vend">Vendor</span>
-                    <select class="cat-select vend-select-box ${vendEmptyCls}" id="vend-${tx.id}">${buildVendorDropdown(tx.vendorId)}</select>
-                `;
-                catHtml = `
-                    <span class="inline-lbl lbl-cat">Category</span>
-                    <select class="cat-select cat-select-box ${catEmptyCls}" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>
-                `;
+                vendHtml = `<select class="cat-select vend-select-box ${vendEmptyCls}" id="vend-${tx.id}">${buildVendorDropdown(tx.vendorId)}</select>`;
+                catHtml = `<select class="cat-select cat-select-box ${catEmptyCls}" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>`;
                 postHtml = `<a class="txt-link post btn-post" data-id="${tx.id}">Post</a>`;
                 splitHtml = `<a class="txt-link btn-split" data-id="${tx.id}">Split</a>`;
             } else {
@@ -632,16 +627,8 @@ export function init(containerId, entityId = null) {
                 const vendName = vendorsList.find(v => v.id === tx.vendorId)?.name || '';
                 const catName = tx.status === 'Split' ? `Split (${tx.splits ? tx.splits.length : 0})` : (chartOfAccounts.find(c => c.id === tx.postedCategoryId)?.name || 'Categorized');
                 
-                vendHtml = `
-                    <span class="inline-lbl lbl-vend">Vendor</span>
-                    <span class="${borderClass}">${vendName}</span>
-                `;
-                catHtml = `
-                    <span class="inline-lbl lbl-cat">Category</span>
-                    <span class="${borderClass}" style="color: #2e7d32; font-weight: 500;">${catName}</span>
-                `;
-                
-                // Maps Checkmark into Post cell, Undo into Split cell for precise grid alignment
+                vendHtml = `<span class="${borderClass}">${vendName}</span>`;
+                catHtml = `<span class="${borderClass}" style="color: #2e7d32; font-weight: 500;">${catName}</span>`;
                 postHtml = `<span class="txt-green">&#10003;</span>`;
                 splitHtml = `<a class="txt-link undo cat-btn-undo" data-id="${tx.id}">Undo</a>`;
             }
@@ -650,8 +637,8 @@ export function init(containerId, entityId = null) {
                 <div class="bt-row-group ${statusClass}">
                     <div class="bt-cell bt-cell-chk"><input type="checkbox" class="bt-row-check" data-id="${tx.id}"></div>
                     <div class="bt-cell bt-cell-date"><span class="${borderClass}">${tx.date}</span></div>
-                    <div class="bt-cell bt-cell-vend">${vendHtml}</div>
-                    <div class="bt-cell bt-cell-cat">${catHtml}</div>
+                    <div class="bt-cell bt-cell-vend"><span class="inline-lbl lbl-vend">Vendor</span><div style="flex:1;">${vendHtml}</div></div>
+                    <div class="bt-cell bt-cell-cat"><span class="inline-lbl lbl-cat">Category</span><div style="flex:1;">${catHtml}</div></div>
                     <div class="bt-cell bt-cell-desc"><span class="inline-lbl lbl-desc">Bank Memo</span><span class="${borderClass}">${tx.description}</span></div>
                     <div class="bt-cell bt-cell-amt ${amtClass}"><span class="${borderClass}">${formatCurrency(Math.abs(tx.foreignAmount), tx.currency)}</span></div>
                     <div class="bt-cell bt-cell-bal"><span class="${borderClass}">${formatCurrency(tx.calculatedBalance, tx.currency)}</span></div>
@@ -718,7 +705,6 @@ export function init(containerId, entityId = null) {
         });
     };
 
-    // --- BATCH ACTIONS ---
     document.getElementById('bt-btnBatchPost').addEventListener('click', async (e) => {
         e.preventDefault();
         const checked = document.querySelectorAll('.bt-row-check:checked');
@@ -754,7 +740,6 @@ export function init(containerId, entityId = null) {
         window.refreshBankTransactionsTable();
     });
 
-    // --- SPLIT TRANSACTION MODAL (Intact) ---
     const openSplitModal = (tx, isCC) => {
         let existing = document.getElementById('splitModalOverlay');
         if (existing) existing.remove();
@@ -964,9 +949,7 @@ export function init(containerId, entityId = null) {
         
         document.getElementById('sp-btnSave').addEventListener('click', async (e) => {
             e.preventDefault();
-            let sum = 0;
-            let splits = [];
-            let valid = true;
+            let sum = 0; let splits = []; let valid = true;
             
             spTable.querySelectorAll('.sp-row-group').forEach(group => {
                 const cat = group.querySelector('.sp-cat-input').value;
@@ -994,7 +977,7 @@ export function init(containerId, entityId = null) {
                     splits: splits
                 });
                 overlay.remove();
-                window.refreshBankTransactionsTable(); // Keeps current page
+                window.refreshBankTransactionsTable();
             } catch(err) {
                 console.error(err); alert("Failed to save split.");
                 btn.textContent = "Save Split"; btn.disabled = false;
