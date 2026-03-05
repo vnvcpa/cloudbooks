@@ -36,8 +36,12 @@ export function init(containerId, entityId = null) {
             /* Vertical Controls Stack */
             .bt-controls-stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
             .bt-control-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-            .bt-select { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; outline: none; min-width: 160px; color: #000; }
+            
+            /* Line-Input UI for Controls */
+            .bt-select { padding: 8px 0; border: none; border-bottom: 1px solid #ccc; border-radius: 0; font-size: 13px; outline: none; min-width: 160px; color: #000; background: transparent; transition: border-bottom-color 0.2s; }
+            .bt-select:focus { border-bottom: 2px solid var(--primary-dark); padding-bottom: 7px; }
             .bt-search { flex: 1; min-width: 250px; }
+            #bt-dateMode { min-width: auto; width: 125px; }
             
             .bt-split-btn { display: flex; position: relative; }
             .bt-btn-main { background: var(--primary-dark); color: #fff; border: none; padding: 10px 15px; font-size: 14px; border-radius: 4px 0 0 4px; cursor: pointer; }
@@ -216,6 +220,7 @@ export function init(containerId, entityId = null) {
                     <option value="not_between">Not between</option>
                 </select>
                 <input type="date" id="bt-date1" class="bt-select" style="display:none;">
+                <span id="bt-date-and" style="display:none; font-size: 13px; color: #666; font-weight: 500;">and</span>
                 <input type="date" id="bt-date2" class="bt-select" style="display:none;" title="End Date">
             </div>
             <div class="bt-control-row">
@@ -253,7 +258,7 @@ export function init(containerId, entityId = null) {
             <div id="bt-page-info">Showing 0-0 of 0</div>
             <div class="bt-page-controls">
                 <label style="margin-right: 10px;">Rows per page: 
-                    <select class="bt-select" style="min-width: auto; padding: 4px 8px;" id="bt-rowsPerPage">
+                    <select class="bt-select" style="min-width: auto; padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px;" id="bt-rowsPerPage">
                         <option value="25">25</option>
                         <option value="50">50</option>
                         <option value="75">75</option>
@@ -270,6 +275,7 @@ export function init(containerId, entityId = null) {
     const dateMode = document.getElementById('bt-dateMode');
     const elDate1 = document.getElementById('bt-date1');
     const elDate2 = document.getElementById('bt-date2');
+    const elDateAnd = document.getElementById('bt-date-and');
     const elSearch = document.getElementById('bt-search');
     
     const listContainer = document.getElementById('bt-listContainer');
@@ -324,7 +330,7 @@ export function init(containerId, entityId = null) {
     };
 
     const buildCategoryDropdown = (selectedCatId) => {
-        let options = `<option value="">Select Category...</option>`;
+        let options = `<option value="">[Select Category]</option>`;
         chartOfAccounts.forEach(acc => {
             const isSelected = selectedCatId === acc.id ? 'selected' : '';
             options += `<option value="${acc.id}" ${isSelected}>${acc.code} - ${acc.name}</option>`;
@@ -372,9 +378,19 @@ export function init(containerId, entityId = null) {
 
     dateMode.addEventListener('change', (e) => {
         const mode = e.target.value;
-        if (mode === 'all') { elDate1.style.display = 'none'; elDate2.style.display = 'none'; }
-        else if (mode === 'between' || mode === 'not_between') { elDate1.style.display = 'block'; elDate2.style.display = 'block'; }
-        else { elDate1.style.display = 'block'; elDate2.style.display = 'none'; }
+        if (mode === 'all') { 
+            elDate1.style.display = 'none'; 
+            elDate2.style.display = 'none'; 
+            elDateAnd.style.display = 'none';
+        } else if (mode === 'between' || mode === 'not_between') { 
+            elDate1.style.display = 'block'; 
+            elDate2.style.display = 'block'; 
+            elDateAnd.style.display = 'block';
+        } else { 
+            elDate1.style.display = 'block'; 
+            elDate2.style.display = 'none'; 
+            elDateAnd.style.display = 'none';
+        }
         resetFiltersAndFetch();
     });
 
@@ -880,7 +896,7 @@ export function init(containerId, entityId = null) {
                     splits: splits
                 });
                 overlay.remove();
-                window.refreshBankTransactionsTable();
+                window.refreshBankTransactionsTable(); // Keeps current page
             } catch(err) {
                 console.error(err); alert("Failed to save split.");
                 btn.textContent = "Save Split"; btn.disabled = false;
