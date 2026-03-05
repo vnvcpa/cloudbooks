@@ -46,134 +46,134 @@ export function init(containerId, entityId = null) {
             
             .bt-batch-bar { display: none; padding: 10px 15px; background: #e3f2fd; border-radius: 4px; margin-bottom: 15px; align-items: center; gap: 12px; border: 1px solid #bbdefb; }
             
-            /* Dynamic CSS Grid Table Layout */
-            .bt-table { --grid-cols: 40px 100px 1fr 120px 120px; width: 100%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 6px; overflow-x: auto; }
-            .bt-table-inner { min-width: 600px; }
-            .bt-thead { display: grid; grid-template-columns: var(--grid-cols); background: #f4f7f9; font-weight: 600; font-size: 12px; color: var(--primary-dark); border-bottom: 2px solid #eaedf1; position: relative; }
-            .bt-th { padding: 12px 10px; display: flex; align-items: center; position: relative; }
-            .bt-th-sortable { cursor: pointer; user-select: none; }
-            .bt-th-sortable:hover { background: #eaedf1; }
-            .bt-resizer { position: absolute; right: 0; top: 0; bottom: 0; width: 5px; cursor: col-resize; z-index: 2; }
-            .bt-resizer:hover { background: rgba(0,0,0,0.1); }
+            /* Dynamic CSS Grid Table Layout with REMs */
+            .bt-table { 
+                --col-chk: 24px;
+                --col-date: 4.5rem;
+                --col-vend: 18rem;
+                --col-cat: 18rem;
+                --col-amt: 7rem;
+                --col-bal: 7rem;
+                --col-post: 2.25rem;
+                --col-split: 2.8125rem;
+                --gap: 1rem;
+                width: 100%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 6px 6px 0 0; overflow-x: auto; 
+            }
+            .bt-table-inner { min-width: 65rem; }
+            .bt-thead { display: grid; grid-template-columns: var(--col-chk) var(--col-date) var(--col-vend) var(--col-cat) 1fr var(--col-amt) var(--col-bal) var(--col-post) var(--col-split); gap: 0 var(--gap); background: #f4f7f9; font-weight: 600; font-size: 12px; color: var(--primary-dark); border-bottom: 2px solid #eaedf1; }
+            .bt-th { padding: 12px 0; display: flex; align-items: center; position: relative; }
             
-            /* Row Colors & Hover */
-            .bt-row-group { display: grid; grid-template-columns: var(--grid-cols); border-bottom: 1px solid #c0c7d0; background-color: #fff; transition: background-color 0.2s; }
+            /* Rows */
+            .bt-row-group { display: grid; grid-template-columns: var(--col-chk) var(--col-date) var(--col-vend) var(--col-cat) 1fr var(--col-amt) var(--col-bal) var(--col-post) var(--col-split); gap: 0 var(--gap); border-bottom: 1px solid #c0c7d0; padding: 10px 0; transition: background 0.2s; }
             .bt-row-group:hover { background-color: #f1f8ff !important; }
             .row-reviewed { background-color: #f4fbf4; }
-            .row-split { background-color: #f0f7ff; }
 
-            .bt-cell { padding: 12px 10px; font-size: 13px; align-self: start; }
-            .bt-cell-chk { grid-column: 1; grid-row: 1; text-align: center; }
-            .bt-cell-date { grid-column: 2; grid-row: 1; }
-            .bt-cell-cat { grid-column: 3; grid-row: 1; display: flex; align-items: flex-start; }
-            .bt-cell-amt { grid-column: 4; grid-row: 1; text-align: right; }
-            .bt-cell-bal { grid-column: 5; grid-row: 1; text-align: right; }
+            .bt-cell { font-size: 13px; align-self: start; }
+            .bt-cell-chk { grid-column: 1; text-align: center; }
+            .bt-cell-amt, .bt-cell-bal { text-align: right; }
             
-            /* Enhanced Sub-Row Layout */
-            .bt-cell-desc { grid-column: 1 / 5; grid-row: 2; padding: 0 10px 12px 40px; font-size: 12px; color: #666; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-            .bt-cell-acts { grid-column: 5; grid-row: 2; display: flex; justify-content: flex-end; gap: 12px; padding: 0 10px 12px 0; align-items: baseline; }
-            
-            .mobile-label { display: none; }
-            
-            /* Dashed bottom borders for posted items */
-            .dashed-border { border-bottom: 1px dashed #81c784; padding-bottom: 2px; display: inline-block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-            .bt-cell-desc .dashed-border { white-space: normal; }
+            /* Borders */
+            .solid-border { border-bottom: 1px solid #ccc; width: 100%; display: inline-block; }
+            .dashed-border { border-bottom: 1px dashed #81c784; width: 100%; display: inline-block; }
 
-            /* Perfectly Aligned Balance Row */
-            .bt-bal-row { display: grid; grid-template-columns: var(--grid-cols); background: #fcfcfc; font-weight: 600; font-size: 13px; border-bottom: 1px solid #c0c7d0; }
-            .bt-bal-label { grid-column: 1 / 5; padding: 12px 10px; text-align: right; color: #666; }
-            .bt-bal-amt { grid-column: 5; padding: 12px 10px; text-align: right; }
-            
-            .cat-select { width: 100%; padding: 4px 0; border: none; border-bottom: 1px solid #ccc; border-radius: 0; font-size: 12px; background: transparent; outline: none; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 100%; background-position-y: center; background-size: 16px; padding-right: 20px; margin-top: -4px;}
-            .cat-select:focus { border-bottom-color: var(--primary-dark); }
-            
-            /* Text Links instead of bulky buttons */
-            .bt-action-link { font-weight: 600; font-size: 13px; text-decoration: none; cursor: pointer; transition: opacity 0.2s; color: var(--primary-dark); }
-            .bt-action-link:hover { text-decoration: underline; opacity: 0.8; }
-            .bt-action-link.post { color: #2e7d32; }
-            .bt-action-link.undo { color: #999; font-size: 12px; font-weight: normal; }
-            
-            /* Allow Full Category Text wrapping */
-            .cat-reviewed-text { font-size: 13px; font-weight: 500; color: #333; display: flex; align-items: flex-start; gap: 8px; white-space: normal; line-height: 1.3; }
-            
-            .txt-green { color: #2e7d32; font-weight: 500; }
-            .txt-red { color: #d32f2f; font-weight: 500; }
+            .bt-bal-row { display: grid; grid-template-columns: var(--col-chk) var(--col-date) var(--col-vend) var(--col-cat) 1fr var(--col-amt) var(--col-bal) var(--col-post) var(--col-split); gap: 0 var(--gap); background: #fcfcfc; font-weight: 600; border-bottom: 2px solid #c0c7d0; }
+            .bt-bal-label { grid-column: 1 / 7; padding: 12px 0; text-align: right; color: #666; }
+            .bt-bal-amt { grid-column: 7; padding: 12px 0; text-align: right; }
 
-            /* MOBILE LAYOUT overrides */
+            .cat-select { width: 100%; padding: 2px 0; border: none; border-radius: 0; font-size: 12px; background: transparent; outline: none; appearance: none; }
+            
+            .txt-link { font-weight: 600; font-size: 13px; cursor: pointer; color: var(--primary-dark); text-decoration: none; }
+            .txt-link.post { color: #2e7d32; }
+
+            /* Pagination Controls */
+            .bt-pagination { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #fff; border: 1px solid #eaedf1; border-top: none; border-radius: 0 0 6px 6px; font-size: 13px; color: #666; }
+            .bt-page-controls { display: flex; align-items: center; gap: 15px; }
+            .bt-page-btn { background: #f4f7f9; border: 1px solid #ccc; padding: 5px 12px; border-radius: 4px; cursor: pointer; color: #333; transition: background 0.2s; font-size: 13px; }
+            .bt-page-btn:hover:not(:disabled) { background: #e2e6ea; }
+            .bt-page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+            /* MOBILE 4-LINE ROW ARCHITECTURE */
             @media (max-width: 768px) {
-                .bt-table { --grid-cols: 30px 1fr 80px 80px; }
+                .bt-table { --gap: 0.5rem; }
                 .bt-table-inner { min-width: 100%; }
-                
-                .bt-th:nth-child(3) { display: none; }
-                .bt-th:nth-child(4) { grid-column: 3; justify-content: flex-end; }
-                .bt-th:nth-child(5) { grid-column: 4; justify-content: flex-end; }
-                
-                .bt-cell-chk { grid-column: 1; grid-row: 1; padding: 10px 5px; }
-                .bt-cell-date { grid-column: 2; grid-row: 1; padding: 10px 5px; font-size: 12px; }
-                .bt-cell-amt { grid-column: 3; grid-row: 1; padding: 10px 5px; font-size: 12px; }
-                .bt-cell-bal { grid-column: 4; grid-row: 1; padding: 10px 5px; font-size: 12px; }
-                
-                .bt-cell-cat { grid-column: 1 / 4; grid-row: 2; padding: 2px 5px 6px 30px; display: flex; align-items: flex-start; }
-                .mobile-label { display: block; font-size: 11px; color: #666; margin-right: 5px; margin-top: 1px;}
-                
-                .bt-cell-acts { display: contents; }
-                .btn-post-wrapper { grid-column: 4; grid-row: 2; padding: 2px 5px 6px 0; display: flex; justify-content: flex-end; align-items: flex-start; }
-                .btn-split-wrapper { grid-column: 4; grid-row: 3; padding: 2px 5px 12px 0; display: flex; justify-content: flex-end; align-items: flex-start; }
-                
-                .bt-cell-desc { grid-column: 1 / 4; grid-row: 3; padding: 2px 5px 12px 30px; }
-                
-                /* Perfect Mobile Balance Alignment */
+                .bt-thead { display: none; }
+                .bt-row-group, .bt-bal-row { 
+                    grid-template-columns: 30px 1fr 7rem 7rem; 
+                    grid-template-rows: auto auto auto auto;
+                    gap: 4px 0.5rem;
+                }
+                /* Line 1: Date, Amt, Bal */
+                .bt-cell-chk { grid-row: 1; grid-column: 1; }
+                .bt-cell-date { grid-row: 1; grid-column: 2; }
+                .bt-cell-amt { grid-row: 1; grid-column: 3; }
+                .bt-cell-bal { grid-row: 1; grid-column: 4; }
+                /* Line 2: Vendor + Post */
+                .bt-cell-vend { grid-row: 2; grid-column: 2 / 4; display: flex; align-items: center; }
+                .bt-cell-post { grid-row: 2; grid-column: 4; text-align: right; }
+                /* Line 3: Category + Split */
+                .bt-cell-cat { grid-row: 3; grid-column: 2 / 4; display: flex; align-items: center; }
+                .bt-cell-split { grid-row: 3; grid-column: 4; text-align: right; }
+                /* Line 4: Description */
+                .bt-cell-desc { grid-row: 4; grid-column: 2 / 5; font-size: 11px; }
+
                 .bt-bal-label { grid-column: 1 / 4; }
                 .bt-bal-amt { grid-column: 4; }
+
+                .bt-pagination { flex-direction: column; gap: 15px; }
             }
         </style>
 
         <div class="bt-header">
-            <div>
-                <h3>Bank Transactions</h3>
-                <p>Categorize and review your connected feeds.</p>
-            </div>
-            <div class="bt-split-btn">
-                <button class="bt-btn-main" id="bt-btnConnect">Connect Bank</button>
-                <button class="bt-btn-arrow" id="bt-btnPrimaryDropdown">▼</button>
-                <div class="bt-dropdown" id="bt-primaryMenu">
-                    <div>Add Manual Deposit</div>
-                    <div>Add Manual Withdrawal</div>
-                    <div>Add CC Charge</div>
-                    <div>Add CC Credit</div>
-                    <div id="bt-optUpload">Upload Transactions</div>
-                </div>
-            </div>
+            <h3>Bank Transactions</h3>
+            <button class="bt-btn-main" id="bt-btnConnect">Connect Bank</button>
         </div>
 
         <div class="bt-controls">
-            <select class="bt-select" id="bt-filterAccount">
-                <option value="">Select Account...</option>
-            </select>
-            <input type="date" id="bt-filterStart" class="bt-select" title="Start Date">
-            <input type="date" id="bt-filterEnd" class="bt-select" title="End Date">
-            <input type="text" id="bt-search" class="bt-select bt-search" placeholder="Search date, description, or amount...">
+            <select class="bt-select" id="bt-filterAccount"></select>
+            <input type="date" id="bt-filterStart" class="bt-select">
+            <input type="date" id="bt-filterEnd" class="bt-select">
+            <input type="text" id="bt-search" class="bt-select bt-search" placeholder="Search date, desc, or amount...">
         </div>
 
         <div class="bt-batch-bar" id="bt-batchBar">
             <span style="font-size: 13px; font-weight: 600; color: var(--primary-dark);" id="bt-batchCount">0 selected</span>
-            <button class="bt-action-link post" id="bt-btnBatchPost" style="border:1px solid #ccc; padding:4px 8px;">Post Selected</button>
-            <button class="bt-action-link undo" id="bt-btnBatchUndo">Undo Selected</button>
-            <button class="bt-action-link undo" id="bt-btnBatchDelete" style="color: #d32f2f;">Delete Selected</button>
+            <button class="txt-link post" id="bt-btnBatchPost" style="border:1px solid #ccc; padding:4px 8px; border-radius: 4px; background:#fff;">Post Selected</button>
+            <button class="txt-link undo" id="bt-btnBatchUndo">Undo Selected</button>
+            <button class="txt-link undo" id="bt-btnBatchDelete" style="color: #d32f2f;">Delete Selected</button>
         </div>
 
         <div class="bt-table">
             <div class="bt-table-inner">
                 <div class="bt-thead" id="bt-thead">
-                    <div class="bt-th" style="justify-content:center;"><input type="checkbox" id="bt-selectAll"><div class="bt-resizer"></div></div>
-                    <div class="bt-th bt-th-sortable" id="bt-headerDate">DATE <span id="bt-sortArrow" style="margin-left:5px;">&#8595;</span><div class="bt-resizer"></div></div>
-                    <div class="bt-th">CATEGORY<div class="bt-resizer"></div></div>
-                    <div class="bt-th" style="justify-content: flex-end;">AMOUNT<div class="bt-resizer"></div></div>
+                    <div class="bt-th" style="justify-content:center;"><input type="checkbox" id="bt-selectAll"></div>
+                    <div class="bt-th bt-th-sortable" id="bt-headerDate">DATE <span id="bt-sortArrow">&#8595;</span></div>
+                    <div class="bt-th">VENDOR</div>
+                    <div class="bt-th">CATEGORY</div>
+                    <div class="bt-th">DESCRIPTION</div>
+                    <div class="bt-th" style="justify-content: flex-end;">AMOUNT</div>
                     <div class="bt-th" style="justify-content: flex-end;">BALANCE</div>
+                    <div class="bt-th"></div>
+                    <div class="bt-th"></div>
                 </div>
                 <div id="bt-listContainer">
                     <div style="padding: 40px; text-align: center; color: #666;">Select an account to view transactions.</div>
                 </div>
+            </div>
+        </div>
+        
+        <div class="bt-pagination" id="bt-pagination" style="display:none;">
+            <div id="bt-page-info">Showing 0-0 of 0</div>
+            <div class="bt-page-controls">
+                <label style="margin-right: 10px;">Rows per page: 
+                    <select class="bt-select" style="min-width: auto; padding: 4px 8px;" id="bt-rowsPerPage">
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="75">75</option>
+                        <option value="100">100</option>
+                    </select>
+                </label>
+                <button class="bt-page-btn" id="bt-btnPrev">Prev</button>
+                <button class="bt-page-btn" id="bt-btnNext">Next</button>
             </div>
         </div>
     `;
@@ -189,55 +189,23 @@ export function init(containerId, entityId = null) {
     
     let sortOrder = 'desc'; 
     let chartOfAccounts = [];
+    let vendorsList = [];
     let bankAccountsMap = {};
     let currentTransactions = []; 
 
-    const initResizer = () => {
-        const table = document.querySelector('.bt-table');
-        const headers = table.querySelectorAll('.bt-th');
-        let isMobile = window.innerWidth <= 768;
-        let colWidths = isMobile ? [30, 80, 200, 80, 80] : [40, 100, 350, 120, 120];
-
-        headers.forEach((th, i) => {
-            const resizer = th.querySelector('.bt-resizer');
-            if (!resizer) return;
-            let startX, startWidth;
-            resizer.addEventListener('mousedown', (e) => {
-                startX = e.pageX;
-                startWidth = colWidths[i];
-                const onMouseMove = (e) => {
-                    const diff = e.pageX - startX;
-                    colWidths[i] = Math.max(30, startWidth + diff);
-                    let gridStr = colWidths.map((w, idx) => idx === 2 ? '1fr' : w + 'px').join(' ');
-                    table.style.setProperty('--grid-cols', gridStr);
-                };
-                const onMouseUp = () => {
-                    document.removeEventListener('mousemove', onMouseMove);
-                    document.removeEventListener('mouseup', onMouseUp);
-                };
-                document.addEventListener('mousemove', onMouseMove);
-                document.addEventListener('mouseup', onMouseUp);
-            });
-        });
-    };
-    initResizer();
-
-    const primaryBtn = document.getElementById('bt-btnPrimaryDropdown');
-    const primaryMenu = document.getElementById('bt-primaryMenu');
-    primaryBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        primaryMenu.style.display = primaryMenu.style.display === 'block' ? 'none' : 'block';
-    });
-    document.addEventListener('click', () => primaryMenu.style.display = 'none');
-    document.getElementById('bt-optUpload').addEventListener('click', () => openUploadModal(containerId));
+    // Pagination State
+    let currentPage = 1;
+    let rowsPerPage = 25;
 
     const loadDependencies = async () => {
         try {
             chartOfAccounts = [];
+            vendorsList = [];
             elAccount.innerHTML = '<option value="">Select Account...</option>';
-            const q = query(collection(db, "chartOfAccounts"), where("companyId", "==", session.companyId));
-            const snap = await getDocs(q);
-            snap.forEach(doc => {
+            
+            const qCoa = query(collection(db, "chartOfAccounts"), where("companyId", "==", session.companyId));
+            const snapCoa = await getDocs(qCoa);
+            snapCoa.forEach(doc => {
                 const data = doc.data();
                 chartOfAccounts.push({ id: doc.id, ...data });
                 if (data.type === 'Asset' || data.type === 'Liability') {
@@ -248,6 +216,11 @@ export function init(containerId, entityId = null) {
                     elAccount.appendChild(opt);
                 }
             });
+
+            const qVend = query(collection(db, "vendors"), where("companyId", "==", session.companyId));
+            const snapVend = await getDocs(qVend);
+            snapVend.forEach(doc => vendorsList.push({ id: doc.id, ...doc.data() }));
+
         } catch(e) { console.error(e); }
     };
 
@@ -258,6 +231,15 @@ export function init(containerId, entityId = null) {
             options += `<option value="${acc.id}" ${isSelected}>${acc.code} - ${acc.name}</option>`;
         });
         options += `<option value="ADD_NEW" style="font-weight: bold; color: var(--primary-dark);">+ Add New Account</option>`;
+        return options;
+    };
+
+    const buildVendorDropdown = (selectedVendId) => {
+        let options = `<option value="">[Add New or Select a Vendor]</option>`;
+        vendorsList.forEach(v => {
+            const isSelected = selectedVendId === v.id ? 'selected' : '';
+            options += `<option value="${v.id}" ${isSelected}>${v.name || v.companyName}</option>`;
+        });
         return options;
     };
 
@@ -273,215 +255,242 @@ export function init(containerId, entityId = null) {
     };
 
     selectAll.addEventListener('change', (e) => {
-        const rowChecks = document.querySelectorAll('.bt-row-check');
-        rowChecks.forEach(chk => chk.checked = e.target.checked);
+        document.querySelectorAll('.bt-row-check').forEach(chk => chk.checked = e.target.checked);
         updateBatchUI();
     });
+
+    // Reset page to 1 when filters change to avoid empty state bugs
+    const resetFiltersAndFetch = () => {
+        currentPage = 1;
+        window.refreshBankTransactionsTable();
+    };
+
+    elAccount.addEventListener('change', resetFiltersAndFetch);
+    elStart.addEventListener('change', resetFiltersAndFetch);
+    elEnd.addEventListener('change', resetFiltersAndFetch);
+    elSearch.addEventListener('input', resetFiltersAndFetch);
 
     document.getElementById('bt-headerDate').addEventListener('click', () => {
         sortOrder = sortOrder === 'desc' ? 'asc' : 'desc';
         document.getElementById('bt-sortArrow').innerHTML = sortOrder === 'desc' ? '&#8595;' : '&#8593;';
-        window.refreshBankTransactionsTable();
+        resetFiltersAndFetch();
     });
 
+    // Pagination Listeners
+    document.getElementById('bt-rowsPerPage').addEventListener('change', (e) => {
+        rowsPerPage = parseInt(e.target.value);
+        currentPage = 1;
+        renderTablePage();
+    });
+
+    document.getElementById('bt-btnPrev').addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderTablePage();
+        }
+    });
+
+    document.getElementById('bt-btnNext').addEventListener('click', () => {
+        const totalPages = Math.ceil(currentTransactions.length / rowsPerPage);
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderTablePage();
+        }
+    });
+
+    // Core Fetch Logic (Hits DB once, stores in memory)
     window.refreshBankTransactionsTable = async () => {
         const targetAccountId = elAccount.value;
         if (!targetAccountId) {
             listContainer.innerHTML = `<div style="padding: 40px; text-align: center; color: #666;">Select an account to view transactions.</div>`;
             batchBar.style.display = 'none';
+            document.getElementById('bt-pagination').style.display = 'none';
             selectAll.checked = false;
             return;
         }
 
-        const isCC = bankAccountsMap[targetAccountId].type === 'Liability';
-        const startStr = elStart.value; 
+        const startStr = elStart.value;
         const endStr = elEnd.value;
         const searchTxt = elSearch.value.toLowerCase();
 
         try {
-            const q = query(
-                collection(db, "bankTransactions"), 
-                where("companyId", "==", session.companyId),
-                where("bankAccountId", "==", targetAccountId)
-            );
+            const q = query(collection(db, "bankTransactions"), where("companyId", "==", session.companyId), where("bankAccountId", "==", targetAccountId));
             const snap = await getDocs(q);
             
             let allTxs = [];
-            snap.forEach(doc => { allTxs.push({ id: doc.id, ...doc.data() }); });
+            snap.forEach(doc => allTxs.push({ id: doc.id, ...doc.data() }));
+            
+            // Calculate running balances strictly oldest to newest
             allTxs.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-            let runningBalance = 0;
-            let displayTxs = [];
-            let beginningBalance = 0;
+            let runningBalance = 0, displayTxs = [];
 
             allTxs.forEach(tx => {
                 if (startStr && tx.date < startStr) {
                     runningBalance += tx.foreignAmount;
-                    beginningBalance = runningBalance;
                 } else {
                     runningBalance += tx.foreignAmount;
                     tx.calculatedBalance = runningBalance;
                     
                     if (endStr && tx.date > endStr) return;
-
-                    if (searchTxt) {
-                        const amountStr = String(Math.abs(tx.foreignAmount));
-                        const match = tx.date.includes(searchTxt) || 
-                                      (tx.description || '').toLowerCase().includes(searchTxt) || 
-                                      amountStr.includes(searchTxt);
-                        if (!match) return;
-                    }
+                    if (searchTxt && !tx.description.toLowerCase().includes(searchTxt) && !String(Math.abs(tx.foreignAmount)).includes(searchTxt) && !tx.date.includes(searchTxt)) return;
+                    
                     displayTxs.push(tx);
                 }
             });
 
-            currentTransactions = displayTxs; 
             if (sortOrder === 'desc') displayTxs.reverse();
-
-            if (displayTxs.length === 0) {
-                listContainer.innerHTML = `<div style="padding: 40px; text-align: center; color: #666;">No matching transactions found.</div>`;
-                return;
-            }
-
-            let html = '';
-            const currencyCode = displayTxs[0].currency; 
-            const closingBal = sortOrder === 'desc' ? displayTxs[0].calculatedBalance : displayTxs[displayTxs.length-1].calculatedBalance;
             
-            const begBalHtml = `<div class="bt-bal-row"><div class="bt-bal-label">Beginning Balance</div><div class="bt-bal-amt">${formatCurrency(beginningBalance, currencyCode)}</div></div>`;
-            const endBalHtml = `<div class="bt-bal-row"><div class="bt-bal-label">Ending Balance</div><div class="bt-bal-amt">${formatCurrency(closingBal, currencyCode)}</div></div>`;
+            currentTransactions = displayTxs;
+            renderTablePage(); // Hand off to renderer
 
-            if (sortOrder === 'asc') html += begBalHtml;
-            else html += endBalHtml;
-
-            displayTxs.forEach(tx => {
-                let amountClass = '';
-                
-                if (!isCC) {
-                    amountClass = tx.foreignAmount > 0 ? 'txt-green' : 'txt-red';
-                } else {
-                    amountClass = tx.foreignAmount > 0 ? 'txt-red' : 'txt-green';
-                }
-
-                let catHtml = '';
-                let actionHtmlPost = '';
-                let actionHtmlSplit = '';
-                let statusClass = '';
-                let dashedClass = tx.status !== 'Unreviewed' ? 'dashed-border' : '';
-
-                if (tx.status === 'Unreviewed') {
-                    let defCatId = tx.postedCategoryId;
-                    if(!defCatId) {
-                        const matchedCat = chartOfAccounts.find(c => c.name === tx.suggestedCategory);
-                        defCatId = matchedCat ? matchedCat.id : "";
-                    }
-                    catHtml = `<select class="cat-select" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>`;
-                    actionHtmlPost = `<a href="#" class="bt-action-link post btn-post" data-id="${tx.id}">Post</a>`;
-                    actionHtmlSplit = `<a href="#" class="bt-action-link btn-split" data-id="${tx.id}">Split</a>`;
-                } else if (tx.status === 'Split') {
-                    statusClass = 'row-split';
-                    catHtml = `
-                        <div class="cat-reviewed-text">
-                            <span style="color: #2e7d32;">&#10003;</span> 
-                            <span class="${dashedClass}">Split (${tx.splits ? tx.splits.length : 0})</span>
-                        </div>`;
-                    actionHtmlPost = `<a href="#" class="bt-action-link undo cat-btn-undo" data-id="${tx.id}">Undo</a>`;
-                } else {
-                    statusClass = 'row-reviewed';
-                    const postedName = chartOfAccounts.find(c => c.id === tx.postedCategoryId)?.name || 'Categorized';
-                    catHtml = `
-                        <div class="cat-reviewed-text">
-                            <span style="color: #2e7d32;">&#10003;</span> 
-                            <span class="${dashedClass}">${postedName}</span>
-                        </div>`;
-                    actionHtmlPost = `<a href="#" class="bt-action-link undo cat-btn-undo" data-id="${tx.id}">Undo</a>`;
-                }
-
-                html += `
-                    <div class="bt-row-group ${statusClass}">
-                        <div class="bt-cell bt-cell-chk"><input type="checkbox" class="bt-row-check" data-id="${tx.id}"></div>
-                        <div class="bt-cell bt-cell-date"><span class="${dashedClass}">${tx.date}</span></div>
-                        <div class="bt-cell bt-cell-cat">
-                            <span class="mobile-label">Cat:</span>
-                            <div style="flex:1;">${catHtml}</div>
-                        </div>
-                        <div class="bt-cell bt-cell-amt ${amountClass}">
-                            <span class="${dashedClass}">${formatCurrency(Math.abs(tx.foreignAmount), tx.currency)}</span>
-                        </div>
-                        <div class="bt-cell bt-cell-bal"><span class="${dashedClass}">${formatCurrency(tx.calculatedBalance, tx.currency)}</span></div>
-                        
-                        <div class="bt-cell-desc"><span class="${dashedClass}">${tx.description} ${tx.checkNo ? '(Ref: ' + tx.checkNo + ')' : ''}</span></div>
-                        <div class="bt-cell-acts">
-                            <div class="btn-post-wrapper">${actionHtmlPost}</div>
-                            <div class="btn-split-wrapper">${actionHtmlSplit}</div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            if (sortOrder === 'asc') html += endBalHtml;
-            else html += begBalHtml;
-
-            listContainer.innerHTML = html;
-            selectAll.checked = false;
-            updateBatchUI();
-
-            document.querySelectorAll('.bt-row-check').forEach(chk => chk.addEventListener('change', updateBatchUI));
-
-            document.querySelectorAll('.cat-select').forEach(sel => {
-                sel.addEventListener('change', (e) => {
-                    if (e.target.value === 'ADD_NEW') {
-                        openAddCoaModal(containerId);
-                        e.target.value = ''; 
-                    }
-                });
-            });
-
-            // Prevent default href jumping on link clicks
-            document.querySelectorAll('.btn-post').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    const txId = e.target.getAttribute('data-id');
-                    const selVal = document.getElementById(`sel-${txId}`).value;
-                    if (!selVal) return alert("Select a category first.");
-                    e.target.textContent = "Saving...";
-                    await updateDoc(doc(db, "bankTransactions", txId), { status: 'Reviewed', postedCategoryId: selVal });
-                    window.refreshBankTransactionsTable();
-                });
-            });
-
-            document.querySelectorAll('.btn-split').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const txId = e.target.getAttribute('data-id');
-                    const tx = currentTransactions.find(t => t.id === txId);
-                    openSplitModal(tx, isCC);
-                });
-            });
-
-            document.querySelectorAll('.cat-btn-undo').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    const txId = e.target.getAttribute('data-id');
-                    e.target.textContent = "Undo...";
-                    await updateDoc(doc(db, "bankTransactions", txId), { status: 'Unreviewed', postedCategoryId: null, splits: null });
-                    window.refreshBankTransactionsTable();
-                });
-            });
-
-        } catch (e) {
-            console.error(e);
+        } catch (e) { 
+            console.error(e); 
             listContainer.innerHTML = `<div style="padding: 40px; text-align: center; color: #d9534f;">Error loading data.</div>`;
         }
     };
 
+    // Fast Local DOM Renderer Engine
+    const renderTablePage = () => {
+        if (currentTransactions.length === 0) {
+            listContainer.innerHTML = `<div style="padding: 40px; text-align: center; color: #666;">No matching transactions found.</div>`;
+            document.getElementById('bt-pagination').style.display = 'none';
+            batchBar.style.display = 'none';
+            selectAll.checked = false;
+            return;
+        }
+
+        const totalRows = currentTransactions.length;
+        const totalPages = Math.ceil(totalRows / rowsPerPage);
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        const startIndex = (currentPage - 1) * rowsPerPage;
+        const endIndex = Math.min(startIndex + rowsPerPage, totalRows);
+        const paginatedTxs = currentTransactions.slice(startIndex, endIndex);
+
+        // Update Pagination UI
+        document.getElementById('bt-pagination').style.display = 'flex';
+        document.getElementById('bt-page-info').textContent = `Showing ${startIndex + 1}-${endIndex} of ${totalRows}`;
+        document.getElementById('bt-btnPrev').disabled = currentPage === 1;
+        document.getElementById('bt-btnNext').disabled = currentPage === totalPages;
+
+        const targetAccountId = elAccount.value;
+        const isCC = bankAccountsMap[targetAccountId].type === 'Liability';
+        const currencyCode = paginatedTxs[0]?.currency || 'PHP';
+
+        // Intelligent Page Balances Calculation
+        const chronFirstItem = sortOrder === 'asc' ? paginatedTxs[0] : paginatedTxs[paginatedTxs.length - 1];
+        const chronLastItem = sortOrder === 'asc' ? paginatedTxs[paginatedTxs.length - 1] : paginatedTxs[0];
+        
+        const pageBeginningBal = chronFirstItem.calculatedBalance - chronFirstItem.foreignAmount;
+        const pageClosingBal = chronLastItem.calculatedBalance;
+
+        let html = '';
+        const balRow = (lbl, amt) => `<div class="bt-bal-row"><div class="bt-bal-label">${lbl}</div><div class="bt-bal-amt">${formatCurrency(amt || 0, currencyCode)}</div></div>`;
+        
+        html += (sortOrder === 'asc') ? balRow('Beginning Balance', pageBeginningBal) : balRow('Ending Balance', pageClosingBal);
+
+        paginatedTxs.forEach(tx => {
+            const isPosted = tx.status !== 'Unreviewed';
+            const borderClass = isPosted ? 'dashed-border' : 'solid-border';
+            const amtClass = tx.foreignAmount > 0 ? (!isCC ? 'txt-green' : 'txt-red') : (!isCC ? 'txt-red' : 'txt-green');
+            
+            let vendHtml = '', catHtml = '', postHtml = '', splitHtml = '', statusClass = '';
+
+            if (!isPosted) {
+                let defCatId = tx.postedCategoryId || (chartOfAccounts.find(c => c.name === tx.suggestedCategory)?.id || "");
+                vendHtml = `<select class="cat-select vend-select-box" id="vend-${tx.id}">${buildVendorDropdown(tx.vendorId)}</select>`;
+                catHtml = `<select class="cat-select cat-select-box" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>`;
+                postHtml = `<a class="txt-link post btn-post" data-id="${tx.id}">Post</a>`;
+                splitHtml = `<a class="txt-link btn-split" data-id="${tx.id}">Split</a>`;
+            } else {
+                statusClass = tx.status === 'Split' ? 'row-split' : 'row-reviewed';
+                const vendName = vendorsList.find(v => v.id === tx.vendorId)?.name || '';
+                const catName = tx.status === 'Split' ? `Split (${tx.splits ? tx.splits.length : 0})` : (chartOfAccounts.find(c => c.id === tx.postedCategoryId)?.name || 'Categorized');
+                
+                vendHtml = `<span class="${borderClass}">${vendName}</span>`;
+                catHtml = `<span class="${borderClass}" style="color: #2e7d32; font-weight: 500;">${catName}</span>`;
+                postHtml = `<span class="txt-green" style="margin-right:4px;">✔</span> <a class="txt-link undo cat-btn-undo" data-id="${tx.id}">Undo</a>`;
+            }
+
+            html += `
+                <div class="bt-row-group ${statusClass}">
+                    <div class="bt-cell bt-cell-chk"><input type="checkbox" class="bt-row-check" data-id="${tx.id}"></div>
+                    <div class="bt-cell bt-cell-date"><span class="${borderClass}">${tx.date}</span></div>
+                    <div class="bt-cell bt-cell-vend"><span class="mobile-label">Vend:</span><div style="flex:1;">${vendHtml}</div></div>
+                    <div class="bt-cell bt-cell-cat"><span class="mobile-label">Cat:</span><div style="flex:1;">${catHtml}</div></div>
+                    <div class="bt-cell bt-cell-desc"><span class="${borderClass}">${tx.description}</span></div>
+                    <div class="bt-cell bt-cell-amt ${amtClass}"><span class="${borderClass}">${formatCurrency(Math.abs(tx.foreignAmount), tx.currency)}</span></div>
+                    <div class="bt-cell bt-cell-bal"><span class="${borderClass}">${formatCurrency(tx.calculatedBalance, tx.currency)}</span></div>
+                    <div class="bt-cell bt-cell-post">${postHtml}</div>
+                    <div class="bt-cell bt-cell-split">${splitHtml}</div>
+                </div>
+            `;
+        });
+
+        html += (sortOrder === 'asc') ? balRow('Ending Balance', pageClosingBal) : balRow('Beginning Balance', pageBeginningBal);
+        
+        listContainer.innerHTML = html;
+        selectAll.checked = false;
+        updateBatchUI();
+        bindRenderedRowEvents();
+    };
+
+    // Isolate Event Binders to specifically target the newly rendered page rows
+    const bindRenderedRowEvents = () => {
+        document.querySelectorAll('.bt-row-check').forEach(chk => chk.addEventListener('change', updateBatchUI));
+
+        document.querySelectorAll('.cat-select-box').forEach(sel => {
+            sel.addEventListener('change', (e) => {
+                if (e.target.value === 'ADD_NEW') { openAddCoaModal(containerId); e.target.value = ''; }
+            });
+        });
+
+        document.querySelectorAll('.btn-post').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const txId = e.target.getAttribute('data-id');
+                const selVal = document.getElementById(`sel-${txId}`).value;
+                const vendVal = document.getElementById(`vend-${txId}`)?.value || null;
+                if (!selVal) return alert("Select a category first.");
+                e.target.textContent = "Saving...";
+                await updateDoc(doc(db, "bankTransactions", txId), { status: 'Reviewed', postedCategoryId: selVal, vendorId: vendVal });
+                window.refreshBankTransactionsTable(); // Keeps current page!
+            });
+        });
+
+        document.querySelectorAll('.btn-split').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const txId = e.target.getAttribute('data-id');
+                const targetAccountId = elAccount.value;
+                const isCC = bankAccountsMap[targetAccountId].type === 'Liability';
+                const tx = currentTransactions.find(t => t.id === txId);
+                openSplitModal(tx, isCC);
+            });
+        });
+
+        document.querySelectorAll('.cat-btn-undo').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const txId = e.target.getAttribute('data-id');
+                e.target.textContent = "Undo...";
+                await updateDoc(doc(db, "bankTransactions", txId), { status: 'Unreviewed', postedCategoryId: null, vendorId: null, splits: null });
+                window.refreshBankTransactionsTable(); // Keeps current page!
+            });
+        });
+    };
+
+    // --- BATCH ACTIONS ---
     document.getElementById('bt-btnBatchPost').addEventListener('click', async (e) => {
         e.preventDefault();
         const checked = document.querySelectorAll('.bt-row-check:checked');
         for (let chk of checked) {
             const txId = chk.getAttribute('data-id');
             const sel = document.getElementById(`sel-${txId}`);
+            const vend = document.getElementById(`vend-${txId}`);
             if (sel && sel.value && sel.value !== 'ADD_NEW') {
-                await updateDoc(doc(db, "bankTransactions", txId), { status: 'Reviewed', postedCategoryId: sel.value });
+                await updateDoc(doc(db, "bankTransactions", txId), { status: 'Reviewed', postedCategoryId: sel.value, vendorId: vend ? vend.value : null });
             }
         }
         window.refreshBankTransactionsTable();
@@ -492,7 +501,7 @@ export function init(containerId, entityId = null) {
         const checked = document.querySelectorAll('.bt-row-check:checked');
         for (let chk of checked) {
             const txId = chk.getAttribute('data-id');
-            await updateDoc(doc(db, "bankTransactions", txId), { status: 'Unreviewed', postedCategoryId: null, splits: null });
+            await updateDoc(doc(db, "bankTransactions", txId), { status: 'Unreviewed', postedCategoryId: null, vendorId: null, splits: null });
         }
         window.refreshBankTransactionsTable();
     });
@@ -508,7 +517,7 @@ export function init(containerId, entityId = null) {
         window.refreshBankTransactionsTable();
     });
 
-    // --- SPLIT TRANSACTION MODAL (Untouched from previous iteration) ---
+    // --- SPLIT TRANSACTION MODAL (Intact) ---
     const openSplitModal = (tx, isCC) => {
         let existing = document.getElementById('splitModalOverlay');
         if (existing) existing.remove();
@@ -552,9 +561,7 @@ export function init(containerId, entityId = null) {
                 .sp-total-row { font-weight: bold; font-size: 14px; text-align: right; padding: 15px 5px; }
                 .sp-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eaedf1; padding-top: 20px; }
 
-                @media (max-width: 768px) {
-                    .sp-amt-input { width: 85px; } 
-                }
+                @media (max-width: 768px) { .sp-amt-input { width: 85px; } }
             </style>
             <div class="sp-modal" id="sp-modalBox">
                 <div class="sp-header">
@@ -585,7 +592,7 @@ export function init(containerId, entityId = null) {
                 <div class="sp-footer">
                     <button class="bt-btn-main" id="sp-btnAddRow" style="background:#fff; color:#666; border:1px solid #ccc; font-size:12px; padding:6px 10px;">+ Add Split Row</button>
                     <div style="display:flex; gap: 10px;">
-                        <button class="bt-action-link undo" id="sp-btnCancel">Cancel</button>
+                        <a href="#" class="txt-link undo" id="sp-btnCancel">Cancel</a>
                         <button class="bt-btn-main" id="sp-btnSave" style="background:#5cb85c; padding:6px 15px;">Save Split</button>
                     </div>
                 </div>
@@ -658,7 +665,6 @@ export function init(containerId, entityId = null) {
 
             tbodyGroup.addEventListener('dragstart', () => tbodyGroup.classList.add('dragging'));
             tbodyGroup.addEventListener('dragend', () => tbodyGroup.classList.remove('dragging'));
-
             spTable.insertBefore(tbodyGroup, tfoot);
         };
 
@@ -720,9 +726,7 @@ export function init(containerId, entityId = null) {
         
         document.getElementById('sp-btnSave').addEventListener('click', async (e) => {
             e.preventDefault();
-            let sum = 0;
-            let splits = [];
-            let valid = true;
+            let sum = 0; let splits = []; let valid = true;
             
             spTable.querySelectorAll('.sp-row-group').forEach(group => {
                 const cat = group.querySelector('.sp-cat-input').value;
@@ -750,18 +754,13 @@ export function init(containerId, entityId = null) {
                     splits: splits
                 });
                 overlay.remove();
-                window.refreshBankTransactionsTable();
+                window.refreshBankTransactionsTable(); // Keeps current page
             } catch(err) {
                 console.error(err); alert("Failed to save split.");
                 btn.textContent = "Save Split"; btn.disabled = false;
             }
         });
     };
-
-    elAccount.addEventListener('change', window.refreshBankTransactionsTable);
-    elStart.addEventListener('change', window.refreshBankTransactionsTable);
-    elEnd.addEventListener('change', window.refreshBankTransactionsTable);
-    elSearch.addEventListener('input', window.refreshBankTransactionsTable);
 
     loadDependencies();
 }
