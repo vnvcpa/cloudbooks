@@ -1,4 +1,4 @@
-// accounting/bankTransactions.js
+//- accounting/bankTransactions.js
 
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, query, where, getDocs, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -34,14 +34,20 @@ export function init(containerId, entityId = null) {
             .bt-header p { margin: 4px 0 0 0; font-size: 13px; color: #666; }
             
             /* Vertical Controls Stack */
-            .bt-controls-stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
-            .bt-control-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+            .bt-controls-stack { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+            .bt-control-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; min-height: 32px; }
             
             /* Line-Input UI for Controls */
-            .bt-select { padding: 8px 0; border: none; border-bottom: 1px solid #ccc; border-radius: 0; font-size: 13px; outline: none; min-width: 160px; color: #000; background: transparent; transition: border-bottom-color 0.2s; }
-            .bt-select:focus { border-bottom: 2px solid var(--primary-dark); padding-bottom: 7px; }
-            .bt-search { flex: 1; min-width: 250px; }
-            #bt-dateMode { min-width: auto; width: 125px; }
+            .bt-line-input { padding: 6px 0; border: none; border-bottom: 1px solid #ccc; border-radius: 0; font-size: 13px; outline: none; color: #000; background: transparent; transition: border-bottom-color 0.2s; appearance: none; -webkit-appearance: none; }
+            .bt-line-input:focus { border-bottom: 2px solid var(--primary-dark); padding-bottom: 5px; }
+            select.bt-line-input { background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 100%; background-position-y: center; background-size: 16px; padding-right: 20px; }
+            
+            #bt-filterAccount { min-width: 250px; }
+            #bt-dateMode { width: 135px; min-width: 135px; }
+            .bt-date-box { width: 110px; }
+            
+            /* Standard Search Box (Intact) */
+            .bt-search { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; outline: none; flex: 1; max-width: 400px; color: #000; }
             
             .bt-split-btn { display: flex; position: relative; }
             .bt-btn-main { background: var(--primary-dark); color: #fff; border: none; padding: 10px 15px; font-size: 14px; border-radius: 4px 0 0 4px; cursor: pointer; }
@@ -145,7 +151,6 @@ export function init(containerId, entityId = null) {
                 .bt-table { --gap: 0.5rem; }
                 .bt-table-inner { min-width: 100%; }
                 
-                /* Keep Header visible but hide everything except Chk, Date, Amt, Bal */
                 .bt-thead { grid-template-columns: 30px 1fr 7rem 7rem; gap: 0 var(--gap); padding: 0 6px; }
                 .bt-th-vend, .bt-th-cat, .bt-th-desc, .bt-th-post, .bt-th-split { display: none !important; }
                 
@@ -158,21 +163,17 @@ export function init(containerId, entityId = null) {
                 
                 .lbl-vend, .lbl-cat, .lbl-desc { display: inline-block; }
                 
-                /* Line 1: Date, Amt, Bal */
                 .bt-cell-chk { grid-row: 1; grid-column: 1; }
                 .bt-cell-date { grid-row: 1; grid-column: 2; }
                 .bt-cell-amt { grid-row: 1; grid-column: 3; text-align: right; }
                 .bt-cell-bal { grid-row: 1; grid-column: 4; text-align: right; }
                 
-                /* Line 2: Vendor + Post */
                 .bt-cell-vend { grid-row: 2; grid-column: 2 / 4; }
                 .bt-cell-post { grid-row: 2; grid-column: 4; text-align: right; align-self: end; }
                 
-                /* Line 3: Category + Split */
                 .bt-cell-cat { grid-row: 3; grid-column: 2 / 4; }
                 .bt-cell-split { grid-row: 3; grid-column: 4; text-align: right; align-self: end; }
                 
-                /* Line 4: Description */
                 .bt-cell-desc { grid-row: 4; grid-column: 2 / 5; }
 
                 .bt-bal-row { grid-template-columns: 30px 1fr 7rem 7rem; gap: 0.5rem; padding: 0 6px; }
@@ -203,12 +204,13 @@ export function init(containerId, entityId = null) {
 
         <div class="bt-controls-stack">
             <div class="bt-control-row">
-                <select class="bt-select" id="bt-filterAccount">
+                <select class="bt-line-input" id="bt-filterAccount" style="min-width: 250px;">
                     <option value="">Select Account...</option>
                 </select>
             </div>
+            
             <div class="bt-control-row">
-                <select class="bt-select" id="bt-dateMode">
+                <select class="bt-line-input" id="bt-dateMode">
                     <option value="all">All Dates</option>
                     <option value="eq">Equals</option>
                     <option value="neq">Not equals</option>
@@ -219,12 +221,19 @@ export function init(containerId, entityId = null) {
                     <option value="between">Between / Range</option>
                     <option value="not_between">Not between</option>
                 </select>
-                <input type="date" id="bt-date1" class="bt-select" style="display:none;">
-                <span id="bt-date-and" style="display:none; font-size: 13px; color: #666; font-weight: 500;">and</span>
-                <input type="date" id="bt-date2" class="bt-select" style="display:none;" title="End Date">
+                
+                <input type="date" id="bt-date1" class="bt-line-input bt-date-box" style="display:none;">
+                <span id="bt-date-and" style="display:none; font-size:13px; color:#666; font-weight:500;">and</span>
+                <input type="date" id="bt-date2" class="bt-line-input bt-date-box" style="display:none;" title="End Date">
+                
+                <div id="bt-date-display-container" style="display:none; align-items:center; gap:8px;">
+                    <span id="bt-date-display-text" class="bt-line-input" style="border-bottom: 1px solid transparent; font-weight: 500;"></span>
+                    <button id="bt-date-clear" style="background:transparent; border:none; color:#d9534f; cursor:pointer; font-size:18px; line-height:1; padding:0; display:flex; align-items:center;" title="Clear Filter">&times;</button>
+                </div>
             </div>
+
             <div class="bt-control-row">
-                <input type="text" id="bt-search" class="bt-select bt-search" placeholder="Search date, description, or amount...">
+                <input type="text" id="bt-search" class="bt-search" placeholder="Search date, description, or amount...">
             </div>
         </div>
 
@@ -276,6 +285,9 @@ export function init(containerId, entityId = null) {
     const elDate1 = document.getElementById('bt-date1');
     const elDate2 = document.getElementById('bt-date2');
     const elDateAnd = document.getElementById('bt-date-and');
+    const dateDisplayContainer = document.getElementById('bt-date-display-container');
+    const dateDisplayText = document.getElementById('bt-date-display-text');
+    const dateClearBtn = document.getElementById('bt-date-clear');
     const elSearch = document.getElementById('bt-search');
     
     const listContainer = document.getElementById('bt-listContainer');
@@ -370,29 +382,76 @@ export function init(containerId, entityId = null) {
         window.refreshBankTransactionsTable();
     };
 
-    // Filter Logic Hooks
-    elAccount.addEventListener('change', resetFiltersAndFetch);
-    elDate1.addEventListener('change', resetFiltersAndFetch);
-    elDate2.addEventListener('change', resetFiltersAndFetch);
-    elSearch.addEventListener('input', resetFiltersAndFetch);
+    // --- Dynamic Date Control UI Logic ---
+    const updateDateUI = () => {
+        const mode = dateMode.value;
+        const d1 = elDate1.value;
+        const d2 = elDate2.value;
+        const requiresTwo = mode === 'between' || mode === 'not_between';
 
-    dateMode.addEventListener('change', (e) => {
-        const mode = e.target.value;
-        if (mode === 'all') { 
-            elDate1.style.display = 'none'; 
-            elDate2.style.display = 'none'; 
+        if (mode === 'all') {
+            elDate1.style.display = 'none';
+            elDate2.style.display = 'none';
             elDateAnd.style.display = 'none';
-        } else if (mode === 'between' || mode === 'not_between') { 
-            elDate1.style.display = 'block'; 
-            elDate2.style.display = 'block'; 
-            elDateAnd.style.display = 'block';
-        } else { 
-            elDate1.style.display = 'block'; 
-            elDate2.style.display = 'none'; 
-            elDateAnd.style.display = 'none';
+            dateDisplayContainer.style.display = 'none';
+        } else {
+            const isPopulated = requiresTwo ? (d1 && d2) : (d1 !== '');
+            
+            if (isPopulated) {
+                // Hide inputs, show display text
+                elDate1.style.display = 'none';
+                elDate2.style.display = 'none';
+                elDateAnd.style.display = 'none';
+                
+                dateDisplayText.textContent = requiresTwo ? `${d1} and ${d2}` : d1;
+                dateDisplayContainer.style.display = 'flex';
+            } else {
+                // Show inputs to allow picking
+                dateDisplayContainer.style.display = 'none';
+                elDate1.style.display = 'block';
+                
+                if (requiresTwo) {
+                    elDateAnd.style.display = 'block';
+                    elDate2.style.display = 'block';
+                } else {
+                    elDateAnd.style.display = 'none';
+                    elDate2.style.display = 'none';
+                }
+            }
         }
         resetFiltersAndFetch();
+    };
+
+    dateMode.addEventListener('change', () => {
+        elDate1.value = '';
+        elDate2.value = '';
+        updateDateUI();
+        
+        // Auto-open picker gracefully
+        if (dateMode.value !== 'all') {
+            try { elDate1.showPicker(); } catch(e) {}
+        }
     });
+
+    elDate1.addEventListener('change', () => {
+        updateDateUI();
+        const mode = dateMode.value;
+        if ((mode === 'between' || mode === 'not_between') && !elDate2.value) {
+            try { setTimeout(() => elDate2.showPicker(), 100); } catch(e) {}
+        }
+    });
+
+    elDate2.addEventListener('change', updateDateUI);
+
+    dateClearBtn.addEventListener('click', () => {
+        dateMode.value = 'all';
+        elDate1.value = '';
+        elDate2.value = '';
+        updateDateUI();
+    });
+
+    elAccount.addEventListener('change', resetFiltersAndFetch);
+    elSearch.addEventListener('input', resetFiltersAndFetch);
 
     document.getElementById('bt-headerDate').addEventListener('click', () => {
         sortOrder = sortOrder === 'desc' ? 'asc' : 'desc';
@@ -439,7 +498,7 @@ export function init(containerId, entityId = null) {
             let allTxs = [];
             snap.forEach(doc => allTxs.push({ id: doc.id, ...doc.data() }));
             
-            // Critical: Calculate running balances completely isolated from filters
+            // Calculate running balances completely isolated from filters
             allTxs.sort((a, b) => new Date(a.date) - new Date(b.date));
 
             let runningBalance = 0, displayTxs = [];
@@ -448,7 +507,7 @@ export function init(containerId, entityId = null) {
                 runningBalance += tx.foreignAmount;
                 tx.calculatedBalance = runningBalance;
                 
-                // Advanced Date Filtering
+                // Advanced Date Filtering Logic
                 let includeDate = true;
                 if (mode !== 'all' && d1) {
                     if (mode === 'eq') includeDate = (tx.date === d1);
@@ -542,7 +601,7 @@ export function init(containerId, entityId = null) {
                 vendHtml = `<span class="${borderClass}">${vendName}</span>`;
                 catHtml = `<span class="${borderClass}" style="color: #2e7d32; font-weight: 500;">${catName}</span>`;
                 
-                // Side-by-side Checkmark (Col 8) and Undo (Col 9)
+                // Side-by-side Checkmark and Undo Logic 
                 postHtml = `<span class="txt-green" style="font-size: 16px; font-weight: bold;">&#10003;</span>`;
                 splitHtml = `<a class="txt-link undo cat-btn-undo" data-id="${tx.id}">Undo</a>`;
             }
