@@ -46,86 +46,87 @@ export function init(containerId, entityId = null) {
             
             .bt-batch-bar { display: none; padding: 10px 15px; background: #e3f2fd; border-radius: 4px; margin-bottom: 15px; align-items: center; gap: 12px; border: 1px solid #bbdefb; }
             
-            /* Dynamic CSS Grid Table Layout */
-            .bt-table { --grid-cols: 40px 100px 1fr 120px 120px; width: 100%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 6px; overflow-x: auto; }
-            .bt-table-inner { min-width: 600px; }
-            .bt-thead { display: grid; grid-template-columns: var(--grid-cols); background: #f4f7f9; font-weight: 600; font-size: 12px; color: var(--primary-dark); border-bottom: 2px solid #eaedf1; position: relative; }
-            .bt-th { padding: 12px 10px; display: flex; align-items: center; position: relative; }
+            /* High-Fidelity CSS Grid Layout */
+            .bt-table { width: 100%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 6px; overflow-x: auto; }
+            .bt-table-inner { min-width: 35rem; }
+            
+            .bt-thead { display: grid; background: #f4f7f9; font-weight: 600; font-size: 12px; color: var(--primary-dark); border-bottom: 2px solid #eaedf1; }
+            .bt-th { padding: 12px 0; display: flex; align-items: center; position: relative; }
             .bt-th-sortable { cursor: pointer; user-select: none; }
             .bt-th-sortable:hover { background: #eaedf1; }
-            .bt-resizer { position: absolute; right: 0; top: 0; bottom: 0; width: 5px; cursor: col-resize; z-index: 2; }
-            .bt-resizer:hover { background: rgba(0,0,0,0.1); }
             
-            /* Row Colors & Hover */
-            .bt-row-group { display: grid; grid-template-columns: var(--grid-cols); border-bottom: 1px solid #c0c7d0; background-color: #fff; transition: background-color 0.2s; }
+            .bt-row-group { display: grid; border-bottom: 1px solid #eaedf1; background-color: #fff; transition: background-color 0.2s; padding: 8px 0; }
             .bt-row-group:hover { background-color: #f1f8ff !important; }
             .row-reviewed { background-color: #f4fbf4; }
             .row-split { background-color: #f0f7ff; }
 
-            .bt-cell { padding: 12px 10px; font-size: 13px; align-self: start; }
-            .bt-cell-chk { grid-column: 1; grid-row: 1; text-align: center; }
-            .bt-cell-date { grid-column: 2; grid-row: 1; }
-            .bt-cell-cat { grid-column: 3; grid-row: 1; display: flex; align-items: flex-start; }
-            .bt-cell-amt { grid-column: 4; grid-row: 1; text-align: right; }
-            .bt-cell-bal { grid-column: 5; grid-row: 1; text-align: right; }
+            .bt-cell { padding: 4px 0; font-size: 13px; align-self: start; }
             
-            /* Enhanced Sub-Row Layout */
-            .bt-cell-desc { grid-column: 1 / 5; grid-row: 2; padding: 0 10px 12px 40px; font-size: 12px; color: #666; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-            .bt-cell-acts { grid-column: 5; grid-row: 2; display: flex; justify-content: flex-end; gap: 12px; padding: 0 10px 12px 0; align-items: baseline; }
-            
-            .mobile-label { display: none; }
-            
-            /* Dashed bottom borders for posted items */
-            .dashed-border { border-bottom: 1px dashed #81c784; padding-bottom: 2px; display: inline-block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-            .bt-cell-desc .dashed-border { white-space: normal; }
+            /* State 1: Default Wide Desktop */
+            .bt-thead, .bt-row-group {
+                grid-template-columns: 24px 4.5rem 18rem 18rem 1fr 7rem 7rem 2.25rem 2.8125rem;
+                gap: 0 1rem;
+            }
+            .bt-cell-chk { grid-column: 1; text-align: center; }
+            .bt-cell-date { grid-column: 2; }
+            .bt-cell-vend { grid-column: 3; }
+            .bt-cell-cat { grid-column: 4; }
+            .bt-cell-desc { grid-column: 5; line-height: 1.3; }
+            .bt-cell-amt { grid-column: 6; text-align: right; }
+            .bt-cell-bal { grid-column: 7; text-align: right; }
+            .bt-cell-post { grid-column: 8; text-align: right; }
+            .bt-cell-split { grid-column: 9; text-align: right; }
 
-            /* Perfectly Aligned Balance Row */
-            .bt-bal-row { display: grid; grid-template-columns: var(--grid-cols); background: #fcfcfc; font-weight: 600; font-size: 13px; border-bottom: 1px solid #c0c7d0; }
-            .bt-bal-label { grid-column: 1 / 5; padding: 12px 10px; text-align: right; color: #666; }
-            .bt-bal-amt { grid-column: 5; padding: 12px 10px; text-align: right; }
+            .bt-bal-row { display: grid; grid-template-columns: 24px 4.5rem 18rem 18rem 1fr 7rem 7rem 2.25rem 2.8125rem; gap: 0 1rem; background: #fcfcfc; font-weight: 600; font-size: 13px; border-bottom: 1px solid #eaedf1; }
+            .bt-bal-label { grid-column: 1 / -4; padding: 12px 0; text-align: right; color: #666; }
+            .bt-bal-amt { grid-column: -4 / -3; padding: 12px 0; text-align: right; }
+
+            /* State 2: Medium Desktop (< 1400px) */
+            @media (max-width: 1400px) {
+                .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: 24px 4.5rem 18rem 18rem 1fr 7rem 7rem; }
+                .bt-th-post, .bt-th-split { display: none; }
+                
+                .bt-cell-desc { grid-column: 3 / 6; grid-row: 2; margin-top: 4px; }
+                .bt-cell-post { grid-column: 6; grid-row: 2; margin-top: 4px; }
+                .bt-cell-split { grid-column: 7; grid-row: 2; margin-top: 4px; }
+            }
+
+            /* State 3: Tablet (< 1024px) */
+            @media (max-width: 1024px) {
+                .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: 24px 4.5rem 1fr 7rem 7rem; }
+                .bt-th-vend, .bt-th-cat, .bt-th-desc { display: none; }
+                
+                .bt-cell-vend { grid-column: 3; grid-row: 1; }
+                .bt-cell-cat { grid-column: 2 / 4; grid-row: 2; margin-top: 4px; }
+                .bt-cell-post { grid-column: 5; grid-row: 2; margin-top: 4px; }
+                .bt-cell-desc { grid-column: 2 / 4; grid-row: 3; margin-top: 4px; }
+                .bt-cell-split { grid-column: 5; grid-row: 3; margin-top: 4px; }
+            }
+
+            /* State 4: Mobile (< 768px) */
+            @media (max-width: 768px) {
+                .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: 24px 4.5rem 1fr 7rem 7rem; }
+                
+                .bt-cell-vend { grid-column: 2 / 4; grid-row: 2; margin-top: 4px; }
+                .bt-cell-post { grid-column: 5; grid-row: 2; margin-top: 4px; }
+                .bt-cell-cat { grid-column: 2 / 4; grid-row: 3; margin-top: 4px; }
+                .bt-cell-split { grid-column: 5; grid-row: 3; margin-top: 4px; }
+                .bt-cell-desc { grid-column: 2 / 5; grid-row: 4; margin-top: 4px; }
+            }
             
-            .cat-select { width: 100%; padding: 4px 0; border: none; border-bottom: 1px solid #ccc; border-radius: 0; font-size: 12px; background: transparent; outline: none; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 100%; background-position-y: center; background-size: 16px; padding-right: 20px; margin-top: -4px;}
-            .cat-select:focus { border-bottom-color: var(--primary-dark); }
+            .txt-link { font-weight: 600; font-size: 13px; text-decoration: none; cursor: pointer; color: var(--primary-dark); }
+            .txt-link:hover { text-decoration: underline; opacity: 0.8; }
+            .txt-link.post { color: #2e7d32; }
+            .txt-link.undo { color: #999; font-weight: normal; }
             
-            /* Text Links instead of bulky buttons */
-            .bt-action-link { font-weight: 600; font-size: 13px; text-decoration: none; cursor: pointer; transition: opacity 0.2s; color: var(--primary-dark); }
-            .bt-action-link:hover { text-decoration: underline; opacity: 0.8; }
-            .bt-action-link.post { color: #2e7d32; }
-            .bt-action-link.undo { color: #999; font-size: 12px; font-weight: normal; }
-            
-            /* Allow Full Category Text wrapping */
-            .cat-reviewed-text { font-size: 13px; font-weight: 500; color: #333; display: flex; align-items: flex-start; gap: 8px; white-space: normal; line-height: 1.3; }
+            .dashed-border { border-bottom: 1px dashed #81c784; padding-bottom: 2px; display: inline-block; width: 100%; white-space: normal; word-break: break-word;}
+            .solid-border { border-bottom: 1px solid #ccc; padding-bottom: 2px; }
+
+            .cat-select { width: 100%; padding: 0 0 2px 0; border: none; border-bottom: 1px solid #000; border-radius: 0; font-size: 13px; background: transparent; outline: none; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 100%; background-position-y: center; background-size: 16px; }
+            .cat-select:focus { border-bottom-color: var(--primary-dark); border-bottom-width: 2px; }
             
             .txt-green { color: #2e7d32; font-weight: 500; }
             .txt-red { color: #d32f2f; font-weight: 500; }
-
-            /* MOBILE LAYOUT overrides */
-            @media (max-width: 768px) {
-                .bt-table { --grid-cols: 30px 1fr 80px 80px; }
-                .bt-table-inner { min-width: 100%; }
-                
-                .bt-th:nth-child(3) { display: none; }
-                .bt-th:nth-child(4) { grid-column: 3; justify-content: flex-end; }
-                .bt-th:nth-child(5) { grid-column: 4; justify-content: flex-end; }
-                
-                .bt-cell-chk { grid-column: 1; grid-row: 1; padding: 10px 5px; }
-                .bt-cell-date { grid-column: 2; grid-row: 1; padding: 10px 5px; font-size: 12px; }
-                .bt-cell-amt { grid-column: 3; grid-row: 1; padding: 10px 5px; font-size: 12px; }
-                .bt-cell-bal { grid-column: 4; grid-row: 1; padding: 10px 5px; font-size: 12px; }
-                
-                .bt-cell-cat { grid-column: 1 / 4; grid-row: 2; padding: 2px 5px 6px 30px; display: flex; align-items: flex-start; }
-                .mobile-label { display: block; font-size: 11px; color: #666; margin-right: 5px; margin-top: 1px;}
-                
-                .bt-cell-acts { display: contents; }
-                .btn-post-wrapper { grid-column: 4; grid-row: 2; padding: 2px 5px 6px 0; display: flex; justify-content: flex-end; align-items: flex-start; }
-                .btn-split-wrapper { grid-column: 4; grid-row: 3; padding: 2px 5px 12px 0; display: flex; justify-content: flex-end; align-items: flex-start; }
-                
-                .bt-cell-desc { grid-column: 1 / 4; grid-row: 3; padding: 2px 5px 12px 30px; }
-                
-                /* Perfect Mobile Balance Alignment */
-                .bt-bal-label { grid-column: 1 / 4; }
-                .bt-bal-amt { grid-column: 4; }
-            }
         </style>
 
         <div class="bt-header">
@@ -157,19 +158,23 @@ export function init(containerId, entityId = null) {
 
         <div class="bt-batch-bar" id="bt-batchBar">
             <span style="font-size: 13px; font-weight: 600; color: var(--primary-dark);" id="bt-batchCount">0 selected</span>
-            <button class="bt-action-link post" id="bt-btnBatchPost" style="border:1px solid #ccc; padding:4px 8px;">Post Selected</button>
-            <button class="bt-action-link undo" id="bt-btnBatchUndo">Undo Selected</button>
-            <button class="bt-action-link undo" id="bt-btnBatchDelete" style="color: #d32f2f;">Delete Selected</button>
+            <button class="txt-link post" id="bt-btnBatchPost" style="border:1px solid #ccc; padding:4px 8px; border-radius: 4px;">Post Selected</button>
+            <button class="txt-link undo" id="bt-btnBatchUndo">Undo Selected</button>
+            <button class="txt-link undo" id="bt-btnBatchDelete" style="color: #d32f2f;">Delete Selected</button>
         </div>
 
         <div class="bt-table">
             <div class="bt-table-inner">
                 <div class="bt-thead" id="bt-thead">
-                    <div class="bt-th" style="justify-content:center;"><input type="checkbox" id="bt-selectAll"><div class="bt-resizer"></div></div>
-                    <div class="bt-th bt-th-sortable" id="bt-headerDate">DATE <span id="bt-sortArrow" style="margin-left:5px;">&#8595;</span><div class="bt-resizer"></div></div>
-                    <div class="bt-th">CATEGORY<div class="bt-resizer"></div></div>
-                    <div class="bt-th" style="justify-content: flex-end;">AMOUNT<div class="bt-resizer"></div></div>
+                    <div class="bt-th" style="justify-content:center;"><input type="checkbox" id="bt-selectAll"></div>
+                    <div class="bt-th bt-th-sortable" id="bt-headerDate">DATE <span id="bt-sortArrow" style="margin-left:5px;">&#8595;</span></div>
+                    <div class="bt-th bt-th-vend">VENDOR</div>
+                    <div class="bt-th bt-th-cat">CATEGORY</div>
+                    <div class="bt-th bt-th-desc">DESCRIPTION</div>
+                    <div class="bt-th" style="justify-content: flex-end;">AMOUNT</div>
                     <div class="bt-th" style="justify-content: flex-end;">BALANCE</div>
+                    <div class="bt-th bt-th-post"></div>
+                    <div class="bt-th bt-th-split"></div>
                 </div>
                 <div id="bt-listContainer">
                     <div style="padding: 40px; text-align: center; color: #666;">Select an account to view transactions.</div>
@@ -189,38 +194,9 @@ export function init(containerId, entityId = null) {
     
     let sortOrder = 'desc'; 
     let chartOfAccounts = [];
+    let vendorsList = [];
     let bankAccountsMap = {};
     let currentTransactions = []; 
-
-    const initResizer = () => {
-        const table = document.querySelector('.bt-table');
-        const headers = table.querySelectorAll('.bt-th');
-        let isMobile = window.innerWidth <= 768;
-        let colWidths = isMobile ? [30, 80, 200, 80, 80] : [40, 100, 350, 120, 120];
-
-        headers.forEach((th, i) => {
-            const resizer = th.querySelector('.bt-resizer');
-            if (!resizer) return;
-            let startX, startWidth;
-            resizer.addEventListener('mousedown', (e) => {
-                startX = e.pageX;
-                startWidth = colWidths[i];
-                const onMouseMove = (e) => {
-                    const diff = e.pageX - startX;
-                    colWidths[i] = Math.max(30, startWidth + diff);
-                    let gridStr = colWidths.map((w, idx) => idx === 2 ? '1fr' : w + 'px').join(' ');
-                    table.style.setProperty('--grid-cols', gridStr);
-                };
-                const onMouseUp = () => {
-                    document.removeEventListener('mousemove', onMouseMove);
-                    document.removeEventListener('mouseup', onMouseUp);
-                };
-                document.addEventListener('mousemove', onMouseMove);
-                document.addEventListener('mouseup', onMouseUp);
-            });
-        });
-    };
-    initResizer();
 
     const primaryBtn = document.getElementById('bt-btnPrimaryDropdown');
     const primaryMenu = document.getElementById('bt-primaryMenu');
@@ -234,10 +210,12 @@ export function init(containerId, entityId = null) {
     const loadDependencies = async () => {
         try {
             chartOfAccounts = [];
+            vendorsList = [];
             elAccount.innerHTML = '<option value="">Select Account...</option>';
-            const q = query(collection(db, "chartOfAccounts"), where("companyId", "==", session.companyId));
-            const snap = await getDocs(q);
-            snap.forEach(doc => {
+            
+            const qCoa = query(collection(db, "chartOfAccounts"), where("companyId", "==", session.companyId));
+            const snapCoa = await getDocs(qCoa);
+            snapCoa.forEach(doc => {
                 const data = doc.data();
                 chartOfAccounts.push({ id: doc.id, ...data });
                 if (data.type === 'Asset' || data.type === 'Liability') {
@@ -248,6 +226,11 @@ export function init(containerId, entityId = null) {
                     elAccount.appendChild(opt);
                 }
             });
+
+            const qVend = query(collection(db, "vendors"), where("companyId", "==", session.companyId));
+            const snapVend = await getDocs(qVend);
+            snapVend.forEach(doc => vendorsList.push({ id: doc.id, ...doc.data() }));
+
         } catch(e) { console.error(e); }
     };
 
@@ -258,6 +241,15 @@ export function init(containerId, entityId = null) {
             options += `<option value="${acc.id}" ${isSelected}>${acc.code} - ${acc.name}</option>`;
         });
         options += `<option value="ADD_NEW" style="font-weight: bold; color: var(--primary-dark);">+ Add New Account</option>`;
+        return options;
+    };
+
+    const buildVendorDropdown = (selectedVendId) => {
+        let options = `<option value="">[Add New or Select a Vendor]</option>`;
+        vendorsList.forEach(v => {
+            const isSelected = selectedVendId === v.id ? 'selected' : '';
+            options += `<option value="${v.id}" ${isSelected}>${v.name || v.companyName}</option>`;
+        });
         return options;
     };
 
@@ -294,16 +286,12 @@ export function init(containerId, entityId = null) {
         }
 
         const isCC = bankAccountsMap[targetAccountId].type === 'Liability';
-        const startStr = elStart.value; 
-        const endStr = elEnd.value;
+        const startObj = elStart.value ? new Date(elStart.value) : null;
+        const endObj = elEnd.value ? new Date(elEnd.value) : null;
         const searchTxt = elSearch.value.toLowerCase();
 
         try {
-            const q = query(
-                collection(db, "bankTransactions"), 
-                where("companyId", "==", session.companyId),
-                where("bankAccountId", "==", targetAccountId)
-            );
+            const q = query(collection(db, "bankTransactions"), where("companyId", "==", session.companyId), where("bankAccountId", "==", targetAccountId));
             const snap = await getDocs(q);
             
             let allTxs = [];
@@ -315,14 +303,16 @@ export function init(containerId, entityId = null) {
             let beginningBalance = 0;
 
             allTxs.forEach(tx => {
-                if (startStr && tx.date < startStr) {
+                const txDateObj = new Date(tx.date);
+
+                if (startObj && txDateObj < startObj) {
                     runningBalance += tx.foreignAmount;
                     beginningBalance = runningBalance;
                 } else {
                     runningBalance += tx.foreignAmount;
                     tx.calculatedBalance = runningBalance;
                     
-                    if (endStr && tx.date > endStr) return;
+                    if (endObj && txDateObj > endObj) return;
 
                     if (searchTxt) {
                         const amountStr = String(Math.abs(tx.foreignAmount));
@@ -354,65 +344,42 @@ export function init(containerId, entityId = null) {
             else html += endBalHtml;
 
             displayTxs.forEach(tx => {
-                let amountClass = '';
-                
-                if (!isCC) {
-                    amountClass = tx.foreignAmount > 0 ? 'txt-green' : 'txt-red';
-                } else {
-                    amountClass = tx.foreignAmount > 0 ? 'txt-red' : 'txt-green';
-                }
-
-                let catHtml = '';
-                let actionHtmlPost = '';
-                let actionHtmlSplit = '';
-                let statusClass = '';
-                let dashedClass = tx.status !== 'Unreviewed' ? 'dashed-border' : '';
+                let amountClass = tx.foreignAmount > 0 ? (!isCC ? 'txt-green' : 'txt-red') : (!isCC ? 'txt-red' : 'txt-green');
+                let catHtml = '', vendHtml = '', actionHtmlPost = '', actionHtmlSplit = '';
+                let statusClass = '', dashedClass = '';
 
                 if (tx.status === 'Unreviewed') {
-                    let defCatId = tx.postedCategoryId;
-                    if(!defCatId) {
-                        const matchedCat = chartOfAccounts.find(c => c.name === tx.suggestedCategory);
-                        defCatId = matchedCat ? matchedCat.id : "";
-                    }
-                    catHtml = `<select class="cat-select" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>`;
-                    actionHtmlPost = `<a href="#" class="bt-action-link post btn-post" data-id="${tx.id}">Post</a>`;
-                    actionHtmlSplit = `<a href="#" class="bt-action-link btn-split" data-id="${tx.id}">Split</a>`;
+                    let defCatId = tx.postedCategoryId || (chartOfAccounts.find(c => c.name === tx.suggestedCategory)?.id || "");
+                    vendHtml = `<select class="cat-select vend-select" id="vend-${tx.id}">${buildVendorDropdown(tx.vendorId)}</select>`;
+                    catHtml = `<select class="cat-select cat-select-box" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>`;
+                    actionHtmlPost = `<a class="txt-link post btn-post" data-id="${tx.id}">Post</a>`;
+                    actionHtmlSplit = `<a class="txt-link btn-split" data-id="${tx.id}">Split</a>`;
                 } else if (tx.status === 'Split') {
-                    statusClass = 'row-split';
-                    catHtml = `
-                        <div class="cat-reviewed-text">
-                            <span style="color: #2e7d32;">&#10003;</span> 
-                            <span class="${dashedClass}">Split (${tx.splits ? tx.splits.length : 0})</span>
-                        </div>`;
-                    actionHtmlPost = `<a href="#" class="bt-action-link undo cat-btn-undo" data-id="${tx.id}">Undo</a>`;
+                    statusClass = 'row-split'; dashedClass = 'dashed-border';
+                    const postedVend = vendorsList.find(v => v.id === tx.vendorId)?.name || '';
+                    vendHtml = `<span class="${dashedClass}">${postedVend}</span>`;
+                    catHtml = `<span class="${dashedClass}" style="color: #2e7d32; font-weight: 500;">Split (${tx.splits ? tx.splits.length : 0})</span>`;
+                    actionHtmlSplit = `<span class="txt-green">✔</span> <a class="txt-link undo cat-btn-undo" data-id="${tx.id}">Undo</a>`;
                 } else {
-                    statusClass = 'row-reviewed';
+                    statusClass = 'row-reviewed'; dashedClass = 'dashed-border';
+                    const postedVend = vendorsList.find(v => v.id === tx.vendorId)?.name || '';
                     const postedName = chartOfAccounts.find(c => c.id === tx.postedCategoryId)?.name || 'Categorized';
-                    catHtml = `
-                        <div class="cat-reviewed-text">
-                            <span style="color: #2e7d32;">&#10003;</span> 
-                            <span class="${dashedClass}">${postedName}</span>
-                        </div>`;
-                    actionHtmlPost = `<a href="#" class="bt-action-link undo cat-btn-undo" data-id="${tx.id}">Undo</a>`;
+                    vendHtml = `<span class="${dashedClass}">${postedVend}</span>`;
+                    catHtml = `<span class="${dashedClass}">${postedName}</span>`;
+                    actionHtmlSplit = `<span class="txt-green">✔</span> <a class="txt-link undo cat-btn-undo" data-id="${tx.id}">Undo</a>`;
                 }
 
                 html += `
                     <div class="bt-row-group ${statusClass}">
                         <div class="bt-cell bt-cell-chk"><input type="checkbox" class="bt-row-check" data-id="${tx.id}"></div>
                         <div class="bt-cell bt-cell-date"><span class="${dashedClass}">${tx.date}</span></div>
-                        <div class="bt-cell bt-cell-cat">
-                            <div style="flex:1;">${catHtml}</div>
-                        </div>
-                        <div class="bt-cell bt-cell-amt ${amountClass}">
-                            <span class="${dashedClass}">${formatCurrency(Math.abs(tx.foreignAmount), tx.currency)}</span>
-                        </div>
+                        <div class="bt-cell bt-cell-vend">${vendHtml}</div>
+                        <div class="bt-cell bt-cell-cat">${catHtml}</div>
+                        <div class="bt-cell bt-cell-desc"><span class="${dashedClass}">${tx.description}</span></div>
+                        <div class="bt-cell bt-cell-amt ${amountClass}"><span class="${dashedClass}">${formatCurrency(Math.abs(tx.foreignAmount), tx.currency)}</span></div>
                         <div class="bt-cell bt-cell-bal"><span class="${dashedClass}">${formatCurrency(tx.calculatedBalance, tx.currency)}</span></div>
-                        
-                        <div class="bt-cell-desc"><span class="${dashedClass}">${tx.description} ${tx.checkNo ? '(Ref: ' + tx.checkNo + ')' : ''}</span></div>
-                        <div class="bt-cell-acts">
-                            <div class="btn-post-wrapper">${actionHtmlPost}</div>
-                            <div class="btn-split-wrapper">${actionHtmlSplit}</div>
-                        </div>
+                        <div class="bt-cell bt-cell-post">${actionHtmlPost}</div>
+                        <div class="bt-cell bt-cell-split">${actionHtmlSplit}</div>
                     </div>
                 `;
             });
@@ -426,31 +393,26 @@ export function init(containerId, entityId = null) {
 
             document.querySelectorAll('.bt-row-check').forEach(chk => chk.addEventListener('change', updateBatchUI));
 
-            document.querySelectorAll('.cat-select').forEach(sel => {
+            document.querySelectorAll('.cat-select-box').forEach(sel => {
                 sel.addEventListener('change', (e) => {
-                    if (e.target.value === 'ADD_NEW') {
-                        openAddCoaModal(containerId);
-                        e.target.value = ''; 
-                    }
+                    if (e.target.value === 'ADD_NEW') { openAddCoaModal(containerId); e.target.value = ''; }
                 });
             });
 
-            // Prevent default href jumping on link clicks
             document.querySelectorAll('.btn-post').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
-                    e.preventDefault();
                     const txId = e.target.getAttribute('data-id');
                     const selVal = document.getElementById(`sel-${txId}`).value;
+                    const vendVal = document.getElementById(`vend-${txId}`)?.value || null;
                     if (!selVal) return alert("Select a category first.");
                     e.target.textContent = "Saving...";
-                    await updateDoc(doc(db, "bankTransactions", txId), { status: 'Reviewed', postedCategoryId: selVal });
+                    await updateDoc(doc(db, "bankTransactions", txId), { status: 'Reviewed', postedCategoryId: selVal, vendorId: vendVal });
                     window.refreshBankTransactionsTable();
                 });
             });
 
             document.querySelectorAll('.btn-split').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    e.preventDefault();
                     const txId = e.target.getAttribute('data-id');
                     const tx = currentTransactions.find(t => t.id === txId);
                     openSplitModal(tx, isCC);
@@ -459,10 +421,9 @@ export function init(containerId, entityId = null) {
 
             document.querySelectorAll('.cat-btn-undo').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
-                    e.preventDefault();
                     const txId = e.target.getAttribute('data-id');
                     e.target.textContent = "Undo...";
-                    await updateDoc(doc(db, "bankTransactions", txId), { status: 'Unreviewed', postedCategoryId: null, splits: null });
+                    await updateDoc(doc(db, "bankTransactions", txId), { status: 'Unreviewed', postedCategoryId: null, vendorId: null, splits: null });
                     window.refreshBankTransactionsTable();
                 });
             });
@@ -473,31 +434,29 @@ export function init(containerId, entityId = null) {
         }
     };
 
-    document.getElementById('bt-btnBatchPost').addEventListener('click', async (e) => {
-        e.preventDefault();
+    document.getElementById('bt-btnBatchPost').addEventListener('click', async () => {
         const checked = document.querySelectorAll('.bt-row-check:checked');
         for (let chk of checked) {
             const txId = chk.getAttribute('data-id');
             const sel = document.getElementById(`sel-${txId}`);
+            const vend = document.getElementById(`vend-${txId}`);
             if (sel && sel.value && sel.value !== 'ADD_NEW') {
-                await updateDoc(doc(db, "bankTransactions", txId), { status: 'Reviewed', postedCategoryId: sel.value });
+                await updateDoc(doc(db, "bankTransactions", txId), { status: 'Reviewed', postedCategoryId: sel.value, vendorId: vend ? vend.value : null });
             }
         }
         window.refreshBankTransactionsTable();
     });
 
-    document.getElementById('bt-btnBatchUndo').addEventListener('click', async (e) => {
-        e.preventDefault();
+    document.getElementById('bt-btnBatchUndo').addEventListener('click', async () => {
         const checked = document.querySelectorAll('.bt-row-check:checked');
         for (let chk of checked) {
             const txId = chk.getAttribute('data-id');
-            await updateDoc(doc(db, "bankTransactions", txId), { status: 'Unreviewed', postedCategoryId: null, splits: null });
+            await updateDoc(doc(db, "bankTransactions", txId), { status: 'Unreviewed', postedCategoryId: null, vendorId: null, splits: null });
         }
         window.refreshBankTransactionsTable();
     });
 
-    document.getElementById('bt-btnBatchDelete').addEventListener('click', async (e) => {
-        e.preventDefault();
+    document.getElementById('bt-btnBatchDelete').addEventListener('click', async () => {
         if(!confirm("Are you sure you want to permanently delete the selected transactions?")) return;
         const checked = document.querySelectorAll('.bt-row-check:checked');
         for (let chk of checked) {
@@ -507,7 +466,7 @@ export function init(containerId, entityId = null) {
         window.refreshBankTransactionsTable();
     });
 
-    // --- SPLIT TRANSACTION MODAL (Untouched from previous iteration) ---
+    // --- SPLIT TRANSACTION MODAL ---
     const openSplitModal = (tx, isCC) => {
         let existing = document.getElementById('splitModalOverlay');
         if (existing) existing.remove();
@@ -551,9 +510,7 @@ export function init(containerId, entityId = null) {
                 .sp-total-row { font-weight: bold; font-size: 14px; text-align: right; padding: 15px 5px; }
                 .sp-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eaedf1; padding-top: 20px; }
 
-                @media (max-width: 768px) {
-                    .sp-amt-input { width: 85px; } 
-                }
+                @media (max-width: 768px) { .sp-amt-input { width: 85px; } }
             </style>
             <div class="sp-modal" id="sp-modalBox">
                 <div class="sp-header">
@@ -584,7 +541,7 @@ export function init(containerId, entityId = null) {
                 <div class="sp-footer">
                     <button class="bt-btn-main" id="sp-btnAddRow" style="background:#fff; color:#666; border:1px solid #ccc; font-size:12px; padding:6px 10px;">+ Add Split Row</button>
                     <div style="display:flex; gap: 10px;">
-                        <button class="bt-action-link undo" id="sp-btnCancel">Cancel</button>
+                        <a href="#" class="txt-link undo" id="sp-btnCancel">Cancel</a>
                         <button class="bt-btn-main" id="sp-btnSave" style="background:#5cb85c; padding:6px 15px;">Save Split</button>
                     </div>
                 </div>
@@ -625,12 +582,8 @@ export function init(containerId, entityId = null) {
             tbodyGroup.innerHTML = `
                 <tr class="sp-row">
                     <td class="sp-cell" style="padding-top:12px;"><span class="sp-handle">&#8942;&#8942;</span></td>
-                    <td class="sp-cell">
-                        <select class="sp-input sp-cat-input">${catOptions}</select>
-                    </td>
-                    <td class="sp-cell" style="text-align: right;">
-                        <input type="text" class="sp-input sp-amt-input" placeholder="0.00">
-                    </td>
+                    <td class="sp-cell"><select class="sp-input sp-cat-input">${catOptions}</select></td>
+                    <td class="sp-cell" style="text-align: right;"><input type="text" class="sp-input sp-amt-input" placeholder="0.00"></td>
                     <td class="sp-cell" style="text-align: center; position: relative;">
                         <button class="sp-menu-btn">&#8942;</button>
                         <div class="sp-menu-dropdown">
@@ -641,9 +594,7 @@ export function init(containerId, entityId = null) {
                 </tr>
                 <tr class="sp-desc-row" style="display:none;">
                     <td></td>
-                    <td colspan="2" style="padding: 0 5px 10px 5px;">
-                        <textarea class="sp-desc-input" rows="2" placeholder="Line description..."></textarea>
-                    </td>
+                    <td colspan="2" style="padding: 0 5px 10px 5px;"><textarea class="sp-desc-input" rows="2" placeholder="Line description..."></textarea></td>
                     <td></td>
                 </tr>
             `;
@@ -657,7 +608,6 @@ export function init(containerId, entityId = null) {
 
             tbodyGroup.addEventListener('dragstart', () => tbodyGroup.classList.add('dragging'));
             tbodyGroup.addEventListener('dragend', () => tbodyGroup.classList.remove('dragging'));
-
             spTable.insertBefore(tbodyGroup, tfoot);
         };
 
@@ -719,9 +669,7 @@ export function init(containerId, entityId = null) {
         
         document.getElementById('sp-btnSave').addEventListener('click', async (e) => {
             e.preventDefault();
-            let sum = 0;
-            let splits = [];
-            let valid = true;
+            let sum = 0; let splits = []; let valid = true;
             
             spTable.querySelectorAll('.sp-row-group').forEach(group => {
                 const cat = group.querySelector('.sp-cat-input').value;
