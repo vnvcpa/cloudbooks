@@ -33,9 +33,15 @@ export function init(containerId, entityId = null) {
             .bt-header h3 { margin: 0; font-size: 20px; color: var(--primary-dark); }
             .bt-header p { margin: 4px 0 0 0; font-size: 13px; color: #666; }
             
-            .bt-controls { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; flex-wrap: wrap; }
-            .bt-select { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; outline: none; min-width: 160px; }
+            /* Vertical Controls Stack */
+            .bt-controls-stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+            .bt-control-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+            
+            /* Line-Input UI for Controls */
+            .bt-select { padding: 8px 0; border: none; border-bottom: 1px solid #ccc; border-radius: 0; font-size: 13px; outline: none; min-width: 160px; color: #000; background: transparent; transition: border-bottom-color 0.2s; }
+            .bt-select:focus { border-bottom: 2px solid var(--primary-dark); padding-bottom: 7px; }
             .bt-search { flex: 1; min-width: 250px; }
+            #bt-dateMode { min-width: auto; width: 125px; }
             
             .bt-split-btn { display: flex; position: relative; }
             .bt-btn-main { background: var(--primary-dark); color: #fff; border: none; padding: 10px 15px; font-size: 14px; border-radius: 4px 0 0 4px; cursor: pointer; }
@@ -46,7 +52,7 @@ export function init(containerId, entityId = null) {
             
             .bt-batch-bar { display: none; padding: 10px 15px; background: #e3f2fd; border-radius: 4px; margin-bottom: 15px; align-items: center; gap: 12px; border: 1px solid #bbdefb; }
             
-            /* Dynamic CSS Grid Table Layout with REMs */
+            /* High-Fidelity CSS Grid Layout with REMs */
             .bt-table { 
                 --col-chk: 24px;
                 --col-date: 4.5rem;
@@ -61,29 +67,46 @@ export function init(containerId, entityId = null) {
             }
             .bt-table-inner { min-width: 65rem; }
             .bt-thead { display: grid; grid-template-columns: var(--col-chk) var(--col-date) var(--col-vend) var(--col-cat) 1fr var(--col-amt) var(--col-bal) var(--col-post) var(--col-split); gap: 0 var(--gap); background: #f4f7f9; font-weight: 600; font-size: 12px; color: var(--primary-dark); border-bottom: 2px solid #eaedf1; }
-            .bt-th { padding: 12px 0; display: flex; align-items: center; position: relative; }
+            .bt-th { padding: 12px 0; display: flex; align-items: center; position: relative; text-transform: uppercase; }
             
             /* Rows */
             .bt-row-group { display: grid; grid-template-columns: var(--col-chk) var(--col-date) var(--col-vend) var(--col-cat) 1fr var(--col-amt) var(--col-bal) var(--col-post) var(--col-split); gap: 0 var(--gap); border-bottom: 1px solid #c0c7d0; padding: 10px 0; transition: background 0.2s; }
             .bt-row-group:hover { background-color: #f1f8ff !important; }
             .row-reviewed { background-color: #f4fbf4; }
 
-            .bt-cell { font-size: 13px; align-self: start; }
+            .bt-cell { font-size: 13px; align-self: start; padding: 0; color: #000; }
             .bt-cell-chk { grid-column: 1; text-align: center; }
-            .bt-cell-amt, .bt-cell-bal { text-align: right; }
+            .bt-cell-date { grid-column: 2; }
+            .bt-cell-vend { grid-column: 3; display: flex; align-items: baseline; }
+            .bt-cell-cat { grid-column: 4; display: flex; align-items: baseline; }
+            .bt-cell-desc { grid-column: 5; display: flex; align-items: baseline; }
+            .bt-cell-amt { grid-column: 6; text-align: right; }
+            .bt-cell-bal { grid-column: 7; text-align: right; }
+            .bt-cell-post { grid-column: 8; text-align: right; }
+            .bt-cell-split { grid-column: 9; text-align: right; }
+            
+            /* Responsive Inline Labels (Hidden on Desktop) */
+            .inline-lbl { display: none; font-weight: 600; font-size: 11px; color: var(--primary-dark); text-transform: uppercase; margin-right: 8px; letter-spacing: 0.5px; white-space: nowrap; }
             
             /* Borders */
-            .solid-border { border-bottom: 1px solid #ccc; width: 100%; display: inline-block; }
-            .dashed-border { border-bottom: 1px dashed #81c784; width: 100%; display: inline-block; }
+            .solid-border { border-bottom: 1px solid #ccc; width: 100%; display: inline-block; padding-bottom: 2px; }
+            .dashed-border { border-bottom: 1px dashed #81c784; width: 100%; display: inline-block; padding-bottom: 2px; white-space: normal; word-break: break-word;}
 
-            .bt-bal-row { display: grid; grid-template-columns: var(--col-chk) var(--col-date) var(--col-vend) var(--col-cat) 1fr var(--col-amt) var(--col-bal) var(--col-post) var(--col-split); gap: 0 var(--gap); background: #fcfcfc; font-weight: 600; border-bottom: 2px solid #c0c7d0; }
+            .bt-bal-row { display: grid; grid-template-columns: var(--col-chk) var(--col-date) var(--col-vend) var(--col-cat) 1fr var(--col-amt) var(--col-bal) var(--col-post) var(--col-split); gap: 0 var(--gap); background: #fcfcfc; font-weight: 600; border-bottom: 2px solid #c0c7d0; font-size: 13px; }
             .bt-bal-label { grid-column: 1 / 7; padding: 12px 0; text-align: right; color: #666; }
-            .bt-bal-amt { grid-column: 7; padding: 12px 0; text-align: right; }
+            .bt-bal-amt { grid-column: 7; padding: 12px 0; text-align: right; color: #000; }
 
-            .cat-select { width: 100%; padding: 2px 0; border: none; border-radius: 0; font-size: 12px; background: transparent; outline: none; appearance: none; }
+            .cat-select { width: 100%; padding: 2px 0; border: none; border-radius: 0; font-size: 13px; background: transparent; outline: none; appearance: none; color: #000; }
+            .cat-select.is-empty { color: #999; }
+            .cat-select option { color: #000; }
+            .cat-select option[value=""] { color: #999; }
             
             .txt-link { font-weight: 600; font-size: 13px; cursor: pointer; color: var(--primary-dark); text-decoration: none; }
             .txt-link.post { color: #2e7d32; }
+            .txt-link.undo { color: #999; font-weight: normal; }
+            
+            .txt-green { color: #2e7d32; font-weight: 500; }
+            .txt-red { color: #d32f2f; font-weight: 500; }
 
             /* Pagination Controls */
             .bt-pagination { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #fff; border: 1px solid #eaedf1; border-top: none; border-radius: 0 0 6px 6px; font-size: 13px; color: #666; }
@@ -92,30 +115,67 @@ export function init(containerId, entityId = null) {
             .bt-page-btn:hover:not(:disabled) { background: #e2e6ea; }
             .bt-page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-            /* MOBILE 4-LINE ROW ARCHITECTURE */
+            /* ========================================= */
+            /* RESPONSIVE CASCADING GRID LOGIC           */
+            /* ========================================= */
+
+            /* 1. Medium Desktop: Description wraps to line 2 */
+            @media (max-width: 1400px) and (min-width: 1025px) {
+                .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) var(--col-vend) var(--col-cat) var(--col-amt) var(--col-bal) var(--col-post) var(--col-split); }
+                .bt-th-desc { display: none; }
+                .lbl-desc { display: inline-block; }
+                
+                .bt-cell-desc { grid-column: 2 / 5; grid-row: 2; margin-top: 4px; }
+            }
+
+            /* 2. Tablet: Category & Description drop to Line 2 & 3 */
+            @media (max-width: 1024px) and (min-width: 769px) {
+                .bt-table-inner { min-width: 45rem; }
+                .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) 1fr var(--col-amt) var(--col-bal) var(--col-post) var(--col-split); }
+                .bt-th-vend, .bt-th-cat, .bt-th-desc { display: none; }
+                .lbl-cat, .lbl-desc { display: inline-block; }
+                
+                .bt-cell-vend { grid-column: 3; grid-row: 1; }
+                .bt-cell-cat { grid-column: 2 / 4; grid-row: 2; margin-top: 4px; }
+                .bt-cell-desc { grid-column: 2 / 4; grid-row: 3; margin-top: 4px; }
+            }
+
+            /* 3. Mobile (Strictly maintains Date, Amt, Bal Header) */
             @media (max-width: 768px) {
                 .bt-table { --gap: 0.5rem; }
                 .bt-table-inner { min-width: 100%; }
-                .bt-thead { display: none; }
-                .bt-row-group, .bt-bal-row { 
+                
+                /* Keep Header visible but hide everything except Chk, Date, Amt, Bal */
+                .bt-thead { grid-template-columns: 30px 1fr 7rem 7rem; gap: 0 var(--gap); padding: 0 6px; }
+                .bt-th-vend, .bt-th-cat, .bt-th-desc, .bt-th-post, .bt-th-split { display: none !important; }
+                
+                .bt-row-group { 
                     grid-template-columns: 30px 1fr 7rem 7rem; 
                     grid-template-rows: auto auto auto auto;
-                    gap: 4px 0.5rem;
+                    gap: 6px 0.5rem;
+                    padding: 12px 6px;
                 }
+                
+                .lbl-vend, .lbl-cat, .lbl-desc { display: inline-block; }
+                
                 /* Line 1: Date, Amt, Bal */
                 .bt-cell-chk { grid-row: 1; grid-column: 1; }
                 .bt-cell-date { grid-row: 1; grid-column: 2; }
-                .bt-cell-amt { grid-row: 1; grid-column: 3; }
-                .bt-cell-bal { grid-row: 1; grid-column: 4; }
+                .bt-cell-amt { grid-row: 1; grid-column: 3; text-align: right; }
+                .bt-cell-bal { grid-row: 1; grid-column: 4; text-align: right; }
+                
                 /* Line 2: Vendor + Post */
-                .bt-cell-vend { grid-row: 2; grid-column: 2 / 4; display: flex; align-items: center; }
-                .bt-cell-post { grid-row: 2; grid-column: 4; text-align: right; }
+                .bt-cell-vend { grid-row: 2; grid-column: 2 / 4; }
+                .bt-cell-post { grid-row: 2; grid-column: 4; text-align: right; align-self: end; }
+                
                 /* Line 3: Category + Split */
-                .bt-cell-cat { grid-row: 3; grid-column: 2 / 4; display: flex; align-items: center; }
-                .bt-cell-split { grid-row: 3; grid-column: 4; text-align: right; }
+                .bt-cell-cat { grid-row: 3; grid-column: 2 / 4; }
+                .bt-cell-split { grid-row: 3; grid-column: 4; text-align: right; align-self: end; }
+                
                 /* Line 4: Description */
-                .bt-cell-desc { grid-row: 4; grid-column: 2 / 5; font-size: 11px; }
+                .bt-cell-desc { grid-row: 4; grid-column: 2 / 5; }
 
+                .bt-bal-row { grid-template-columns: 30px 1fr 7rem 7rem; gap: 0.5rem; padding: 0 6px; }
                 .bt-bal-label { grid-column: 1 / 4; }
                 .bt-bal-amt { grid-column: 4; }
 
@@ -124,15 +184,48 @@ export function init(containerId, entityId = null) {
         </style>
 
         <div class="bt-header">
-            <h3>Bank Transactions</h3>
-            <button class="bt-btn-main" id="bt-btnConnect">Connect Bank</button>
+            <div>
+                <h3>Bank Transactions</h3>
+                <p>Categorize and review your connected feeds.</p>
+            </div>
+            <div class="bt-split-btn">
+                <button class="bt-btn-main" id="bt-btnConnect">Connect Bank</button>
+                <button class="bt-btn-arrow" id="bt-btnPrimaryDropdown">▼</button>
+                <div class="bt-dropdown" id="bt-primaryMenu">
+                    <div>Add Manual Deposit</div>
+                    <div>Add Manual Withdrawal</div>
+                    <div>Add CC Charge</div>
+                    <div>Add CC Credit</div>
+                    <div id="bt-optUpload">Upload Transactions</div>
+                </div>
+            </div>
         </div>
 
-        <div class="bt-controls">
-            <select class="bt-select" id="bt-filterAccount"></select>
-            <input type="date" id="bt-filterStart" class="bt-select">
-            <input type="date" id="bt-filterEnd" class="bt-select">
-            <input type="text" id="bt-search" class="bt-select bt-search" placeholder="Search date, desc, or amount...">
+        <div class="bt-controls-stack">
+            <div class="bt-control-row">
+                <select class="bt-select" id="bt-filterAccount">
+                    <option value="">Select Account...</option>
+                </select>
+            </div>
+            <div class="bt-control-row">
+                <select class="bt-select" id="bt-dateMode">
+                    <option value="all">All Dates</option>
+                    <option value="eq">Equals</option>
+                    <option value="neq">Not equals</option>
+                    <option value="before">Before</option>
+                    <option value="on_before">On or before</option>
+                    <option value="after">After</option>
+                    <option value="on_after">On or after</option>
+                    <option value="between">Between / Range</option>
+                    <option value="not_between">Not between</option>
+                </select>
+                <input type="date" id="bt-date1" class="bt-select" style="display:none;">
+                <span id="bt-date-and" style="display:none; font-size: 13px; color: #666; font-weight: 500;">and</span>
+                <input type="date" id="bt-date2" class="bt-select" style="display:none;" title="End Date">
+            </div>
+            <div class="bt-control-row">
+                <input type="text" id="bt-search" class="bt-select bt-search" placeholder="Search date, description, or amount...">
+            </div>
         </div>
 
         <div class="bt-batch-bar" id="bt-batchBar">
@@ -146,14 +239,14 @@ export function init(containerId, entityId = null) {
             <div class="bt-table-inner">
                 <div class="bt-thead" id="bt-thead">
                     <div class="bt-th" style="justify-content:center;"><input type="checkbox" id="bt-selectAll"></div>
-                    <div class="bt-th bt-th-sortable" id="bt-headerDate">DATE <span id="bt-sortArrow">&#8595;</span></div>
-                    <div class="bt-th">VENDOR</div>
-                    <div class="bt-th">CATEGORY</div>
-                    <div class="bt-th">DESCRIPTION</div>
+                    <div class="bt-th bt-th-sortable" id="bt-headerDate">DATE <span id="bt-sortArrow" style="margin-left:5px;">&#8595;</span></div>
+                    <div class="bt-th bt-th-vend">VENDOR</div>
+                    <div class="bt-th bt-th-cat">CATEGORY</div>
+                    <div class="bt-th bt-th-desc">DESCRIPTION</div>
                     <div class="bt-th" style="justify-content: flex-end;">AMOUNT</div>
                     <div class="bt-th" style="justify-content: flex-end;">BALANCE</div>
-                    <div class="bt-th"></div>
-                    <div class="bt-th"></div>
+                    <div class="bt-th bt-th-post"></div>
+                    <div class="bt-th bt-th-split"></div>
                 </div>
                 <div id="bt-listContainer">
                     <div style="padding: 40px; text-align: center; color: #666;">Select an account to view transactions.</div>
@@ -165,7 +258,7 @@ export function init(containerId, entityId = null) {
             <div id="bt-page-info">Showing 0-0 of 0</div>
             <div class="bt-page-controls">
                 <label style="margin-right: 10px;">Rows per page: 
-                    <select class="bt-select" style="min-width: auto; padding: 4px 8px;" id="bt-rowsPerPage">
+                    <select class="bt-select" style="min-width: auto; padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px;" id="bt-rowsPerPage">
                         <option value="25">25</option>
                         <option value="50">50</option>
                         <option value="75">75</option>
@@ -179,9 +272,12 @@ export function init(containerId, entityId = null) {
     `;
 
     const elAccount = document.getElementById('bt-filterAccount');
-    const elStart = document.getElementById('bt-filterStart');
-    const elEnd = document.getElementById('bt-filterEnd');
+    const dateMode = document.getElementById('bt-dateMode');
+    const elDate1 = document.getElementById('bt-date1');
+    const elDate2 = document.getElementById('bt-date2');
+    const elDateAnd = document.getElementById('bt-date-and');
     const elSearch = document.getElementById('bt-search');
+    
     const listContainer = document.getElementById('bt-listContainer');
     const selectAll = document.getElementById('bt-selectAll');
     const batchBar = document.getElementById('bt-batchBar');
@@ -192,11 +288,20 @@ export function init(containerId, entityId = null) {
     let vendorsList = [];
     let bankAccountsMap = {};
     let currentTransactions = []; 
-
-    // Pagination State
     let currentPage = 1;
     let rowsPerPage = 25;
 
+    // Header Actions
+    const primaryBtn = document.getElementById('bt-btnPrimaryDropdown');
+    const primaryMenu = document.getElementById('bt-primaryMenu');
+    primaryBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        primaryMenu.style.display = primaryMenu.style.display === 'block' ? 'none' : 'block';
+    });
+    document.addEventListener('click', () => primaryMenu.style.display = 'none');
+    document.getElementById('bt-optUpload').addEventListener('click', () => openUploadModal(containerId));
+
+    // Data Loaders
     const loadDependencies = async () => {
         try {
             chartOfAccounts = [];
@@ -225,7 +330,7 @@ export function init(containerId, entityId = null) {
     };
 
     const buildCategoryDropdown = (selectedCatId) => {
-        let options = `<option value="">Select Category...</option>`;
+        let options = `<option value="">[Select Category]</option>`;
         chartOfAccounts.forEach(acc => {
             const isSelected = selectedCatId === acc.id ? 'selected' : '';
             options += `<option value="${acc.id}" ${isSelected}>${acc.code} - ${acc.name}</option>`;
@@ -243,6 +348,7 @@ export function init(containerId, entityId = null) {
         return options;
     };
 
+    // UI State Management
     const updateBatchUI = () => {
         const checked = document.querySelectorAll('.bt-row-check:checked');
         if (checked.length > 0) {
@@ -259,16 +365,34 @@ export function init(containerId, entityId = null) {
         updateBatchUI();
     });
 
-    // Reset page to 1 when filters change to avoid empty state bugs
     const resetFiltersAndFetch = () => {
         currentPage = 1;
         window.refreshBankTransactionsTable();
     };
 
+    // Filter Logic Hooks
     elAccount.addEventListener('change', resetFiltersAndFetch);
-    elStart.addEventListener('change', resetFiltersAndFetch);
-    elEnd.addEventListener('change', resetFiltersAndFetch);
+    elDate1.addEventListener('change', resetFiltersAndFetch);
+    elDate2.addEventListener('change', resetFiltersAndFetch);
     elSearch.addEventListener('input', resetFiltersAndFetch);
+
+    dateMode.addEventListener('change', (e) => {
+        const mode = e.target.value;
+        if (mode === 'all') { 
+            elDate1.style.display = 'none'; 
+            elDate2.style.display = 'none'; 
+            elDateAnd.style.display = 'none';
+        } else if (mode === 'between' || mode === 'not_between') { 
+            elDate1.style.display = 'block'; 
+            elDate2.style.display = 'block'; 
+            elDateAnd.style.display = 'block';
+        } else { 
+            elDate1.style.display = 'block'; 
+            elDate2.style.display = 'none'; 
+            elDateAnd.style.display = 'none';
+        }
+        resetFiltersAndFetch();
+    });
 
     document.getElementById('bt-headerDate').addEventListener('click', () => {
         sortOrder = sortOrder === 'desc' ? 'asc' : 'desc';
@@ -276,7 +400,7 @@ export function init(containerId, entityId = null) {
         resetFiltersAndFetch();
     });
 
-    // Pagination Listeners
+    // Pagination Logic Hooks
     document.getElementById('bt-rowsPerPage').addEventListener('change', (e) => {
         rowsPerPage = parseInt(e.target.value);
         currentPage = 1;
@@ -284,21 +408,15 @@ export function init(containerId, entityId = null) {
     });
 
     document.getElementById('bt-btnPrev').addEventListener('click', () => {
-        if (currentPage > 1) {
-            currentPage--;
-            renderTablePage();
-        }
+        if (currentPage > 1) { currentPage--; renderTablePage(); }
     });
 
     document.getElementById('bt-btnNext').addEventListener('click', () => {
         const totalPages = Math.ceil(currentTransactions.length / rowsPerPage);
-        if (currentPage < totalPages) {
-            currentPage++;
-            renderTablePage();
-        }
+        if (currentPage < totalPages) { currentPage++; renderTablePage(); }
     });
 
-    // Core Fetch Logic (Hits DB once, stores in memory)
+    // Core DB Fetch Engine
     window.refreshBankTransactionsTable = async () => {
         const targetAccountId = elAccount.value;
         if (!targetAccountId) {
@@ -309,8 +427,9 @@ export function init(containerId, entityId = null) {
             return;
         }
 
-        const startStr = elStart.value;
-        const endStr = elEnd.value;
+        const mode = dateMode.value;
+        const d1 = elDate1.value;
+        const d2 = elDate2.value;
         const searchTxt = elSearch.value.toLowerCase();
 
         try {
@@ -320,29 +439,39 @@ export function init(containerId, entityId = null) {
             let allTxs = [];
             snap.forEach(doc => allTxs.push({ id: doc.id, ...doc.data() }));
             
-            // Calculate running balances strictly oldest to newest
+            // Critical: Calculate running balances completely isolated from filters
             allTxs.sort((a, b) => new Date(a.date) - new Date(b.date));
 
             let runningBalance = 0, displayTxs = [];
 
             allTxs.forEach(tx => {
-                if (startStr && tx.date < startStr) {
-                    runningBalance += tx.foreignAmount;
-                } else {
-                    runningBalance += tx.foreignAmount;
-                    tx.calculatedBalance = runningBalance;
-                    
-                    if (endStr && tx.date > endStr) return;
-                    if (searchTxt && !tx.description.toLowerCase().includes(searchTxt) && !String(Math.abs(tx.foreignAmount)).includes(searchTxt) && !tx.date.includes(searchTxt)) return;
-                    
-                    displayTxs.push(tx);
+                runningBalance += tx.foreignAmount;
+                tx.calculatedBalance = runningBalance;
+                
+                // Advanced Date Filtering
+                let includeDate = true;
+                if (mode !== 'all' && d1) {
+                    if (mode === 'eq') includeDate = (tx.date === d1);
+                    else if (mode === 'neq') includeDate = (tx.date !== d1);
+                    else if (mode === 'before') includeDate = (tx.date < d1);
+                    else if (mode === 'on_before') includeDate = (tx.date <= d1);
+                    else if (mode === 'after') includeDate = (tx.date > d1);
+                    else if (mode === 'on_after') includeDate = (tx.date >= d1);
+                    else if (mode === 'between') includeDate = d2 ? (tx.date >= d1 && tx.date <= d2) : (tx.date >= d1);
+                    else if (mode === 'not_between') includeDate = d2 ? (tx.date < d1 || tx.date > d2) : (tx.date < d1);
                 }
+
+                if (!includeDate) return;
+
+                // Search Filtering
+                if (searchTxt && !tx.description.toLowerCase().includes(searchTxt) && !String(Math.abs(tx.foreignAmount)).includes(searchTxt) && !tx.date.includes(searchTxt)) return;
+                
+                displayTxs.push(tx);
             });
 
             if (sortOrder === 'desc') displayTxs.reverse();
-            
             currentTransactions = displayTxs;
-            renderTablePage(); // Hand off to renderer
+            renderTablePage(); 
 
         } catch (e) { 
             console.error(e); 
@@ -350,7 +479,7 @@ export function init(containerId, entityId = null) {
         }
     };
 
-    // Fast Local DOM Renderer Engine
+    // DOM Renderer Engine
     const renderTablePage = () => {
         if (currentTransactions.length === 0) {
             listContainer.innerHTML = `<div style="padding: 40px; text-align: center; color: #666;">No matching transactions found.</div>`;
@@ -368,7 +497,6 @@ export function init(containerId, entityId = null) {
         const endIndex = Math.min(startIndex + rowsPerPage, totalRows);
         const paginatedTxs = currentTransactions.slice(startIndex, endIndex);
 
-        // Update Pagination UI
         document.getElementById('bt-pagination').style.display = 'flex';
         document.getElementById('bt-page-info').textContent = `Showing ${startIndex + 1}-${endIndex} of ${totalRows}`;
         document.getElementById('bt-btnPrev').disabled = currentPage === 1;
@@ -378,7 +506,7 @@ export function init(containerId, entityId = null) {
         const isCC = bankAccountsMap[targetAccountId].type === 'Liability';
         const currencyCode = paginatedTxs[0]?.currency || 'PHP';
 
-        // Intelligent Page Balances Calculation
+        // Intelligent Page Balances
         const chronFirstItem = sortOrder === 'asc' ? paginatedTxs[0] : paginatedTxs[paginatedTxs.length - 1];
         const chronLastItem = sortOrder === 'asc' ? paginatedTxs[paginatedTxs.length - 1] : paginatedTxs[0];
         
@@ -399,8 +527,11 @@ export function init(containerId, entityId = null) {
 
             if (!isPosted) {
                 let defCatId = tx.postedCategoryId || (chartOfAccounts.find(c => c.name === tx.suggestedCategory)?.id || "");
-                vendHtml = `<select class="cat-select vend-select-box" id="vend-${tx.id}">${buildVendorDropdown(tx.vendorId)}</select>`;
-                catHtml = `<select class="cat-select cat-select-box" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>`;
+                const vendEmptyCls = tx.vendorId ? '' : 'is-empty';
+                const catEmptyCls = defCatId ? '' : 'is-empty';
+                
+                vendHtml = `<select class="cat-select vend-select-box ${vendEmptyCls}" id="vend-${tx.id}">${buildVendorDropdown(tx.vendorId)}</select>`;
+                catHtml = `<select class="cat-select cat-select-box ${catEmptyCls}" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>`;
                 postHtml = `<a class="txt-link post btn-post" data-id="${tx.id}">Post</a>`;
                 splitHtml = `<a class="txt-link btn-split" data-id="${tx.id}">Split</a>`;
             } else {
@@ -410,16 +541,19 @@ export function init(containerId, entityId = null) {
                 
                 vendHtml = `<span class="${borderClass}">${vendName}</span>`;
                 catHtml = `<span class="${borderClass}" style="color: #2e7d32; font-weight: 500;">${catName}</span>`;
-                postHtml = `<span class="txt-green" style="margin-right:4px;">✔</span> <a class="txt-link undo cat-btn-undo" data-id="${tx.id}">Undo</a>`;
+                
+                // Side-by-side Checkmark (Col 8) and Undo (Col 9)
+                postHtml = `<span class="txt-green" style="font-size: 16px; font-weight: bold;">&#10003;</span>`;
+                splitHtml = `<a class="txt-link undo cat-btn-undo" data-id="${tx.id}">Undo</a>`;
             }
 
             html += `
                 <div class="bt-row-group ${statusClass}">
                     <div class="bt-cell bt-cell-chk"><input type="checkbox" class="bt-row-check" data-id="${tx.id}"></div>
                     <div class="bt-cell bt-cell-date"><span class="${borderClass}">${tx.date}</span></div>
-                    <div class="bt-cell bt-cell-vend"><span class="mobile-label">Vend:</span><div style="flex:1;">${vendHtml}</div></div>
-                    <div class="bt-cell bt-cell-cat"><span class="mobile-label">Cat:</span><div style="flex:1;">${catHtml}</div></div>
-                    <div class="bt-cell bt-cell-desc"><span class="${borderClass}">${tx.description}</span></div>
+                    <div class="bt-cell bt-cell-vend"><span class="inline-lbl lbl-vend">Vendor</span><div style="flex:1;">${vendHtml}</div></div>
+                    <div class="bt-cell bt-cell-cat"><span class="inline-lbl lbl-cat">Category</span><div style="flex:1;">${catHtml}</div></div>
+                    <div class="bt-cell bt-cell-desc"><span class="inline-lbl lbl-desc">Bank Memo</span><span class="${borderClass}">${tx.description}</span></div>
                     <div class="bt-cell bt-cell-amt ${amtClass}"><span class="${borderClass}">${formatCurrency(Math.abs(tx.foreignAmount), tx.currency)}</span></div>
                     <div class="bt-cell bt-cell-bal"><span class="${borderClass}">${formatCurrency(tx.calculatedBalance, tx.currency)}</span></div>
                     <div class="bt-cell bt-cell-post">${postHtml}</div>
@@ -436,13 +570,18 @@ export function init(containerId, entityId = null) {
         bindRenderedRowEvents();
     };
 
-    // Isolate Event Binders to specifically target the newly rendered page rows
     const bindRenderedRowEvents = () => {
         document.querySelectorAll('.bt-row-check').forEach(chk => chk.addEventListener('change', updateBatchUI));
 
-        document.querySelectorAll('.cat-select-box').forEach(sel => {
+        // Dynamic Gray Placeholder Logic
+        document.querySelectorAll('.cat-select').forEach(sel => {
             sel.addEventListener('change', (e) => {
-                if (e.target.value === 'ADD_NEW') { openAddCoaModal(containerId); e.target.value = ''; }
+                if (e.target.value && e.target.value !== 'ADD_NEW') e.target.classList.remove('is-empty');
+                else e.target.classList.add('is-empty');
+                
+                if (e.target.classList.contains('cat-select-box') && e.target.value === 'ADD_NEW') {
+                    openAddCoaModal(containerId); e.target.value = ''; e.target.classList.add('is-empty');
+                }
             });
         });
 
@@ -455,7 +594,7 @@ export function init(containerId, entityId = null) {
                 if (!selVal) return alert("Select a category first.");
                 e.target.textContent = "Saving...";
                 await updateDoc(doc(db, "bankTransactions", txId), { status: 'Reviewed', postedCategoryId: selVal, vendorId: vendVal });
-                window.refreshBankTransactionsTable(); // Keeps current page!
+                window.refreshBankTransactionsTable(); 
             });
         });
 
@@ -476,7 +615,7 @@ export function init(containerId, entityId = null) {
                 const txId = e.target.getAttribute('data-id');
                 e.target.textContent = "Undo...";
                 await updateDoc(doc(db, "bankTransactions", txId), { status: 'Unreviewed', postedCategoryId: null, vendorId: null, splits: null });
-                window.refreshBankTransactionsTable(); // Keeps current page!
+                window.refreshBankTransactionsTable(); 
             });
         });
     };
@@ -592,7 +731,7 @@ export function init(containerId, entityId = null) {
                 <div class="sp-footer">
                     <button class="bt-btn-main" id="sp-btnAddRow" style="background:#fff; color:#666; border:1px solid #ccc; font-size:12px; padding:6px 10px;">+ Add Split Row</button>
                     <div style="display:flex; gap: 10px;">
-                        <a href="#" class="txt-link undo" id="sp-btnCancel">Cancel</a>
+                        <button class="bt-action-link undo" id="sp-btnCancel">Cancel</button>
                         <button class="bt-btn-main" id="sp-btnSave" style="background:#5cb85c; padding:6px 15px;">Save Split</button>
                     </div>
                 </div>
@@ -665,6 +804,7 @@ export function init(containerId, entityId = null) {
 
             tbodyGroup.addEventListener('dragstart', () => tbodyGroup.classList.add('dragging'));
             tbodyGroup.addEventListener('dragend', () => tbodyGroup.classList.remove('dragging'));
+
             spTable.insertBefore(tbodyGroup, tfoot);
         };
 
@@ -726,7 +866,9 @@ export function init(containerId, entityId = null) {
         
         document.getElementById('sp-btnSave').addEventListener('click', async (e) => {
             e.preventDefault();
-            let sum = 0; let splits = []; let valid = true;
+            let sum = 0;
+            let splits = [];
+            let valid = true;
             
             spTable.querySelectorAll('.sp-row-group').forEach(group => {
                 const cat = group.querySelector('.sp-cat-input').value;
