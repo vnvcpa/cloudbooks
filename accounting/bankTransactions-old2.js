@@ -32,7 +32,85 @@ export function init(containerId, entityId = null) {
             .bt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
             .bt-header h3 { margin: 0; font-size: 20px; color: var(--primary-dark); }
             
-            /* Header Options Dropdown (No blue background, no left/right padding) */
+            /* ========================================= */
+            /* FLUID CONTROLS BAR                        */
+            /* ========================================= */
+            .bt-ctrl-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 15px; margin-bottom: 20px; }
+            .bt-ctrl-group { display: flex; align-items: center; gap: 8px; position: relative; }
+            
+            /* Oval Hover Inputs (Hidden by default, visible on hover) */
+            .bt-oval-input { 
+                padding: 6px 14px; 
+                border: 1px solid transparent; 
+                border-radius: 20px; 
+                font-size: 13px; 
+                outline: none; 
+                color: #000; 
+                background: transparent; 
+                transition: border-color 0.2s, width 0.1s ease-out; 
+                appearance: none; 
+                -webkit-appearance: none; 
+                height: 32px; 
+                box-sizing: border-box; 
+                cursor: pointer;
+            }
+            .bt-oval-input:hover { border-color: #ccc; }
+            .bt-oval-input:focus { border-color: var(--primary-dark); }
+            
+            select.bt-oval-input { 
+                background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); 
+                background-repeat: no-repeat; 
+                background-position-x: calc(100% - 12px); 
+                background-position-y: center; 
+                background-size: 16px; 
+                padding-right: 42px; /* Increased to prevent text clipping */
+            }
+            
+            /* Specific Group Overlaps & Layouts */
+            .grp-acc { position: relative; order: 1; }
+            /*.bt-ctrl-lbl { font-weight: 600; font-size: 12px; color: var(--primary-dark); text-transform: uppercase; position: relative; z-index: 2; pointer-events: none; }*/
+            .bt-ctrl-lbl { display: inline-block; font-weight: 600; font-size: 12px; color: #ffffff; background: var(--primary-dark); padding: 4px; text-transform: uppercase; position: relative; z-index: 2; pointer-events: none; line-height: 1; vertical-align: middle; border-radius: 20px; }
+            
+            /* Slides the border exactly behind the 'O' in ACCOUNT: */
+            #bt-filterAccount { margin-left: -40px; padding-left: 45px; position: relative; z-index: 1; }
+            
+            .grp-search { order: 2; flex: 1; display: flex; justify-content: center; }
+            .bt-search { width: 100%; max-width: 400px; padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; outline: none; height: 32px; box-sizing: border-box; color: #000; }
+            
+            .grp-date { order: 3; justify-content: flex-end; }
+            
+            /* Headless Date Pickers (Visually hidden but functional) */
+            .bt-headless-date { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; border: none; top: 15px; left: 50%; z-index: -1; }
+            
+            /* Persistent Oval Border for Active Date Display */
+            #bt-date-display-container {
+                border: 1px solid #ccc;
+                border-radius: 20px;
+                padding: 4px 14px;
+                background: #fff;
+                align-items: center;
+                gap: 8px;
+                height: 32px;
+                box-sizing: border-box;
+            }
+            #bt-date-display-text { font-size: 13px; font-weight: 500; color: #000; white-space: nowrap; }
+
+            /* Responsive Cascading Controls */
+            @media (max-width: 1100px) {
+                .bt-ctrl-bar { row-gap: 2px; } 
+                .grp-acc { flex: 1 1 100%; margin-bottom: 5px; }
+                .grp-date { order: 2; justify-content: flex-start; flex: 1; }
+                .grp-search { order: 3; justify-content: flex-end; flex: initial; }
+                .bt-search { width: 250px; }
+            }
+            @media (max-width: 650px) {
+                .bt-ctrl-bar { row-gap: 2px; }
+                .grp-date { flex: 1 1 100%; margin-bottom: 5px; }
+                .grp-search { flex: 1 1 100%; justify-content: flex-start; width: 100%; }
+                .bt-search { max-width: 100%; width: 100%; }
+            }
+
+            /* Header Options */
             .bt-options-wrapper { position: relative; display: inline-block; cursor: pointer; }
             .bt-btn-options { background: transparent; color: #333; border: none; padding: 6px 0; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; outline: none; }
             .bt-btn-options:hover { color: var(--primary-dark); }
@@ -40,44 +118,6 @@ export function init(containerId, entityId = null) {
             .bt-dropdown div { padding: 10px 15px; font-size: 13px; cursor: pointer; color: #333; }
             .bt-dropdown div:hover { background: #f4f7f9; color: var(--primary-dark); }
             
-            /* ========================================= */
-            /* FLUID CONTROLS BAR (Search, Date, Account)*/
-            /* ========================================= */
-            .bt-ctrl-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 15px; margin-bottom: 20px; }
-            .bt-ctrl-group { display: flex; align-items: center; gap: 10px; }
-            
-            /* Form Input Boxes (4 borders, curved corners, white bg) */
-            .bt-box-input { padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; outline: none; color: #000; background-color: #fff; transition: border-color 0.2s; appearance: none; -webkit-appearance: none; height: 32px; box-sizing: border-box; }
-            .bt-box-input:focus { border-color: var(--primary-dark); }
-            select.bt-box-input { background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: calc(100% - 8px); background-position-y: center; background-size: 16px; padding-right: 28px; }
-            
-            .bt-ctrl-lbl { font-weight: 600; font-size: 12px; color: var(--primary-dark); text-transform: uppercase; }
-            
-            /* Group Logic & Positioning */
-            .grp-acc { order: 1; }
-            .grp-search { order: 2; flex: 1; display: flex; justify-content: center; }
-            .grp-date { order: 3; justify-content: flex-end; }
-            
-            #bt-filterAccount { min-width: 250px; }
-            #bt-dateMode { width: auto; min-width: 120px; }
-            .bt-date-box { width: 110px; }
-            .bt-search { width: 100%; max-width: 400px; padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; outline: none; height: 32px; box-sizing: border-box; }
-            
-            /* Responsive Cascading Controls */
-            @media (max-width: 1100px) {
-                /* Line 1: Account. Line 2: Date (Left), Search (Right) */
-                .grp-acc { flex: 1 1 100%; margin-bottom: 5px; }
-                .grp-date { order: 2; justify-content: flex-start; flex: 1; }
-                .grp-search { order: 3; justify-content: flex-end; flex: initial; }
-                .bt-search { width: 250px; }
-            }
-            @media (max-width: 650px) {
-                /* Line 1: Account. Line 2: Date. Line 3: Search */
-                .grp-date { flex: 1 1 100%; margin-bottom: 5px; }
-                .grp-search { flex: 1 1 100%; justify-content: flex-start; width: 100%; }
-                .bt-search { max-width: 100%; width: 100%; }
-            }
-
             .bt-batch-bar { display: none; padding: 10px 15px; background: #e3f2fd; border-radius: 4px; margin-bottom: 15px; align-items: center; gap: 12px; border: 1px solid #bbdefb; }
             
             /* ========================================= */
@@ -144,7 +184,7 @@ export function init(containerId, entityId = null) {
             .txt-green { color: #2e7d32; font-weight: 500; font-size: 16px; }
             .txt-red { color: #d32f2f; font-weight: 500; font-size: 13px; }
 
-            /* Pagination */
+            /* Pagination Controls */
             .bt-pagination { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #fff; border: 1px solid #eaedf1; border-top: none; border-radius: 0 0 6px 6px; font-size: 13px; color: #666; }
             .bt-page-controls { display: flex; align-items: center; gap: 15px; }
             .bt-page-btn { background: #f4f7f9; border: 1px solid #ccc; padding: 5px 12px; border-radius: 4px; cursor: pointer; color: #333; transition: background 0.2s; font-size: 13px; }
@@ -270,9 +310,11 @@ export function init(containerId, entityId = null) {
         </style>
 
         <div class="bt-header">
-            <h3>Transactions</h3>
+            <div>
+                <h3>Transactions</h3>
+            </div>
             <div class="bt-options-wrapper" id="bt-optionsGroup">
-                <button class="bt-btn-options" id="bt-btnOptions">
+                <button class="bt-oval-input" id="bt-btnOptions">
                     Options <span style="font-size:10px;">▼</span>
                 </button>
                 <div class="bt-dropdown" id="bt-primaryMenu">
@@ -290,7 +332,7 @@ export function init(containerId, entityId = null) {
         <div class="bt-ctrl-bar">
             <div class="bt-ctrl-group grp-acc">
                 <span class="bt-ctrl-lbl">Account:</span>
-                <select class="bt-box-input" id="bt-filterAccount">
+                <select class="bt-oval-input" id="bt-filterAccount">
                     <option value="">Select Account...</option>
                 </select>
             </div>
@@ -300,7 +342,7 @@ export function init(containerId, entityId = null) {
             </div>
             
             <div class="bt-ctrl-group grp-date">
-                <select class="bt-box-input" id="bt-dateMode">
+                <select class="bt-oval-input" id="bt-dateMode">
                     <option value="all">All Dates</option>
                     <option value="eq">Equals</option>
                     <option value="neq">Not equals</option>
@@ -312,13 +354,12 @@ export function init(containerId, entityId = null) {
                     <option value="not_between">Not between</option>
                 </select>
                 
-                <input type="date" id="bt-date1" class="bt-box-input bt-date-box" style="display:none;">
-                <span id="bt-date-and" style="display:none; font-size:13px; color:#666; font-weight:500;">and</span>
-                <input type="date" id="bt-date2" class="bt-box-input bt-date-box" style="display:none;" title="End Date">
+                <input type="date" id="bt-date1" class="bt-headless-date">
+                <input type="date" id="bt-date2" class="bt-headless-date">
                 
-                <div id="bt-date-display-container" style="display:none; align-items:center; gap:8px;">
-                    <span id="bt-date-display-text" class="bt-box-input" style="font-weight: 500;"></span>
-                    <button id="bt-date-clear" style="background:transparent; border:none; color:#d9534f; cursor:pointer; font-size:18px; line-height:1; padding:0; display:flex; align-items:center;" title="Clear Filter">&times;</button>
+                <div id="bt-date-display-container" style="display:none;">
+                    <span id="bt-date-display-text"></span>
+                    <button id="bt-date-clear" title="Clear Filter">&times;</button>
                 </div>
             </div>
         </div>
@@ -340,8 +381,8 @@ export function init(containerId, entityId = null) {
                     <div class="bt-th bt-th-desc">DESCRIPTION<div class="bt-resizer"></div></div>
                     <div class="bt-th bt-th-amt">AMOUNT<div class="bt-resizer"></div></div>
                     <div class="bt-th bt-th-bal">BALANCE</div>
-                    <div class="bt-th bt-th-post"></div>
-                    <div class="bt-th bt-th-split"></div>
+                    <div class="bt-th bt-th-post">POST</div>
+                    <div class="bt-th bt-th-split">SPLIT</div>
                 </div>
                 <div id="bt-listContainer">
                     <div style="padding: 40px; text-align: center; color: #666;">Select an account to view transactions.</div>
@@ -353,7 +394,7 @@ export function init(containerId, entityId = null) {
             <div id="bt-page-info">Showing 0-0 of 0</div>
             <div class="bt-page-controls">
                 <label style="margin-right: 10px;">Rows per page: 
-                    <select class="bt-box-input" style="min-width: auto; padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px;" id="bt-rowsPerPage">
+                    <select class="bt-oval-input" style="border: 1px solid #ccc; width:auto;" id="bt-rowsPerPage">
                         <option value="25">25</option>
                         <option value="50">50</option>
                         <option value="75">75</option>
@@ -370,7 +411,6 @@ export function init(containerId, entityId = null) {
     const dateMode = document.getElementById('bt-dateMode');
     const elDate1 = document.getElementById('bt-date1');
     const elDate2 = document.getElementById('bt-date2');
-    const elDateAnd = document.getElementById('bt-date-and');
     const dateDisplayContainer = document.getElementById('bt-date-display-container');
     const dateDisplayText = document.getElementById('bt-date-display-text');
     const dateClearBtn = document.getElementById('bt-date-clear');
@@ -389,6 +429,20 @@ export function init(containerId, entityId = null) {
     let currentPage = 1;
     let rowsPerPage = 25;
 
+    // --- Core Action: Dynamic Width Calculator for Selects ---
+    const adjustSelectWidth = (selElement, extraPadding) => {
+        let span = document.createElement('span');
+        span.style.font = window.getComputedStyle(selElement).font;
+        span.style.visibility = 'hidden';
+        span.style.whiteSpace = 'pre';
+        span.style.position = 'absolute';
+        span.textContent = selElement.options[selElement.selectedIndex]?.text || selElement.value || '';
+        document.body.appendChild(span);
+        const newWidth = span.offsetWidth + extraPadding;
+        selElement.style.width = newWidth + 'px';
+        span.remove();
+    };
+
     // Header Options Actions
     const optionsGroup = document.getElementById('bt-optionsGroup');
     const primaryMenu = document.getElementById('bt-primaryMenu');
@@ -397,7 +451,6 @@ export function init(containerId, entityId = null) {
         primaryMenu.style.display = primaryMenu.style.display === 'block' ? 'none' : 'block';
     });
     document.addEventListener('click', () => primaryMenu.style.display = 'none');
-    
     document.getElementById('bt-optUpload').addEventListener('click', () => openUploadModal(containerId));
 
     // Smart Resizer
@@ -454,6 +507,10 @@ export function init(containerId, entityId = null) {
             const snapVend = await getDocs(qVend);
             snapVend.forEach(doc => vendorsList.push({ id: doc.id, ...doc.data() }));
 
+            // Adjust widths instantly on load
+            adjustSelectWidth(elAccount, 90); 
+            adjustSelectWidth(dateMode, 60);
+
         } catch(e) { console.error(e); }
     };
 
@@ -497,7 +554,7 @@ export function init(containerId, entityId = null) {
         window.refreshBankTransactionsTable();
     };
 
-    // --- Dynamic Date Control UI Logic ---
+    // --- Dynamic Headless Date Picker Engine ---
     const updateDateUI = () => {
         const mode = dateMode.value;
         const d1 = elDate1.value;
@@ -505,40 +562,29 @@ export function init(containerId, entityId = null) {
         const requiresTwo = mode === 'between' || mode === 'not_between';
 
         if (mode === 'all') {
-            elDate1.style.display = 'none';
-            elDate2.style.display = 'none';
-            elDateAnd.style.display = 'none';
             dateDisplayContainer.style.display = 'none';
+            resetFiltersAndFetch();
         } else {
             const isPopulated = requiresTwo ? (d1 && d2) : (d1 !== '');
-            
             if (isPopulated) {
-                elDate1.style.display = 'none';
-                elDate2.style.display = 'none';
-                elDateAnd.style.display = 'none';
                 dateDisplayText.textContent = requiresTwo ? `${d1} and ${d2}` : d1;
                 dateDisplayContainer.style.display = 'flex';
+                resetFiltersAndFetch();
             } else {
                 dateDisplayContainer.style.display = 'none';
-                elDate1.style.display = 'block';
-                if (requiresTwo) {
-                    elDateAnd.style.display = 'block';
-                    elDate2.style.display = 'block';
-                } else {
-                    elDateAnd.style.display = 'none';
-                    elDate2.style.display = 'none';
-                }
             }
         }
-        resetFiltersAndFetch();
     };
 
     dateMode.addEventListener('change', () => {
+        adjustSelectWidth(dateMode, 60);
         elDate1.value = '';
         elDate2.value = '';
         updateDateUI();
+        
+        // Trigger native calendar programmatically
         if (dateMode.value !== 'all') {
-            try { elDate1.showPicker(); } catch(e) {}
+            try { elDate1.showPicker(); } catch(e) { console.warn("Auto-picker not supported by this browser."); }
         }
     });
 
@@ -546,7 +592,9 @@ export function init(containerId, entityId = null) {
         updateDateUI();
         const mode = dateMode.value;
         if ((mode === 'between' || mode === 'not_between') && !elDate2.value) {
-            try { setTimeout(() => elDate2.showPicker(), 100); } catch(e) {}
+            try { 
+                setTimeout(() => elDate2.showPicker(), 100); 
+            } catch(e) {}
         }
     });
 
@@ -554,12 +602,17 @@ export function init(containerId, entityId = null) {
 
     dateClearBtn.addEventListener('click', () => {
         dateMode.value = 'all';
+        adjustSelectWidth(dateMode, 60);
         elDate1.value = '';
         elDate2.value = '';
         updateDateUI();
     });
 
-    elAccount.addEventListener('change', resetFiltersAndFetch);
+   elAccount.addEventListener('change', () => {
+        adjustSelectWidth(elAccount, 90);
+        resetFiltersAndFetch();
+    });
+    
     elSearch.addEventListener('input', resetFiltersAndFetch);
 
     document.getElementById('bt-headerDate').addEventListener('click', () => {
@@ -691,8 +744,14 @@ export function init(containerId, entityId = null) {
                 const vendEmptyCls = tx.vendorId ? '' : 'is-empty';
                 const catEmptyCls = defCatId ? '' : 'is-empty';
                 
-                vendHtml = `<select class="cat-select vend-select-box ${vendEmptyCls}" id="vend-${tx.id}">${buildVendorDropdown(tx.vendorId)}</select>`;
-                catHtml = `<select class="cat-select cat-select-box ${catEmptyCls}" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>`;
+                vendHtml = `
+                    <span class="inline-lbl lbl-vend">Vendor</span>
+                    <select class="cat-select vend-select-box ${vendEmptyCls}" id="vend-${tx.id}">${buildVendorDropdown(tx.vendorId)}</select>
+                `;
+                catHtml = `
+                    <span class="inline-lbl lbl-cat">Category</span>
+                    <select class="cat-select cat-select-box ${catEmptyCls}" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>
+                `;
                 postHtml = `<a class="txt-link post btn-post" data-id="${tx.id}">Post</a>`;
                 splitHtml = `<a class="txt-link btn-split" data-id="${tx.id}">Split</a>`;
             } else {
@@ -700,10 +759,15 @@ export function init(containerId, entityId = null) {
                 const vendName = vendorsList.find(v => v.id === tx.vendorId)?.name || '';
                 const catName = tx.status === 'Split' ? `Split (${tx.splits ? tx.splits.length : 0})` : (chartOfAccounts.find(c => c.id === tx.postedCategoryId)?.name || 'Categorized');
                 
-                vendHtml = `<span class="${borderClass}">${vendName}</span>`;
-                catHtml = `<span class="${borderClass}" style="color: #2e7d32; font-weight: 500;">${catName}</span>`;
+                vendHtml = `
+                    <span class="inline-lbl lbl-vend">Vendor</span>
+                    <span class="${borderClass}">${vendName}</span>
+                `;
+                catHtml = `
+                    <span class="inline-lbl lbl-cat">Category</span>
+                    <span class="${borderClass}" style="color: #2e7d32; font-weight: 500;">${catName}</span>
+                `;
                 
-                // Side-by-side Checkmark and Undo Logic preserved perfectly
                 postHtml = `<span class="txt-green">&#10003;</span>`;
                 splitHtml = `<a class="txt-link undo cat-btn-undo" data-id="${tx.id}">Undo</a>`;
             }
@@ -712,8 +776,8 @@ export function init(containerId, entityId = null) {
                 <div class="bt-row-group ${statusClass}">
                     <div class="bt-cell bt-cell-chk"><input type="checkbox" class="bt-row-check" data-id="${tx.id}"></div>
                     <div class="bt-cell bt-cell-date"><span class="${borderClass}">${tx.date}</span></div>
-                    <div class="bt-cell bt-cell-vend"><span class="inline-lbl lbl-vend">Vendor</span><div style="flex:1; min-width:0;">${vendHtml}</div></div>
-                    <div class="bt-cell bt-cell-cat"><span class="inline-lbl lbl-cat">Category</span><div style="flex:1; min-width:0;">${catHtml}</div></div>
+                    <div class="bt-cell bt-cell-vend"><div style="flex:1; min-width:0;">${vendHtml}</div></div>
+                    <div class="bt-cell bt-cell-cat"><div style="flex:1; min-width:0;">${catHtml}</div></div>
                     <div class="bt-cell bt-cell-desc"><span class="inline-lbl lbl-desc">Bank Memo</span><span class="${borderClass}">${tx.description}</span></div>
                     <div class="bt-cell bt-cell-amt ${amtClass}"><span class="${borderClass}">${formatCurrency(Math.abs(tx.foreignAmount), tx.currency)}</span></div>
                     <div class="bt-cell bt-cell-bal"><span class="${borderClass}">${formatCurrency(tx.calculatedBalance, tx.currency)}</span></div>
