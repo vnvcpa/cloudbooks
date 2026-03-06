@@ -31,227 +31,276 @@ export function init(containerId, entityId = null) {
         <style>
             .bt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
             .bt-header h3 { margin: 0; font-size: 20px; color: var(--primary-dark); }
-            .bt-header p { margin: 4px 0 0 0; font-size: 13px; color: #666; }
             
-            /* Vertical Controls Stack */
-            .bt-controls-stack { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
-            .bt-control-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; min-height: 32px; }
-            
-            /* Line-Input UI for Controls (No left/right/top borders) */
-            .bt-line-input { padding: 6px 0; border: none; border-bottom: 1px solid #ccc; border-radius: 0; font-size: 13px; outline: none; color: #000; background: transparent; transition: border-bottom-color 0.2s; appearance: none; -webkit-appearance: none; }
-            .bt-line-input:focus { border-bottom: 2px solid var(--primary-dark); padding-bottom: 5px; }
-            select.bt-line-input { background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 100%; background-position-y: center; background-size: 16px; padding-right: 20px; }
-            
-            #bt-filterAccount { min-width: 250px; }
-            #bt-dateMode { width: max-content; min-width: 140px; padding-left: 0; padding-right: 20px; }
-            .bt-date-box { width: 110px; padding-left: 0; padding-right: 0; }
-            
-            /* Search Box */
-            .bt-search { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; outline: none; flex: 1; max-width: 400px; color: #000; }
-            
-            .bt-split-btn { display: flex; position: relative; }
-            .bt-btn-main { background: var(--primary-dark); color: #fff; border: none; padding: 10px 15px; font-size: 14px; border-radius: 4px 0 0 4px; cursor: pointer; }
-            .bt-btn-arrow { background: var(--primary-dark); color: #fff; border: none; border-left: 1px solid rgba(255,255,255,0.3); padding: 10px 10px; border-radius: 0 4px 4px 0; cursor: pointer; }
+            /* Header Options Dropdown (No blue background, no left/right padding) */
+            .bt-options-wrapper { position: relative; display: inline-block; cursor: pointer; }
+            .bt-btn-options { background: transparent; color: #333; border: none; padding: 6px 0; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; outline: none; }
+            .bt-btn-options:hover { color: var(--primary-dark); }
             .bt-dropdown { display: none; position: absolute; top: 100%; right: 0; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 4px; border: 1px solid #eee; z-index: 100; min-width: 180px; }
             .bt-dropdown div { padding: 10px 15px; font-size: 13px; cursor: pointer; color: #333; }
             .bt-dropdown div:hover { background: #f4f7f9; color: var(--primary-dark); }
             
+            /* ========================================= */
+            /* FLUID CONTROLS BAR (Search, Date, Account)*/
+            /* ========================================= */
+            .bt-ctrl-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 15px; margin-bottom: 20px; }
+            .bt-ctrl-group { display: flex; align-items: center; gap: 10px; }
+            
+            /* Form Input Boxes (4 borders, curved corners, white bg) */
+            .bt-box-input { padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; outline: none; color: #000; background-color: #fff; transition: border-color 0.2s; appearance: none; -webkit-appearance: none; height: 32px; box-sizing: border-box; }
+            .bt-box-input:focus { border-color: var(--primary-dark); }
+            select.bt-box-input { background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: calc(100% - 8px); background-position-y: center; background-size: 16px; padding-right: 28px; }
+            
+            .bt-ctrl-lbl { font-weight: 600; font-size: 12px; color: var(--primary-dark); text-transform: uppercase; }
+            
+            /* Group Logic & Positioning */
+            .grp-acc { order: 1; }
+            .grp-search { order: 2; flex: 1; display: flex; justify-content: center; }
+            .grp-date { order: 3; justify-content: flex-end; }
+            
+            #bt-filterAccount { min-width: 250px; }
+            #bt-dateMode { width: auto; min-width: 120px; }
+            .bt-date-box { width: 110px; }
+            .bt-search { width: 100%; max-width: 400px; padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; outline: none; height: 32px; box-sizing: border-box; }
+            
+            /* Responsive Cascading Controls */
+            @media (max-width: 1100px) {
+                /* Line 1: Account. Line 2: Date (Left), Search (Right) */
+                .grp-acc { flex: 1 1 100%; margin-bottom: 5px; }
+                .grp-date { order: 2; justify-content: flex-start; flex: 1; }
+                .grp-search { order: 3; justify-content: flex-end; flex: initial; }
+                .bt-search { width: 250px; }
+            }
+            @media (max-width: 650px) {
+                /* Line 1: Account. Line 2: Date. Line 3: Search */
+                .grp-date { flex: 1 1 100%; margin-bottom: 5px; }
+                .grp-search { flex: 1 1 100%; justify-content: flex-start; width: 100%; }
+                .bt-search { max-width: 100%; width: 100%; }
+            }
+
             .bt-batch-bar { display: none; padding: 10px 15px; background: #e3f2fd; border-radius: 4px; margin-bottom: 15px; align-items: center; gap: 12px; border: 1px solid #bbdefb; }
             
             /* ========================================= */
-            /* RESPONSIVE CASCADING GRID LOGIC           */
+            /* ABSOLUTE GRID LOCKING ARCHITECTURE        */
             /* ========================================= */
             .bt-table { 
-                --col-chk: 30px;
+                --col-chk: 24px;
                 --col-date: 4.5rem;
                 --col-vend: 18rem;
                 --col-cat: 18rem;
+                --col-desc: 1fr;
                 --col-amt: 7rem;
                 --col-bal: 7rem;
                 --col-post: 2.25rem;
                 --col-split: 2.8125rem;
-                --gap: 1rem;
+                --gap: 0.5rem;
                 width: 100%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 6px 6px 0 0; overflow-x: auto; 
             }
-            .bt-table-inner { min-width: 100%; }
+            .bt-table-inner { min-width: 65rem; }
             
-            /* Base Grid Properties */
-            .bt-thead { display: grid; gap: 0 var(--gap); background: #f4f7f9; border-bottom: 2px solid #eaedf1; }
-            .bt-th { padding: 12px 0; display: flex; align-items: center; font-weight: 600; font-size: 12px; color: var(--primary-dark); text-transform: uppercase; }
+            .bt-thead, .bt-row-group, .bt-bal-row { display: grid; gap: 0 var(--gap); padding: 10px 15px; }
+
+            .bt-thead { background: #f4f7f9; border-bottom: 2px solid #c0c7d0; }
+            .bt-th { padding: 0; display: flex; align-items: center; font-weight: 600; font-size: 12px; color: var(--primary-dark); text-transform: uppercase; position: relative; }
             .bt-th-sortable { cursor: pointer; user-select: none; }
-            .bt-th-sortable:hover { background: #eaedf1; }
+            .bt-th-sortable:hover { opacity: 0.8; }
+            .bt-resizer { position: absolute; right: -6px; top: 0; bottom: 0; width: 8px; cursor: col-resize; z-index: 2; }
+            .bt-resizer:hover { background: rgba(0,0,0,0.1); }
             
-            .bt-row-group { display: grid; gap: 0 var(--gap); border-bottom: 1px solid #c0c7d0; padding: 10px 0; transition: background 0.2s; background-color: #fff; align-items: end; }
+            .bt-row-group { border-bottom: 1px solid #dcdcdc; transition: background-color 0.2s; background-color: #fff; align-items: end; }
             .bt-row-group:hover { background-color: #f1f8ff !important; }
             .row-reviewed { background-color: #f4fbf4; }
+            .row-split { background-color: #f0f7ff; }
 
-            .bt-cell { font-size: 13px; color: #000; display: flex; flex-direction: column; justify-content: flex-end; }
+            .bt-cell { padding: 0; font-size: 13px; color: #000; display: flex; flex-direction: column; justify-content: flex-end; }
             .bt-cell-chk { text-align: center; }
-            .bt-cell-amt, .bt-cell-bal { text-align: right; }
-            .bt-cell-post, .bt-cell-split { text-align: right; align-items: flex-end; }
             .bt-cell-desc { line-height: 1.3; }
+            
+            .bt-th-amt, .bt-th-bal, .bt-th-post, .bt-th-split { justify-content: flex-end; }
+            .bt-cell-amt, .bt-cell-bal { text-align: right; align-items: flex-end; }
+            .bt-cell-post, .bt-cell-split { text-align: right; align-items: flex-end; }
 
-            .bt-bal-row { display: grid; gap: 0 var(--gap); background: #fcfcfc; border-bottom: 2px solid #c0c7d0; font-weight: 600; font-size: 13px; align-items: center; }
-            .bt-bal-label { padding: 12px 0; text-align: right; color: #666; }
-            .bt-bal-amt { padding: 12px 0; text-align: right; color: #000; }
+            .bt-bal-row { background: #fcfcfc; border-bottom: 2px solid #c0c7d0; font-weight: 600; font-size: 13px; align-items: center; }
+            .bt-bal-label { padding: 0; text-align: right; color: #666; }
+            .bt-bal-amt { padding: 0; text-align: right; color: #000; }
 
-            /* Inline Labels (Hidden in Desktop) */
             .inline-lbl { display: none; font-weight: 600; font-size: 11px; color: var(--primary-dark); text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px; }
 
-            /* Input Elements */
             .cat-select { width: 100%; padding: 2px 0; border: none; border-radius: 0; font-size: 13px; background: transparent; outline: none; appearance: none; color: #000; }
             .cat-select.is-empty { color: #999; }
             .cat-select option { color: #000; }
             .cat-select option[value=""] { color: #999; }
             
-            .solid-border { border-bottom: 1px solid #ccc; width: 100%; padding-bottom: 2px; }
-            .dashed-border { border-bottom: 1px dashed #81c784; width: 100%; padding-bottom: 2px; white-space: normal; word-break: break-word;}
+            .solid-border { border-bottom: 1px solid #ccc; width: 100%; display: inline-block; padding-bottom: 2px; min-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .dashed-border { border-bottom: 1px dashed #81c784; width: 100%; display: inline-block; padding-bottom: 2px; min-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             
-            .txt-link { font-weight: 600; font-size: 13px; cursor: pointer; color: var(--primary-dark); text-decoration: none; }
+            .bt-cell-desc .solid-border, .bt-cell-desc .dashed-border { white-space: normal; overflow: visible; word-break: break-word; }
+            .bt-cell-amt .solid-border, .bt-cell-amt .dashed-border, .bt-cell-bal .solid-border, .bt-cell-bal .dashed-border { text-align: right; }
+
+            .txt-link { font-weight: 600; font-size: 13px; cursor: pointer; color: var(--primary-dark); text-decoration: none; transition: opacity 0.2s; }
+            .txt-link:hover { text-decoration: underline; opacity: 0.8; }
             .txt-link.post { color: #2e7d32; }
             .txt-link.undo { color: #999; font-weight: normal; }
             .txt-green { color: #2e7d32; font-weight: 500; font-size: 16px; }
+            .txt-red { color: #d32f2f; font-weight: 500; font-size: 13px; }
 
-            /* STATE 1: Desktop (> 1400px) - Ultra Wide 1 Line */
+            /* Pagination */
+            .bt-pagination { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #fff; border: 1px solid #eaedf1; border-top: none; border-radius: 0 0 6px 6px; font-size: 13px; color: #666; }
+            .bt-page-controls { display: flex; align-items: center; gap: 15px; }
+            .bt-page-btn { background: #f4f7f9; border: 1px solid #ccc; padding: 5px 12px; border-radius: 4px; cursor: pointer; color: #333; transition: background 0.2s; font-size: 13px; }
+            .bt-page-btn:hover:not(:disabled) { background: #e2e6ea; }
+            .bt-page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+            /* ========================================= */
+            /* CASCADING MATRIX LOGIC                    */
+            /* ========================================= */
+
             @media (min-width: 1401px) {
-                .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) var(--col-vend) var(--col-cat) 1fr var(--col-amt) var(--col-bal) var(--col-post) var(--col-split); }
-                .bt-cell-chk { grid-column: 1; grid-row: 1; }
-                .bt-cell-date { grid-column: 2; grid-row: 1; }
-                .bt-cell-vend { grid-column: 3; grid-row: 1; }
-                .bt-cell-cat { grid-column: 4; grid-row: 1; }
-                .bt-cell-desc { grid-column: 5; grid-row: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-                .bt-cell-amt { grid-column: 6; grid-row: 1; }
-                .bt-cell-bal { grid-column: 7; grid-row: 1; }
-                .bt-cell-post { grid-column: 8; grid-row: 1; }
-                .bt-cell-split { grid-column: 9; grid-row: 1; }
+                .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) var(--col-vend) var(--col-cat) var(--col-desc) var(--col-amt) var(--col-bal) var(--col-post) var(--col-split); }
+                
+                .bt-cell-chk, .bt-th-chk { grid-column: 1; grid-row: 1; }
+                .bt-cell-date, .bt-th-date { grid-column: 2; grid-row: 1; }
+                .bt-cell-vend, .bt-th-vend { grid-column: 3; grid-row: 1; }
+                .bt-cell-cat, .bt-th-cat { grid-column: 4; grid-row: 1; }
+                .bt-cell-desc, .bt-th-desc { grid-column: 5; grid-row: 1; }
+                .bt-cell-amt, .bt-th-amt { grid-column: 6; grid-row: 1; }
+                .bt-cell-bal, .bt-th-bal { grid-column: 7; grid-row: 1; }
+                .bt-cell-post, .bt-th-post { grid-column: 8; grid-row: 1; }
+                .bt-cell-split, .bt-th-split { grid-column: 9; grid-row: 1; }
                 
                 .bt-bal-label { grid-column: 1 / 7; }
                 .bt-bal-amt { grid-column: 7; }
             }
 
-            /* STATE 2: Medium Desktop (1101px - 1400px) - Desc to Line 2 */
             @media (max-width: 1400px) and (min-width: 1101px) {
                 .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) 1fr 1fr var(--col-amt) var(--col-bal) var(--col-post) var(--col-split); }
-                .bt-th:nth-child(5) { display: none; }
-                .lbl-desc { display: block; }
                 
-                .bt-cell-chk { grid-column: 1; grid-row: 1; }
-                .bt-cell-date { grid-column: 2; grid-row: 1; }
-                .bt-cell-vend { grid-column: 3; grid-row: 1; }
-                .bt-cell-cat { grid-column: 4; grid-row: 1; }
-                .bt-cell-amt { grid-column: 5; grid-row: 1; }
-                .bt-cell-bal { grid-column: 6; grid-row: 1; }
-                .bt-cell-post { grid-column: 7; grid-row: 1; }
-                .bt-cell-split { grid-column: 8; grid-row: 1; }
+                .bt-th-desc { display: none; }
+                .lbl-desc { display: block; }
+                .bt-row-group { grid-template-rows: auto auto; }
+                
+                .bt-cell-chk, .bt-th-chk { grid-column: 1; grid-row: 1; }
+                .bt-cell-date, .bt-th-date { grid-column: 2; grid-row: 1; }
+                .bt-cell-vend, .bt-th-vend { grid-column: 3; grid-row: 1; }
+                .bt-cell-cat, .bt-th-cat { grid-column: 4; grid-row: 1; }
+                .bt-cell-amt, .bt-th-amt { grid-column: 5; grid-row: 1; }
+                .bt-cell-bal, .bt-th-bal { grid-column: 6; grid-row: 1; }
+                .bt-cell-post, .bt-th-post { grid-column: 7; grid-row: 1; }
+                .bt-cell-split, .bt-th-split { grid-column: 8; grid-row: 1; }
                 
                 .bt-cell-desc { grid-column: 3 / 7; grid-row: 2; margin-top: 8px; }
                 .bt-bal-label { grid-column: 1 / 6; }
                 .bt-bal-amt { grid-column: 6; }
             }
 
-            /* STATE 3: Tablet Wide (901px - 1100px) - Post/Split to Line 2 */
             @media (max-width: 1100px) and (min-width: 901px) {
+                .bt-table-inner { min-width: 59rem; }
                 .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) 1fr 1fr var(--col-amt) var(--col-bal); }
-                .bt-th:nth-child(5), .bt-th:nth-child(8), .bt-th:nth-child(9) { display: none; }
-                .lbl-desc { display: block; }
                 
-                .bt-cell-chk { grid-column: 1; grid-row: 1; }
-                .bt-cell-date { grid-column: 2; grid-row: 1; }
-                .bt-cell-vend { grid-column: 3; grid-row: 1; }
-                .bt-cell-cat { grid-column: 4; grid-row: 1; }
-                .bt-cell-amt { grid-column: 5; grid-row: 1; }
-                .bt-cell-bal { grid-column: 6; grid-row: 1; }
+                .bt-th-desc, .bt-th-post, .bt-th-split { display: none; }
+                .lbl-desc { display: block; }
+                .bt-row-group { grid-template-rows: auto auto; }
+                
+                .bt-cell-chk, .bt-th-chk { grid-column: 1; grid-row: 1; }
+                .bt-cell-date, .bt-th-date { grid-column: 2; grid-row: 1; }
+                .bt-cell-vend, .bt-th-vend { grid-column: 3; grid-row: 1; }
+                .bt-cell-cat, .bt-th-cat { grid-column: 4; grid-row: 1; }
+                .bt-cell-amt, .bt-th-amt { grid-column: 5; grid-row: 1; }
+                .bt-cell-bal, .bt-th-bal { grid-column: 6; grid-row: 1; }
                 
                 .bt-cell-desc { grid-column: 3 / 5; grid-row: 2; margin-top: 8px; }
-                .bt-cell-post { grid-column: 5; grid-row: 2; margin-top: 8px; justify-content: flex-end; }
-                .bt-cell-split { grid-column: 6; grid-row: 2; margin-top: 8px; justify-content: flex-end; }
+                .bt-cell-post { grid-column: 5; grid-row: 2; margin-top: 8px; align-items: flex-end; }
+                .bt-cell-split { grid-column: 6; grid-row: 2; margin-top: 8px; align-items: flex-end; }
                 
                 .bt-bal-label { grid-column: 1 / 6; }
                 .bt-bal-amt { grid-column: 6; }
             }
 
-            /* STATE 4: Tablet Narrow (769px - 900px) - Cat to Line 2 */
             @media (max-width: 900px) and (min-width: 769px) {
+                .bt-table-inner { min-width: 100%; }
                 .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) 1fr var(--col-amt) var(--col-bal); }
-                .bt-th:nth-child(4), .bt-th:nth-child(5), .bt-th:nth-child(8), .bt-th:nth-child(9) { display: none; }
-                .lbl-cat, .lbl-desc { display: block; }
                 
-                .bt-cell-chk { grid-column: 1; grid-row: 1; }
-                .bt-cell-date { grid-column: 2; grid-row: 1; }
-                .bt-cell-vend { grid-column: 3; grid-row: 1; }
-                .bt-cell-amt { grid-column: 4; grid-row: 1; }
-                .bt-cell-bal { grid-column: 5; grid-row: 1; }
+                .bt-th-cat, .bt-th-desc, .bt-th-post, .bt-th-split { display: none; }
+                .lbl-cat, .lbl-desc { display: block; }
+                .bt-row-group { grid-template-rows: auto auto auto; }
+                
+                .bt-cell-chk, .bt-th-chk { grid-column: 1; grid-row: 1; }
+                .bt-cell-date, .bt-th-date { grid-column: 2; grid-row: 1; }
+                .bt-cell-vend, .bt-th-vend { grid-column: 3; grid-row: 1; }
+                .bt-cell-amt, .bt-th-amt { grid-column: 4; grid-row: 1; }
+                .bt-cell-bal, .bt-th-bal { grid-column: 5; grid-row: 1; }
                 
                 .bt-cell-cat { grid-column: 3; grid-row: 2; margin-top: 8px; }
-                .bt-cell-post { grid-column: 5; grid-row: 2; margin-top: 8px; justify-content: flex-end; }
+                .bt-cell-post { grid-column: 5; grid-row: 2; margin-top: 8px; align-items: flex-end; }
                 
                 .bt-cell-desc { grid-column: 3; grid-row: 3; margin-top: 8px; }
-                .bt-cell-split { grid-column: 5; grid-row: 3; margin-top: 8px; justify-content: flex-end; }
+                .bt-cell-split { grid-column: 5; grid-row: 3; margin-top: 8px; align-items: flex-end; }
                 
                 .bt-bal-label { grid-column: 1 / 5; }
                 .bt-bal-amt { grid-column: 5; }
             }
 
-            /* STATE 5: Mobile (< 768px) - Vend to Line 2 */
             @media (max-width: 768px) {
                 .bt-table { --gap: 0.5rem; }
-                /* 1fr separates Date from Amt/Bal to push them to right edge */
-                .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) 1fr var(--col-amt) var(--col-bal); }
-                .bt-th:nth-child(3), .bt-th:nth-child(4), .bt-th:nth-child(5), .bt-th:nth-child(8), .bt-th:nth-child(9) { display: none; }
+                .bt-table-inner { min-width: 100%; }
+                
+                .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: 24px 1fr 6.5rem 6.5rem; padding: 10px 8px; }
+                
+                .bt-th-vend, .bt-th-cat, .bt-th-desc, .bt-th-post, .bt-th-split { display: none !important; }
                 .lbl-vend, .lbl-cat, .lbl-desc { display: block; }
+                .bt-row-group { grid-template-rows: auto auto auto auto; }
                 
-                .bt-cell-chk { grid-column: 1; grid-row: 1; }
-                .bt-cell-date { grid-column: 2; grid-row: 1; }
-                .bt-cell-amt { grid-column: 4; grid-row: 1; }
-                .bt-cell-bal { grid-column: 5; grid-row: 1; }
+                .bt-cell-chk, .bt-th-chk { grid-column: 1; grid-row: 1; }
+                .bt-cell-date, .bt-th-date { grid-column: 2; grid-row: 1; }
+                .bt-cell-amt, .bt-th-amt { grid-column: 3; grid-row: 1; }
+                .bt-cell-bal, .bt-th-bal { grid-column: 4; grid-row: 1; }
                 
-                .bt-cell-vend { grid-column: 2 / 5; grid-row: 2; margin-top: 8px; }
-                .bt-cell-post { grid-column: 5; grid-row: 2; margin-top: 8px; justify-content: flex-end; }
+                .bt-cell-vend { grid-column: 2 / 4; grid-row: 2; margin-top: 6px; }
+                .bt-cell-post { grid-column: 4; grid-row: 2; margin-top: 6px; align-items: flex-end; }
                 
-                .bt-cell-cat { grid-column: 2 / 5; grid-row: 3; margin-top: 8px; }
-                .bt-cell-split { grid-column: 5; grid-row: 3; margin-top: 8px; justify-content: flex-end; }
+                .bt-cell-cat { grid-column: 2 / 4; grid-row: 3; margin-top: 6px; }
+                .bt-cell-split { grid-column: 4; grid-row: 3; margin-top: 6px; align-items: flex-end; }
                 
-                .bt-cell-desc { grid-column: 2 / 6; grid-row: 4; margin-top: 8px; }
-                
-                .bt-bal-label { grid-column: 1 / 5; }
-                .bt-bal-amt { grid-column: 5; }
+                .bt-cell-desc { grid-column: 2 / 5; grid-row: 4; margin-top: 6px; }
+
+                .bt-bal-label { grid-column: 1 / 4; padding-right: 10px; }
+                .bt-bal-amt { grid-column: 4; }
                 .bt-pagination { flex-direction: column; gap: 15px; }
             }
-
-            .bt-pagination { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #fff; border: 1px solid #eaedf1; border-top: none; border-radius: 0 0 6px 6px; font-size: 13px; color: #666; }
-            .bt-page-controls { display: flex; align-items: center; gap: 15px; }
-            .bt-page-btn { background: #f4f7f9; border: 1px solid #ccc; padding: 5px 12px; border-radius: 4px; cursor: pointer; color: #333; transition: background 0.2s; font-size: 13px; }
-            .bt-page-btn:hover:not(:disabled) { background: #e2e6ea; }
-            .bt-page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         </style>
 
         <div class="bt-header">
-            <div>
-                <h3>Bank Transactions</h3>
-                <p>Categorize and review your connected feeds.</p>
-            </div>
-            <div class="bt-split-btn">
-                <button class="bt-btn-main" id="bt-btnConnect">Connect Bank</button>
-                <button class="bt-btn-arrow" id="bt-btnPrimaryDropdown">▼</button>
+            <h3>Transactions</h3>
+            <div class="bt-options-wrapper" id="bt-optionsGroup">
+                <button class="bt-btn-options" id="bt-btnOptions">
+                    Options <span style="font-size:10px;">▼</span>
+                </button>
                 <div class="bt-dropdown" id="bt-primaryMenu">
+                    <div id="bt-optConnect">Connect Bank</div>
                     <div>Add Manual Deposit</div>
                     <div>Add Manual Withdrawal</div>
                     <div>Add CC Charge</div>
                     <div>Add CC Credit</div>
                     <div id="bt-optUpload">Upload Transactions</div>
+                    <div style="border-top: 1px solid #eaedf1; margin-top: 4px; padding-top: 8px;">Reconcile</div>
                 </div>
             </div>
         </div>
 
-        <div class="bt-controls-stack">
-            <div class="bt-control-row">
-                <select class="bt-line-input" id="bt-filterAccount" style="min-width: 250px;">
+        <div class="bt-ctrl-bar">
+            <div class="bt-ctrl-group grp-acc">
+                <span class="bt-ctrl-lbl">Account:</span>
+                <select class="bt-box-input" id="bt-filterAccount">
                     <option value="">Select Account...</option>
                 </select>
             </div>
             
-            <div class="bt-control-row">
-                <select class="bt-line-input" id="bt-dateMode">
+            <div class="bt-ctrl-group grp-search">
+                <input type="text" id="bt-search" class="bt-search" placeholder="Search date, description, or amount...">
+            </div>
+            
+            <div class="bt-ctrl-group grp-date">
+                <select class="bt-box-input" id="bt-dateMode">
                     <option value="all">All Dates</option>
                     <option value="eq">Equals</option>
                     <option value="neq">Not equals</option>
@@ -263,18 +312,14 @@ export function init(containerId, entityId = null) {
                     <option value="not_between">Not between</option>
                 </select>
                 
-                <input type="date" id="bt-date1" class="bt-line-input bt-date-box" style="display:none;">
-                <span id="bt-date-and" style="display:none; font-size:13px; color:#666; font-weight:500; padding: 0 4px;">and</span>
-                <input type="date" id="bt-date2" class="bt-line-input bt-date-box" style="display:none;" title="End Date">
+                <input type="date" id="bt-date1" class="bt-box-input bt-date-box" style="display:none;">
+                <span id="bt-date-and" style="display:none; font-size:13px; color:#666; font-weight:500;">and</span>
+                <input type="date" id="bt-date2" class="bt-box-input bt-date-box" style="display:none;" title="End Date">
                 
                 <div id="bt-date-display-container" style="display:none; align-items:center; gap:8px;">
-                    <span id="bt-date-display-text" class="bt-line-input" style="border-bottom: 1px solid transparent; font-weight: 500;"></span>
+                    <span id="bt-date-display-text" class="bt-box-input" style="font-weight: 500;"></span>
                     <button id="bt-date-clear" style="background:transparent; border:none; color:#d9534f; cursor:pointer; font-size:18px; line-height:1; padding:0; display:flex; align-items:center;" title="Clear Filter">&times;</button>
                 </div>
-            </div>
-
-            <div class="bt-control-row">
-                <input type="text" id="bt-search" class="bt-search" placeholder="Search date, description, or amount...">
             </div>
         </div>
 
@@ -288,15 +333,15 @@ export function init(containerId, entityId = null) {
         <div class="bt-table">
             <div class="bt-table-inner">
                 <div class="bt-thead" id="bt-thead">
-                    <div class="bt-th" style="justify-content:center;"><input type="checkbox" id="bt-selectAll"></div>
-                    <div class="bt-th bt-th-sortable" id="bt-headerDate">DATE <span id="bt-sortArrow" style="margin-left:5px;">&#8595;</span></div>
-                    <div class="bt-th bt-th-vend">VENDOR</div>
-                    <div class="bt-th bt-th-cat">CATEGORY</div>
-                    <div class="bt-th bt-th-desc">DESCRIPTION</div>
-                    <div class="bt-th" style="justify-content: flex-end;">AMOUNT</div>
-                    <div class="bt-th" style="justify-content: flex-end;">BALANCE</div>
-                    <div class="bt-th bt-th-post" style="justify-content: flex-end;">POST</div>
-                    <div class="bt-th bt-th-split" style="justify-content: flex-end;">SPLIT</div>
+                    <div class="bt-th bt-th-chk" style="justify-content:center;"><input type="checkbox" id="bt-selectAll"></div>
+                    <div class="bt-th bt-th-sortable bt-th-date" id="bt-headerDate">DATE <span id="bt-sortArrow" style="margin-left:5px;">&#8595;</span></div>
+                    <div class="bt-th bt-th-vend">VENDOR<div class="bt-resizer"></div></div>
+                    <div class="bt-th bt-th-cat">CATEGORY<div class="bt-resizer"></div></div>
+                    <div class="bt-th bt-th-desc">DESCRIPTION<div class="bt-resizer"></div></div>
+                    <div class="bt-th bt-th-amt">AMOUNT<div class="bt-resizer"></div></div>
+                    <div class="bt-th bt-th-bal">BALANCE</div>
+                    <div class="bt-th bt-th-post"></div>
+                    <div class="bt-th bt-th-split"></div>
                 </div>
                 <div id="bt-listContainer">
                     <div style="padding: 40px; text-align: center; color: #666;">Select an account to view transactions.</div>
@@ -308,7 +353,7 @@ export function init(containerId, entityId = null) {
             <div id="bt-page-info">Showing 0-0 of 0</div>
             <div class="bt-page-controls">
                 <label style="margin-right: 10px;">Rows per page: 
-                    <select class="bt-select" style="min-width: auto; padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px;" id="bt-rowsPerPage">
+                    <select class="bt-box-input" style="min-width: auto; padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px;" id="bt-rowsPerPage">
                         <option value="25">25</option>
                         <option value="50">50</option>
                         <option value="75">75</option>
@@ -344,14 +389,46 @@ export function init(containerId, entityId = null) {
     let currentPage = 1;
     let rowsPerPage = 25;
 
-    const primaryBtn = document.getElementById('bt-btnPrimaryDropdown');
+    // Header Options Actions
+    const optionsGroup = document.getElementById('bt-optionsGroup');
     const primaryMenu = document.getElementById('bt-primaryMenu');
-    primaryBtn.addEventListener('click', (e) => {
+    optionsGroup.addEventListener('click', (e) => {
         e.stopPropagation();
         primaryMenu.style.display = primaryMenu.style.display === 'block' ? 'none' : 'block';
     });
     document.addEventListener('click', () => primaryMenu.style.display = 'none');
+    
     document.getElementById('bt-optUpload').addEventListener('click', () => openUploadModal(containerId));
+
+    // Smart Resizer
+    const initResizer = () => {
+        if(window.innerWidth <= 768) return; 
+        const table = document.querySelector('.bt-table');
+        const headers = table.querySelectorAll('.bt-th');
+        const varNames = ['--col-chk', '--col-date', '--col-vend', '--col-cat', '--col-desc', '--col-amt', '--col-bal'];
+        
+        headers.forEach((th, i) => {
+            const resizer = th.querySelector('.bt-resizer');
+            if (!resizer || !varNames[i]) return;
+            let startX, startWidth;
+            resizer.addEventListener('mousedown', (e) => {
+                startX = e.pageX;
+                startWidth = th.offsetWidth;
+                const onMouseMove = (e) => {
+                    const diff = e.pageX - startX;
+                    const newWidth = Math.max(30, startWidth + diff);
+                    table.style.setProperty(varNames[i], newWidth + 'px');
+                };
+                const onMouseUp = () => {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                };
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+        });
+    };
+    initResizer();
 
     const loadDependencies = async () => {
         try {
@@ -491,7 +568,6 @@ export function init(containerId, entityId = null) {
         resetFiltersAndFetch();
     });
 
-    // Pagination Logic Hooks
     document.getElementById('bt-rowsPerPage').addEventListener('change', (e) => {
         rowsPerPage = parseInt(e.target.value);
         currentPage = 1;
@@ -507,7 +583,6 @@ export function init(containerId, entityId = null) {
         if (currentPage < totalPages) { currentPage++; renderTablePage(); }
     });
 
-    // Core DB Fetch Engine
     window.refreshBankTransactionsTable = async () => {
         const targetAccountId = elAccount.value;
         if (!targetAccountId) {
@@ -567,7 +642,6 @@ export function init(containerId, entityId = null) {
         }
     };
 
-    // DOM Renderer Engine
     const renderTablePage = () => {
         if (currentTransactions.length === 0) {
             listContainer.innerHTML = `<div style="padding: 40px; text-align: center; color: #666;">No matching transactions found.</div>`;
@@ -617,14 +691,8 @@ export function init(containerId, entityId = null) {
                 const vendEmptyCls = tx.vendorId ? '' : 'is-empty';
                 const catEmptyCls = defCatId ? '' : 'is-empty';
                 
-                vendHtml = `
-                    <span class="inline-lbl lbl-vend">Vendor</span>
-                    <select class="cat-select vend-select-box ${vendEmptyCls}" id="vend-${tx.id}">${buildVendorDropdown(tx.vendorId)}</select>
-                `;
-                catHtml = `
-                    <span class="inline-lbl lbl-cat">Category</span>
-                    <select class="cat-select cat-select-box ${catEmptyCls}" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>
-                `;
+                vendHtml = `<select class="cat-select vend-select-box ${vendEmptyCls}" id="vend-${tx.id}">${buildVendorDropdown(tx.vendorId)}</select>`;
+                catHtml = `<select class="cat-select cat-select-box ${catEmptyCls}" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>`;
                 postHtml = `<a class="txt-link post btn-post" data-id="${tx.id}">Post</a>`;
                 splitHtml = `<a class="txt-link btn-split" data-id="${tx.id}">Split</a>`;
             } else {
@@ -632,16 +700,10 @@ export function init(containerId, entityId = null) {
                 const vendName = vendorsList.find(v => v.id === tx.vendorId)?.name || '';
                 const catName = tx.status === 'Split' ? `Split (${tx.splits ? tx.splits.length : 0})` : (chartOfAccounts.find(c => c.id === tx.postedCategoryId)?.name || 'Categorized');
                 
-                vendHtml = `
-                    <span class="inline-lbl lbl-vend">Vendor</span>
-                    <span class="${borderClass}">${vendName}</span>
-                `;
-                catHtml = `
-                    <span class="inline-lbl lbl-cat">Category</span>
-                    <span class="${borderClass}" style="color: #2e7d32; font-weight: 500;">${catName}</span>
-                `;
+                vendHtml = `<span class="${borderClass}">${vendName}</span>`;
+                catHtml = `<span class="${borderClass}" style="color: #2e7d32; font-weight: 500;">${catName}</span>`;
                 
-                // Maps Checkmark into Post cell, Undo into Split cell for precise grid alignment
+                // Side-by-side Checkmark and Undo Logic preserved perfectly
                 postHtml = `<span class="txt-green">&#10003;</span>`;
                 splitHtml = `<a class="txt-link undo cat-btn-undo" data-id="${tx.id}">Undo</a>`;
             }
@@ -650,8 +712,8 @@ export function init(containerId, entityId = null) {
                 <div class="bt-row-group ${statusClass}">
                     <div class="bt-cell bt-cell-chk"><input type="checkbox" class="bt-row-check" data-id="${tx.id}"></div>
                     <div class="bt-cell bt-cell-date"><span class="${borderClass}">${tx.date}</span></div>
-                    <div class="bt-cell bt-cell-vend">${vendHtml}</div>
-                    <div class="bt-cell bt-cell-cat">${catHtml}</div>
+                    <div class="bt-cell bt-cell-vend"><span class="inline-lbl lbl-vend">Vendor</span><div style="flex:1; min-width:0;">${vendHtml}</div></div>
+                    <div class="bt-cell bt-cell-cat"><span class="inline-lbl lbl-cat">Category</span><div style="flex:1; min-width:0;">${catHtml}</div></div>
                     <div class="bt-cell bt-cell-desc"><span class="inline-lbl lbl-desc">Bank Memo</span><span class="${borderClass}">${tx.description}</span></div>
                     <div class="bt-cell bt-cell-amt ${amtClass}"><span class="${borderClass}">${formatCurrency(Math.abs(tx.foreignAmount), tx.currency)}</span></div>
                     <div class="bt-cell bt-cell-bal"><span class="${borderClass}">${formatCurrency(tx.calculatedBalance, tx.currency)}</span></div>
@@ -718,7 +780,6 @@ export function init(containerId, entityId = null) {
         });
     };
 
-    // --- BATCH ACTIONS ---
     document.getElementById('bt-btnBatchPost').addEventListener('click', async (e) => {
         e.preventDefault();
         const checked = document.querySelectorAll('.bt-row-check:checked');
@@ -754,7 +815,6 @@ export function init(containerId, entityId = null) {
         window.refreshBankTransactionsTable();
     });
 
-    // --- SPLIT TRANSACTION MODAL (Intact) ---
     const openSplitModal = (tx, isCC) => {
         let existing = document.getElementById('splitModalOverlay');
         if (existing) existing.remove();
@@ -964,9 +1024,7 @@ export function init(containerId, entityId = null) {
         
         document.getElementById('sp-btnSave').addEventListener('click', async (e) => {
             e.preventDefault();
-            let sum = 0;
-            let splits = [];
-            let valid = true;
+            let sum = 0; let splits = []; let valid = true;
             
             spTable.querySelectorAll('.sp-row-group').forEach(group => {
                 const cat = group.querySelector('.sp-cat-input').value;
