@@ -82,6 +82,7 @@ export function init(containerId, entityId = null) {
               pointer-events: none;
               line-height: 1;
               vertical-align: middle;
+              border-radius: 20px;
             }
             
             /* Slides the border exactly behind the 'O' in ACCOUNT: */
