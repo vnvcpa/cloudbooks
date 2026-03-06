@@ -60,10 +60,10 @@ export function init(containerId, entityId = null) {
             select.bt-oval-input { 
                 background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); 
                 background-repeat: no-repeat; 
-                background-position-x: calc(100% - 10px); 
+                background-position-x: calc(100% - 12px); 
                 background-position-y: center; 
                 background-size: 16px; 
-                padding-right: 30px; 
+                padding-right: 42px; /* Increased to prevent text clipping */
             }
             
             /* Specific Group Overlaps & Layouts */
@@ -507,8 +507,8 @@ export function init(containerId, entityId = null) {
             snapVend.forEach(doc => vendorsList.push({ id: doc.id, ...doc.data() }));
 
             // Adjust widths instantly on load
-            adjustSelectWidth(elAccount, 75); // 45px left padding + 30px right space
-            adjustSelectWidth(dateMode, 44);
+            adjustSelectWidth(elAccount, 90); 
+            adjustSelectWidth(dateMode, 60);
 
         } catch(e) { console.error(e); }
     };
@@ -576,7 +576,7 @@ export function init(containerId, entityId = null) {
     };
 
     dateMode.addEventListener('change', () => {
-        adjustSelectWidth(dateMode, 44);
+        adjustSelectWidth(dateMode, 60);
         elDate1.value = '';
         elDate2.value = '';
         updateDateUI();
@@ -601,14 +601,14 @@ export function init(containerId, entityId = null) {
 
     dateClearBtn.addEventListener('click', () => {
         dateMode.value = 'all';
-        adjustSelectWidth(dateMode, 44);
+        adjustSelectWidth(dateMode, 60);
         elDate1.value = '';
         elDate2.value = '';
         updateDateUI();
     });
 
-    elAccount.addEventListener('change', () => {
-        adjustSelectWidth(elAccount, 75);
+   elAccount.addEventListener('change', () => {
+        adjustSelectWidth(elAccount, 90);
         resetFiltersAndFetch();
     });
     
