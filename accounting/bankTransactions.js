@@ -75,7 +75,7 @@ export function init(containerId, entityId = null) {
               font-size: 12px;
               color: #ffffff;               /* white text */
               background: var(--primary-dark);          /* #003366 - dark blue background */
-              padding: 1px;                 /* 1px internal padding on all sides */
+              padding: 3px;                 /* 1px internal padding on all sides */
               text-transform: uppercase;
               position: relative;
               z-index: 2;
