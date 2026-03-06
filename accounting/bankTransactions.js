@@ -31,31 +31,53 @@ export function init(containerId, entityId = null) {
         <style>
             .bt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
             .bt-header h3 { margin: 0; font-size: 20px; color: var(--primary-dark); }
-            .bt-header p { margin: 4px 0 0 0; font-size: 13px; color: #666; }
             
-            /* Vertical Controls Stack */
-            .bt-controls-stack { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
-            .bt-control-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; min-height: 32px; }
-            
-            /* Line-Input UI for Controls */
-            .bt-line-input { padding: 6px 0; border: none; border-bottom: 1px solid #ccc; border-radius: 0; font-size: 13px; outline: none; color: #000; background: transparent; transition: border-bottom-color 0.2s; appearance: none; -webkit-appearance: none; }
-            .bt-line-input:focus { border-bottom: 2px solid var(--primary-dark); padding-bottom: 5px; }
-            select.bt-line-input { background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 100%; background-position-y: center; background-size: 16px; padding-right: 18px; }
-            
-            #bt-filterAccount { min-width: 250px; }
-            #bt-dateMode { width: 115px; min-width: 115px; padding-right: 18px; }
-            .bt-date-box { width: 88px; padding-left: 0; padding-right: 0; }
-            
-            /* Search Box */
-            .bt-search { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; outline: none; flex: 1; max-width: 400px; color: #000; }
-            
-            .bt-split-btn { display: flex; position: relative; }
-            .bt-btn-main { background: var(--primary-dark); color: #fff; border: none; padding: 10px 15px; font-size: 14px; border-radius: 4px 0 0 4px; cursor: pointer; }
-            .bt-btn-arrow { background: var(--primary-dark); color: #fff; border: none; border-left: 1px solid rgba(255,255,255,0.3); padding: 10px 10px; border-radius: 0 4px 4px 0; cursor: pointer; }
+            /* Header Options Dropdown (No blue background, no left/right padding) */
+            .bt-options-wrapper { position: relative; display: inline-block; cursor: pointer; }
+            .bt-btn-options { background: transparent; color: #333; border: none; padding: 6px 0; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; outline: none; }
+            .bt-btn-options:hover { color: var(--primary-dark); }
             .bt-dropdown { display: none; position: absolute; top: 100%; right: 0; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 4px; border: 1px solid #eee; z-index: 100; min-width: 180px; }
             .bt-dropdown div { padding: 10px 15px; font-size: 13px; cursor: pointer; color: #333; }
             .bt-dropdown div:hover { background: #f4f7f9; color: var(--primary-dark); }
             
+            /* ========================================= */
+            /* FLUID CONTROLS BAR (Search, Date, Account)*/
+            /* ========================================= */
+            .bt-ctrl-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 15px; margin-bottom: 20px; }
+            .bt-ctrl-group { display: flex; align-items: center; gap: 10px; }
+            
+            /* Form Input Boxes (4 borders, curved corners, white bg) */
+            .bt-box-input { padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; outline: none; color: #000; background-color: #fff; transition: border-color 0.2s; appearance: none; -webkit-appearance: none; height: 32px; box-sizing: border-box; }
+            .bt-box-input:focus { border-color: var(--primary-dark); }
+            select.bt-box-input { background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: calc(100% - 8px); background-position-y: center; background-size: 16px; padding-right: 28px; }
+            
+            .bt-ctrl-lbl { font-weight: 600; font-size: 12px; color: var(--primary-dark); text-transform: uppercase; }
+            
+            /* Group Logic & Positioning */
+            .grp-acc { order: 1; }
+            .grp-search { order: 2; flex: 1; display: flex; justify-content: center; }
+            .grp-date { order: 3; justify-content: flex-end; }
+            
+            #bt-filterAccount { min-width: 250px; }
+            #bt-dateMode { width: auto; min-width: 120px; }
+            .bt-date-box { width: 110px; }
+            .bt-search { width: 100%; max-width: 400px; padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; outline: none; height: 32px; box-sizing: border-box; }
+            
+            /* Responsive Cascading Controls */
+            @media (max-width: 1100px) {
+                /* Line 1: Account. Line 2: Date (Left), Search (Right) */
+                .grp-acc { flex: 1 1 100%; margin-bottom: 5px; }
+                .grp-date { order: 2; justify-content: flex-start; flex: 1; }
+                .grp-search { order: 3; justify-content: flex-end; flex: initial; }
+                .bt-search { width: 250px; }
+            }
+            @media (max-width: 650px) {
+                /* Line 1: Account. Line 2: Date. Line 3: Search */
+                .grp-date { flex: 1 1 100%; margin-bottom: 5px; }
+                .grp-search { flex: 1 1 100%; justify-content: flex-start; width: 100%; }
+                .bt-search { max-width: 100%; width: 100%; }
+            }
+
             .bt-batch-bar { display: none; padding: 10px 15px; background: #e3f2fd; border-radius: 4px; margin-bottom: 15px; align-items: center; gap: 12px; border: 1px solid #bbdefb; }
             
             /* ========================================= */
@@ -76,7 +98,6 @@ export function init(containerId, entityId = null) {
             }
             .bt-table-inner { min-width: 65rem; }
             
-            /* Global Alignment: Headers, Rows, and Balances share the EXACT same matrix settings */
             .bt-thead, .bt-row-group, .bt-bal-row { display: grid; gap: 0 var(--gap); padding: 10px 15px; }
 
             .bt-thead { background: #f4f7f9; border-bottom: 2px solid #c0c7d0; }
@@ -95,7 +116,6 @@ export function init(containerId, entityId = null) {
             .bt-cell-chk { text-align: center; }
             .bt-cell-desc { line-height: 1.3; }
             
-            /* Force strict Right Alignment within the cells */
             .bt-th-amt, .bt-th-bal, .bt-th-post, .bt-th-split { justify-content: flex-end; }
             .bt-cell-amt, .bt-cell-bal { text-align: right; align-items: flex-end; }
             .bt-cell-post, .bt-cell-split { text-align: right; align-items: flex-end; }
@@ -104,23 +124,17 @@ export function init(containerId, entityId = null) {
             .bt-bal-label { padding: 0; text-align: right; color: #666; }
             .bt-bal-amt { padding: 0; text-align: right; color: #000; }
 
-            /* Inline Labels for Mobile */
             .inline-lbl { display: none; font-weight: 600; font-size: 11px; color: var(--primary-dark); text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px; }
 
-            /* Content Input & Borders */
             .cat-select { width: 100%; padding: 2px 0; border: none; border-radius: 0; font-size: 13px; background: transparent; outline: none; appearance: none; color: #000; }
             .cat-select.is-empty { color: #999; }
             .cat-select option { color: #000; }
             .cat-select option[value=""] { color: #999; }
             
-            /* Prevent wrapping on fixed-width numbers */
             .solid-border { border-bottom: 1px solid #ccc; width: 100%; display: inline-block; padding-bottom: 2px; min-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .dashed-border { border-bottom: 1px dashed #81c784; width: 100%; display: inline-block; padding-bottom: 2px; min-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             
-            /* Enable wrapping explicitly ONLY for the Description column */
             .bt-cell-desc .solid-border, .bt-cell-desc .dashed-border { white-space: normal; overflow: visible; word-break: break-word; }
-            
-            /* Ensure right alignment trickles down through the span */
             .bt-cell-amt .solid-border, .bt-cell-amt .dashed-border, .bt-cell-bal .solid-border, .bt-cell-bal .dashed-border { text-align: right; }
 
             .txt-link { font-weight: 600; font-size: 13px; cursor: pointer; color: var(--primary-dark); text-decoration: none; transition: opacity 0.2s; }
@@ -130,7 +144,7 @@ export function init(containerId, entityId = null) {
             .txt-green { color: #2e7d32; font-weight: 500; font-size: 16px; }
             .txt-red { color: #d32f2f; font-weight: 500; font-size: 13px; }
 
-            /* Pagination Controls */
+            /* Pagination */
             .bt-pagination { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #fff; border: 1px solid #eaedf1; border-top: none; border-radius: 0 0 6px 6px; font-size: 13px; color: #666; }
             .bt-page-controls { display: flex; align-items: center; gap: 15px; }
             .bt-page-btn { background: #f4f7f9; border: 1px solid #ccc; padding: 5px 12px; border-radius: 4px; cursor: pointer; color: #333; transition: background 0.2s; font-size: 13px; }
@@ -141,7 +155,6 @@ export function init(containerId, entityId = null) {
             /* CASCADING MATRIX LOGIC                    */
             /* ========================================= */
 
-            /* STATE 1: Desktop (> 1400px) - 9 Columns */
             @media (min-width: 1401px) {
                 .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) var(--col-vend) var(--col-cat) var(--col-desc) var(--col-amt) var(--col-bal) var(--col-post) var(--col-split); }
                 
@@ -159,7 +172,6 @@ export function init(containerId, entityId = null) {
                 .bt-bal-amt { grid-column: 7; }
             }
 
-            /* STATE 2: Medium Desktop (1101px - 1400px) - 8 Columns */
             @media (max-width: 1400px) and (min-width: 1101px) {
                 .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) 1fr 1fr var(--col-amt) var(--col-bal) var(--col-post) var(--col-split); }
                 
@@ -181,11 +193,8 @@ export function init(containerId, entityId = null) {
                 .bt-bal-amt { grid-column: 6; }
             }
 
-            /* STATE 3: Tablet Wide (901px - 1100px) - 6 Columns */
             @media (max-width: 1100px) and (min-width: 901px) {
-                /* Reduce grid min-width by the Post/Split column widths + gap (approx 6rem) */
                 .bt-table-inner { min-width: 59rem; }
-                
                 .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) 1fr 1fr var(--col-amt) var(--col-bal); }
                 
                 .bt-th-desc, .bt-th-post, .bt-th-split { display: none; }
@@ -207,7 +216,6 @@ export function init(containerId, entityId = null) {
                 .bt-bal-amt { grid-column: 6; }
             }
 
-            /* STATE 4: Tablet Narrow (769px - 900px) - 5 Columns */
             @media (max-width: 900px) and (min-width: 769px) {
                 .bt-table-inner { min-width: 100%; }
                 .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) 1fr var(--col-amt) var(--col-bal); }
@@ -232,33 +240,27 @@ export function init(containerId, entityId = null) {
                 .bt-bal-amt { grid-column: 5; }
             }
 
-            /* STATE 5: Mobile (< 768px) - 4 Columns */
             @media (max-width: 768px) {
                 .bt-table { --gap: 0.5rem; }
                 .bt-table-inner { min-width: 100%; }
                 
-                /* Exact strict column definition maintaining right-side alignment */
                 .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: 24px 1fr 6.5rem 6.5rem; padding: 10px 8px; }
                 
                 .bt-th-vend, .bt-th-cat, .bt-th-desc, .bt-th-post, .bt-th-split { display: none !important; }
                 .lbl-vend, .lbl-cat, .lbl-desc { display: block; }
                 .bt-row-group { grid-template-rows: auto auto auto auto; }
                 
-                /* Line 1 */
                 .bt-cell-chk, .bt-th-chk { grid-column: 1; grid-row: 1; }
                 .bt-cell-date, .bt-th-date { grid-column: 2; grid-row: 1; }
                 .bt-cell-amt, .bt-th-amt { grid-column: 3; grid-row: 1; }
                 .bt-cell-bal, .bt-th-bal { grid-column: 4; grid-row: 1; }
                 
-                /* Line 2 */
                 .bt-cell-vend { grid-column: 2 / 4; grid-row: 2; margin-top: 6px; }
                 .bt-cell-post { grid-column: 4; grid-row: 2; margin-top: 6px; align-items: flex-end; }
                 
-                /* Line 3 */
                 .bt-cell-cat { grid-column: 2 / 4; grid-row: 3; margin-top: 6px; }
                 .bt-cell-split { grid-column: 4; grid-row: 3; margin-top: 6px; align-items: flex-end; }
                 
-                /* Line 4 */
                 .bt-cell-desc { grid-column: 2 / 5; grid-row: 4; margin-top: 6px; }
 
                 .bt-bal-label { grid-column: 1 / 4; padding-right: 10px; }
@@ -268,32 +270,37 @@ export function init(containerId, entityId = null) {
         </style>
 
         <div class="bt-header">
-            <div>
-                <h3>Bank Transactions</h3>
-                <p>Categorize and review your connected feeds.</p>
-            </div>
-            <div class="bt-split-btn">
-                <button class="bt-btn-main" id="bt-btnConnect">Connect Bank</button>
-                <button class="bt-btn-arrow" id="bt-btnPrimaryDropdown">▼</button>
+            <h3>Transactions</h3>
+            <div class="bt-options-wrapper" id="bt-optionsGroup">
+                <button class="bt-btn-options" id="bt-btnOptions">
+                    Options <span style="font-size:10px;">▼</span>
+                </button>
                 <div class="bt-dropdown" id="bt-primaryMenu">
+                    <div id="bt-optConnect">Connect Bank</div>
                     <div>Add Manual Deposit</div>
                     <div>Add Manual Withdrawal</div>
                     <div>Add CC Charge</div>
                     <div>Add CC Credit</div>
                     <div id="bt-optUpload">Upload Transactions</div>
+                    <div style="border-top: 1px solid #eaedf1; margin-top: 4px; padding-top: 8px;">Reconcile</div>
                 </div>
             </div>
         </div>
 
-        <div class="bt-controls-stack">
-            <div class="bt-control-row">
-                <select class="bt-line-input" id="bt-filterAccount">
+        <div class="bt-ctrl-bar">
+            <div class="bt-ctrl-group grp-acc">
+                <span class="bt-ctrl-lbl">Account:</span>
+                <select class="bt-box-input" id="bt-filterAccount">
                     <option value="">Select Account...</option>
                 </select>
             </div>
             
-            <div class="bt-control-row">
-                <select class="bt-line-input" id="bt-dateMode">
+            <div class="bt-ctrl-group grp-search">
+                <input type="text" id="bt-search" class="bt-search" placeholder="Search date, description, or amount...">
+            </div>
+            
+            <div class="bt-ctrl-group grp-date">
+                <select class="bt-box-input" id="bt-dateMode">
                     <option value="all">All Dates</option>
                     <option value="eq">Equals</option>
                     <option value="neq">Not equals</option>
@@ -305,18 +312,14 @@ export function init(containerId, entityId = null) {
                     <option value="not_between">Not between</option>
                 </select>
                 
-                <input type="date" id="bt-date1" class="bt-line-input bt-date-box" style="display:none;">
+                <input type="date" id="bt-date1" class="bt-box-input bt-date-box" style="display:none;">
                 <span id="bt-date-and" style="display:none; font-size:13px; color:#666; font-weight:500;">and</span>
-                <input type="date" id="bt-date2" class="bt-line-input bt-date-box" style="display:none;" title="End Date">
+                <input type="date" id="bt-date2" class="bt-box-input bt-date-box" style="display:none;" title="End Date">
                 
                 <div id="bt-date-display-container" style="display:none; align-items:center; gap:8px;">
-                    <span id="bt-date-display-text" class="bt-line-input" style="border-bottom: 1px solid transparent; font-weight: 500;"></span>
+                    <span id="bt-date-display-text" class="bt-box-input" style="font-weight: 500;"></span>
                     <button id="bt-date-clear" style="background:transparent; border:none; color:#d9534f; cursor:pointer; font-size:18px; line-height:1; padding:0; display:flex; align-items:center;" title="Clear Filter">&times;</button>
                 </div>
-            </div>
-
-            <div class="bt-control-row">
-                <input type="text" id="bt-search" class="bt-search" placeholder="Search date, description, or amount...">
             </div>
         </div>
 
@@ -337,8 +340,8 @@ export function init(containerId, entityId = null) {
                     <div class="bt-th bt-th-desc">DESCRIPTION<div class="bt-resizer"></div></div>
                     <div class="bt-th bt-th-amt">AMOUNT<div class="bt-resizer"></div></div>
                     <div class="bt-th bt-th-bal">BALANCE</div>
-                    <div class="bt-th bt-th-post">POST</div>
-                    <div class="bt-th bt-th-split">SPLIT</div>
+                    <div class="bt-th bt-th-post"></div>
+                    <div class="bt-th bt-th-split"></div>
                 </div>
                 <div id="bt-listContainer">
                     <div style="padding: 40px; text-align: center; color: #666;">Select an account to view transactions.</div>
@@ -350,7 +353,7 @@ export function init(containerId, entityId = null) {
             <div id="bt-page-info">Showing 0-0 of 0</div>
             <div class="bt-page-controls">
                 <label style="margin-right: 10px;">Rows per page: 
-                    <select class="bt-select" style="min-width: auto; padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px;" id="bt-rowsPerPage">
+                    <select class="bt-box-input" style="min-width: auto; padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px;" id="bt-rowsPerPage">
                         <option value="25">25</option>
                         <option value="50">50</option>
                         <option value="75">75</option>
@@ -386,12 +389,22 @@ export function init(containerId, entityId = null) {
     let currentPage = 1;
     let rowsPerPage = 25;
 
-    // Smart Resizer: Only adjusts CSS variables instead of overriding the entire grid string
+    // Header Options Actions
+    const optionsGroup = document.getElementById('bt-optionsGroup');
+    const primaryMenu = document.getElementById('bt-primaryMenu');
+    optionsGroup.addEventListener('click', (e) => {
+        e.stopPropagation();
+        primaryMenu.style.display = primaryMenu.style.display === 'block' ? 'none' : 'block';
+    });
+    document.addEventListener('click', () => primaryMenu.style.display = 'none');
+    
+    document.getElementById('bt-optUpload').addEventListener('click', () => openUploadModal(containerId));
+
+    // Smart Resizer
     const initResizer = () => {
         if(window.innerWidth <= 768) return; 
         const table = document.querySelector('.bt-table');
         const headers = table.querySelectorAll('.bt-th');
-        // Map headers to the CSS variables that control their width
         const varNames = ['--col-chk', '--col-date', '--col-vend', '--col-cat', '--col-desc', '--col-amt', '--col-bal'];
         
         headers.forEach((th, i) => {
@@ -416,15 +429,6 @@ export function init(containerId, entityId = null) {
         });
     };
     initResizer();
-
-    const primaryBtn = document.getElementById('bt-btnPrimaryDropdown');
-    const primaryMenu = document.getElementById('bt-primaryMenu');
-    primaryBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        primaryMenu.style.display = primaryMenu.style.display === 'block' ? 'none' : 'block';
-    });
-    document.addEventListener('click', () => primaryMenu.style.display = 'none');
-    document.getElementById('bt-optUpload').addEventListener('click', () => openUploadModal(containerId));
 
     const loadDependencies = async () => {
         try {
@@ -493,6 +497,7 @@ export function init(containerId, entityId = null) {
         window.refreshBankTransactionsTable();
     };
 
+    // --- Dynamic Date Control UI Logic ---
     const updateDateUI = () => {
         const mode = dateMode.value;
         const d1 = elDate1.value;
@@ -599,6 +604,7 @@ export function init(containerId, entityId = null) {
             
             let allTxs = [];
             snap.forEach(doc => allTxs.push({ id: doc.id, ...doc.data() }));
+            
             allTxs.sort((a, b) => new Date(a.date) - new Date(b.date));
 
             let runningBalance = 0, displayTxs = [];
@@ -685,14 +691,8 @@ export function init(containerId, entityId = null) {
                 const vendEmptyCls = tx.vendorId ? '' : 'is-empty';
                 const catEmptyCls = defCatId ? '' : 'is-empty';
                 
-                vendHtml = `
-                    <span class="inline-lbl lbl-vend">Vendor</span>
-                    <select class="cat-select vend-select-box ${vendEmptyCls}" id="vend-${tx.id}">${buildVendorDropdown(tx.vendorId)}</select>
-                `;
-                catHtml = `
-                    <span class="inline-lbl lbl-cat">Category</span>
-                    <select class="cat-select cat-select-box ${catEmptyCls}" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>
-                `;
+                vendHtml = `<select class="cat-select vend-select-box ${vendEmptyCls}" id="vend-${tx.id}">${buildVendorDropdown(tx.vendorId)}</select>`;
+                catHtml = `<select class="cat-select cat-select-box ${catEmptyCls}" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>`;
                 postHtml = `<a class="txt-link post btn-post" data-id="${tx.id}">Post</a>`;
                 splitHtml = `<a class="txt-link btn-split" data-id="${tx.id}">Split</a>`;
             } else {
@@ -700,15 +700,10 @@ export function init(containerId, entityId = null) {
                 const vendName = vendorsList.find(v => v.id === tx.vendorId)?.name || '';
                 const catName = tx.status === 'Split' ? `Split (${tx.splits ? tx.splits.length : 0})` : (chartOfAccounts.find(c => c.id === tx.postedCategoryId)?.name || 'Categorized');
                 
-                vendHtml = `
-                    <span class="inline-lbl lbl-vend">Vendor</span>
-                    <span class="${borderClass}">${vendName}</span>
-                `;
-                catHtml = `
-                    <span class="inline-lbl lbl-cat">Category</span>
-                    <span class="${borderClass}" style="color: #2e7d32; font-weight: 500;">${catName}</span>
-                `;
+                vendHtml = `<span class="${borderClass}">${vendName}</span>`;
+                catHtml = `<span class="${borderClass}" style="color: #2e7d32; font-weight: 500;">${catName}</span>`;
                 
+                // Side-by-side Checkmark and Undo Logic preserved perfectly
                 postHtml = `<span class="txt-green">&#10003;</span>`;
                 splitHtml = `<a class="txt-link undo cat-btn-undo" data-id="${tx.id}">Undo</a>`;
             }
@@ -717,8 +712,8 @@ export function init(containerId, entityId = null) {
                 <div class="bt-row-group ${statusClass}">
                     <div class="bt-cell bt-cell-chk"><input type="checkbox" class="bt-row-check" data-id="${tx.id}"></div>
                     <div class="bt-cell bt-cell-date"><span class="${borderClass}">${tx.date}</span></div>
-                    <div class="bt-cell bt-cell-vend">${vendHtml}</div>
-                    <div class="bt-cell bt-cell-cat">${catHtml}</div>
+                    <div class="bt-cell bt-cell-vend"><span class="inline-lbl lbl-vend">Vendor</span><div style="flex:1; min-width:0;">${vendHtml}</div></div>
+                    <div class="bt-cell bt-cell-cat"><span class="inline-lbl lbl-cat">Category</span><div style="flex:1; min-width:0;">${catHtml}</div></div>
                     <div class="bt-cell bt-cell-desc"><span class="inline-lbl lbl-desc">Bank Memo</span><span class="${borderClass}">${tx.description}</span></div>
                     <div class="bt-cell bt-cell-amt ${amtClass}"><span class="${borderClass}">${formatCurrency(Math.abs(tx.foreignAmount), tx.currency)}</span></div>
                     <div class="bt-cell bt-cell-bal"><span class="${borderClass}">${formatCurrency(tx.calculatedBalance, tx.currency)}</span></div>
@@ -1057,7 +1052,7 @@ export function init(containerId, entityId = null) {
                     splits: splits
                 });
                 overlay.remove();
-                window.refreshBankTransactionsTable();
+                window.refreshBankTransactionsTable(); // Keeps current page
             } catch(err) {
                 console.error(err); alert("Failed to save split.");
                 btn.textContent = "Save Split"; btn.disabled = false;
