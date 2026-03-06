@@ -33,7 +33,7 @@ export function init(containerId, entityId = null) {
             .bt-header h3 { margin: 0; font-size: 20px; color: var(--primary-dark); }
             .bt-header p { margin: 4px 0 0 0; font-size: 13px; color: #666; }
             
-            /* Vertical Controls Stack with Fluidity */
+            /* Vertical Controls Stack */
             .bt-controls-stack { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
             .bt-control-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; min-height: 32px; }
             
@@ -43,9 +43,8 @@ export function init(containerId, entityId = null) {
             select.bt-line-input { background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 100%; background-position-y: center; background-size: 16px; padding-right: 18px; }
             
             #bt-filterAccount { min-width: 250px; }
-            /* Adjusted Date Widths to prevent wrapping */
-            #bt-dateMode { width: 115px; min-width: 115px; }
-            .bt-date-box { width: 88px; }
+            #bt-dateMode { width: 115px; min-width: 115px; padding-right: 18px; }
+            .bt-date-box { width: 88px; padding-left: 0; padding-right: 0; }
             
             /* Search Box */
             .bt-search { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; outline: none; flex: 1; max-width: 400px; color: #000; }
@@ -60,13 +59,14 @@ export function init(containerId, entityId = null) {
             .bt-batch-bar { display: none; padding: 10px 15px; background: #e3f2fd; border-radius: 4px; margin-bottom: 15px; align-items: center; gap: 12px; border: 1px solid #bbdefb; }
             
             /* ========================================= */
-            /* PERFECTLY ALIGNED CASCADING GRID SYSTEM   */
+            /* ABSOLUTE GRID LOCKING ARCHITECTURE        */
             /* ========================================= */
             .bt-table { 
                 --col-chk: 24px;
                 --col-date: 4.5rem;
                 --col-vend: 18rem;
                 --col-cat: 18rem;
+                --col-desc: 1fr;
                 --col-amt: 7rem;
                 --col-bal: 7rem;
                 --col-post: 2.25rem;
@@ -76,12 +76,9 @@ export function init(containerId, entityId = null) {
             }
             .bt-table-inner { min-width: 65rem; }
             
-            /* Absolute Padding Synchronization */
-            .bt-thead, .bt-row-group, .bt-bal-row { 
-                display: grid; gap: 0 var(--gap); padding: 10px 15px;
-            }
+            /* Global Alignment: Headers, Rows, and Balances share the EXACT same matrix settings */
+            .bt-thead, .bt-row-group, .bt-bal-row { display: grid; gap: 0 var(--gap); padding: 10px 15px; }
 
-            /* The Header */
             .bt-thead { background: #f4f7f9; border-bottom: 2px solid #c0c7d0; }
             .bt-th { padding: 0; display: flex; align-items: center; font-weight: 600; font-size: 12px; color: var(--primary-dark); text-transform: uppercase; position: relative; }
             .bt-th-sortable { cursor: pointer; user-select: none; }
@@ -89,46 +86,43 @@ export function init(containerId, entityId = null) {
             .bt-resizer { position: absolute; right: -6px; top: 0; bottom: 0; width: 8px; cursor: col-resize; z-index: 2; }
             .bt-resizer:hover { background: rgba(0,0,0,0.1); }
             
-            /* The Rows */
             .bt-row-group { border-bottom: 1px solid #dcdcdc; transition: background-color 0.2s; background-color: #fff; align-items: end; }
             .bt-row-group:hover { background-color: #f1f8ff !important; }
             .row-reviewed { background-color: #f4fbf4; }
             .row-split { background-color: #f0f7ff; }
 
-            /* Cell Reset */
-            .bt-cell { padding: 0; font-size: 13px; color: #000; align-self: start; display: flex; flex-direction: column; justify-content: flex-end; }
+            .bt-cell { padding: 0; font-size: 13px; color: #000; display: flex; flex-direction: column; justify-content: flex-end; }
+            .bt-cell-chk { text-align: center; }
+            .bt-cell-desc { line-height: 1.3; }
             
-            /* The Balances */
+            /* Force strict Right Alignment within the cells */
+            .bt-th-amt, .bt-th-bal, .bt-th-post, .bt-th-split { justify-content: flex-end; }
+            .bt-cell-amt, .bt-cell-bal { text-align: right; align-items: flex-end; }
+            .bt-cell-post, .bt-cell-split { text-align: right; align-items: flex-end; }
+
             .bt-bal-row { background: #fcfcfc; border-bottom: 2px solid #c0c7d0; font-weight: 600; font-size: 13px; align-items: center; }
             .bt-bal-label { padding: 0; text-align: right; color: #666; }
             .bt-bal-amt { padding: 0; text-align: right; color: #000; }
 
-            /* Default Desktop Matrix */
-            .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) var(--col-vend) var(--col-cat) 1fr var(--col-amt) var(--col-bal) var(--col-post) var(--col-split); }
-            
-            .bt-cell-chk { grid-column: 1; text-align: center; }
-            .bt-cell-date { grid-column: 2; }
-            .bt-cell-vend { grid-column: 3; display: flex; align-items: baseline; }
-            .bt-cell-cat { grid-column: 4; display: flex; align-items: baseline; }
-            .bt-cell-desc { grid-column: 5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; }
-            .bt-cell-amt { grid-column: 6; text-align: right; }
-            .bt-cell-bal { grid-column: 7; text-align: right; }
-            .bt-cell-post { grid-column: 8; text-align: right; align-items: flex-end; }
-            .bt-cell-split { grid-column: 9; text-align: right; align-items: flex-end; }
-            
-            .bt-bal-label { grid-column: 1 / 7; }
-            .bt-bal-amt { grid-column: 7; }
-
-            /* Internal Styles */
+            /* Inline Labels for Mobile */
             .inline-lbl { display: none; font-weight: 600; font-size: 11px; color: var(--primary-dark); text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px; }
-            .solid-border { border-bottom: 1px solid #ccc; width: 100%; display: inline-block; padding-bottom: 2px; min-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-            .dashed-border { border-bottom: 1px dashed #81c784; width: 100%; display: inline-block; padding-bottom: 2px; min-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-            .bt-cell-desc .solid-border, .bt-cell-desc .dashed-border { white-space: normal; word-break: break-word; overflow: visible; }
+
+            /* Content Input & Borders */
             .cat-select { width: 100%; padding: 2px 0; border: none; border-radius: 0; font-size: 13px; background: transparent; outline: none; appearance: none; color: #000; }
             .cat-select.is-empty { color: #999; }
             .cat-select option { color: #000; }
             .cat-select option[value=""] { color: #999; }
             
+            /* Prevent wrapping on fixed-width numbers */
+            .solid-border { border-bottom: 1px solid #ccc; width: 100%; display: inline-block; padding-bottom: 2px; min-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .dashed-border { border-bottom: 1px dashed #81c784; width: 100%; display: inline-block; padding-bottom: 2px; min-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            
+            /* Enable wrapping explicitly ONLY for the Description column */
+            .bt-cell-desc .solid-border, .bt-cell-desc .dashed-border { white-space: normal; overflow: visible; word-break: break-word; }
+            
+            /* Ensure right alignment trickles down through the span */
+            .bt-cell-amt .solid-border, .bt-cell-amt .dashed-border, .bt-cell-bal .solid-border, .bt-cell-bal .dashed-border { text-align: right; }
+
             .txt-link { font-weight: 600; font-size: 13px; cursor: pointer; color: var(--primary-dark); text-decoration: none; transition: opacity 0.2s; }
             .txt-link:hover { text-decoration: underline; opacity: 0.8; }
             .txt-link.post { color: #2e7d32; }
@@ -144,86 +138,128 @@ export function init(containerId, entityId = null) {
             .bt-page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
             /* ========================================= */
-            /* MULTI-STAGE CASCADING LOGIC               */
+            /* CASCADING MATRIX LOGIC                    */
             /* ========================================= */
 
-            /* STATE 2: Medium Desktop (1101px - 1400px) - Desc to Line 2 */
+            /* STATE 1: Desktop (> 1400px) - 9 Columns */
+            @media (min-width: 1401px) {
+                .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) var(--col-vend) var(--col-cat) var(--col-desc) var(--col-amt) var(--col-bal) var(--col-post) var(--col-split); }
+                
+                .bt-cell-chk, .bt-th-chk { grid-column: 1; grid-row: 1; }
+                .bt-cell-date, .bt-th-date { grid-column: 2; grid-row: 1; }
+                .bt-cell-vend, .bt-th-vend { grid-column: 3; grid-row: 1; }
+                .bt-cell-cat, .bt-th-cat { grid-column: 4; grid-row: 1; }
+                .bt-cell-desc, .bt-th-desc { grid-column: 5; grid-row: 1; }
+                .bt-cell-amt, .bt-th-amt { grid-column: 6; grid-row: 1; }
+                .bt-cell-bal, .bt-th-bal { grid-column: 7; grid-row: 1; }
+                .bt-cell-post, .bt-th-post { grid-column: 8; grid-row: 1; }
+                .bt-cell-split, .bt-th-split { grid-column: 9; grid-row: 1; }
+                
+                .bt-bal-label { grid-column: 1 / 7; }
+                .bt-bal-amt { grid-column: 7; }
+            }
+
+            /* STATE 2: Medium Desktop (1101px - 1400px) - 8 Columns */
             @media (max-width: 1400px) and (min-width: 1101px) {
                 .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) 1fr 1fr var(--col-amt) var(--col-bal) var(--col-post) var(--col-split); }
-                .bt-th:nth-child(5) { display: none; }
-                .lbl-desc { display: block; }
                 
+                .bt-th-desc { display: none; }
+                .lbl-desc { display: block; }
                 .bt-row-group { grid-template-rows: auto auto; }
+                
+                .bt-cell-chk, .bt-th-chk { grid-column: 1; grid-row: 1; }
+                .bt-cell-date, .bt-th-date { grid-column: 2; grid-row: 1; }
+                .bt-cell-vend, .bt-th-vend { grid-column: 3; grid-row: 1; }
+                .bt-cell-cat, .bt-th-cat { grid-column: 4; grid-row: 1; }
+                .bt-cell-amt, .bt-th-amt { grid-column: 5; grid-row: 1; }
+                .bt-cell-bal, .bt-th-bal { grid-column: 6; grid-row: 1; }
+                .bt-cell-post, .bt-th-post { grid-column: 7; grid-row: 1; }
+                .bt-cell-split, .bt-th-split { grid-column: 8; grid-row: 1; }
+                
                 .bt-cell-desc { grid-column: 3 / 7; grid-row: 2; margin-top: 8px; }
                 .bt-bal-label { grid-column: 1 / 6; }
                 .bt-bal-amt { grid-column: 6; }
             }
 
-            /* STATE 3: Tablet Wide (901px - 1100px) - Post/Split to Line 2 */
+            /* STATE 3: Tablet Wide (901px - 1100px) - 6 Columns */
             @media (max-width: 1100px) and (min-width: 901px) {
-                .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) 1fr 1fr var(--col-amt) var(--col-bal); }
-                .bt-th:nth-child(5), .bt-th:nth-child(8), .bt-th:nth-child(9) { display: none; }
-                .lbl-desc { display: block; }
+                /* Reduce grid min-width by the Post/Split column widths + gap (approx 6rem) */
+                .bt-table-inner { min-width: 59rem; }
                 
+                .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) 1fr 1fr var(--col-amt) var(--col-bal); }
+                
+                .bt-th-desc, .bt-th-post, .bt-th-split { display: none; }
+                .lbl-desc { display: block; }
                 .bt-row-group { grid-template-rows: auto auto; }
+                
+                .bt-cell-chk, .bt-th-chk { grid-column: 1; grid-row: 1; }
+                .bt-cell-date, .bt-th-date { grid-column: 2; grid-row: 1; }
+                .bt-cell-vend, .bt-th-vend { grid-column: 3; grid-row: 1; }
+                .bt-cell-cat, .bt-th-cat { grid-column: 4; grid-row: 1; }
+                .bt-cell-amt, .bt-th-amt { grid-column: 5; grid-row: 1; }
+                .bt-cell-bal, .bt-th-bal { grid-column: 6; grid-row: 1; }
+                
                 .bt-cell-desc { grid-column: 3 / 5; grid-row: 2; margin-top: 8px; }
-                .bt-cell-post { grid-column: 5; grid-row: 2; margin-top: 8px; }
-                .bt-cell-split { grid-column: 6; grid-row: 2; margin-top: 8px; }
+                .bt-cell-post { grid-column: 5; grid-row: 2; margin-top: 8px; align-items: flex-end; }
+                .bt-cell-split { grid-column: 6; grid-row: 2; margin-top: 8px; align-items: flex-end; }
                 
                 .bt-bal-label { grid-column: 1 / 6; }
                 .bt-bal-amt { grid-column: 6; }
             }
 
-            /* STATE 4: Tablet Narrow (769px - 900px) - Cat to Line 3 */
+            /* STATE 4: Tablet Narrow (769px - 900px) - 5 Columns */
             @media (max-width: 900px) and (min-width: 769px) {
                 .bt-table-inner { min-width: 100%; }
                 .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) 1fr var(--col-amt) var(--col-bal); }
-                .bt-th:nth-child(4), .bt-th:nth-child(5), .bt-th:nth-child(8), .bt-th:nth-child(9) { display: none; }
-                .lbl-cat, .lbl-desc { display: block; }
                 
+                .bt-th-cat, .bt-th-desc, .bt-th-post, .bt-th-split { display: none; }
+                .lbl-cat, .lbl-desc { display: block; }
                 .bt-row-group { grid-template-rows: auto auto auto; }
                 
+                .bt-cell-chk, .bt-th-chk { grid-column: 1; grid-row: 1; }
+                .bt-cell-date, .bt-th-date { grid-column: 2; grid-row: 1; }
+                .bt-cell-vend, .bt-th-vend { grid-column: 3; grid-row: 1; }
+                .bt-cell-amt, .bt-th-amt { grid-column: 4; grid-row: 1; }
+                .bt-cell-bal, .bt-th-bal { grid-column: 5; grid-row: 1; }
+                
                 .bt-cell-cat { grid-column: 3; grid-row: 2; margin-top: 8px; }
-                .bt-cell-post { grid-column: 5; grid-row: 2; margin-top: 8px; }
+                .bt-cell-post { grid-column: 5; grid-row: 2; margin-top: 8px; align-items: flex-end; }
                 
                 .bt-cell-desc { grid-column: 3; grid-row: 3; margin-top: 8px; }
-                .bt-cell-split { grid-column: 5; grid-row: 3; margin-top: 8px; }
+                .bt-cell-split { grid-column: 5; grid-row: 3; margin-top: 8px; align-items: flex-end; }
                 
                 .bt-bal-label { grid-column: 1 / 5; }
                 .bt-bal-amt { grid-column: 5; }
             }
 
-            /* STATE 5: Mobile (< 768px) - Vend to Line 2, Desc to 4 */
+            /* STATE 5: Mobile (< 768px) - 4 Columns */
             @media (max-width: 768px) {
                 .bt-table { --gap: 0.5rem; }
                 .bt-table-inner { min-width: 100%; }
                 
-                /* Keep Header completely intact & aligned for sorting */
-                .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: 24px 1fr 6rem 6rem; padding: 10px 8px; }
-                .bt-th:nth-child(3), .bt-th:nth-child(4), .bt-th:nth-child(5), .bt-th:nth-child(8), .bt-th:nth-child(9) { display: none !important; }
-                .bt-th:nth-child(6) { grid-column: 3; justify-content: flex-end; }
-                .bt-th:nth-child(7) { grid-column: 4; justify-content: flex-end; }
+                /* Exact strict column definition maintaining right-side alignment */
+                .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: 24px 1fr 6.5rem 6.5rem; padding: 10px 8px; }
                 
+                .bt-th-vend, .bt-th-cat, .bt-th-desc, .bt-th-post, .bt-th-split { display: none !important; }
                 .lbl-vend, .lbl-cat, .lbl-desc { display: block; }
-                
                 .bt-row-group { grid-template-rows: auto auto auto auto; }
                 
                 /* Line 1 */
-                .bt-cell-chk { grid-column: 1; grid-row: 1; }
-                .bt-cell-date { grid-column: 2; grid-row: 1; font-size: 12px; }
-                .bt-cell-amt { grid-column: 3; grid-row: 1; font-size: 12px; }
-                .bt-cell-bal { grid-column: 4; grid-row: 1; font-size: 12px; }
+                .bt-cell-chk, .bt-th-chk { grid-column: 1; grid-row: 1; }
+                .bt-cell-date, .bt-th-date { grid-column: 2; grid-row: 1; }
+                .bt-cell-amt, .bt-th-amt { grid-column: 3; grid-row: 1; }
+                .bt-cell-bal, .bt-th-bal { grid-column: 4; grid-row: 1; }
                 
                 /* Line 2 */
                 .bt-cell-vend { grid-column: 2 / 4; grid-row: 2; margin-top: 6px; }
-                .bt-cell-post { grid-column: 4; grid-row: 2; margin-top: 6px; }
+                .bt-cell-post { grid-column: 4; grid-row: 2; margin-top: 6px; align-items: flex-end; }
                 
                 /* Line 3 */
                 .bt-cell-cat { grid-column: 2 / 4; grid-row: 3; margin-top: 6px; }
-                .bt-cell-split { grid-column: 4; grid-row: 3; margin-top: 6px; }
+                .bt-cell-split { grid-column: 4; grid-row: 3; margin-top: 6px; align-items: flex-end; }
                 
                 /* Line 4 */
-                .bt-cell-desc { grid-column: 2 / 5; grid-row: 4; margin-top: 6px; font-size: 11px; }
+                .bt-cell-desc { grid-column: 2 / 5; grid-row: 4; margin-top: 6px; }
 
                 .bt-bal-label { grid-column: 1 / 4; padding-right: 10px; }
                 .bt-bal-amt { grid-column: 4; }
@@ -294,15 +330,15 @@ export function init(containerId, entityId = null) {
         <div class="bt-table">
             <div class="bt-table-inner">
                 <div class="bt-thead" id="bt-thead">
-                    <div class="bt-th" style="justify-content:center;"><input type="checkbox" id="bt-selectAll"></div>
-                    <div class="bt-th bt-th-sortable" id="bt-headerDate">DATE <span id="bt-sortArrow" style="margin-left:5px;">&#8595;</span></div>
-                    <div class="bt-th bt-th-vend">VENDOR</div>
-                    <div class="bt-th bt-th-cat">CATEGORY</div>
-                    <div class="bt-th bt-th-desc">DESCRIPTION</div>
-                    <div class="bt-th" style="justify-content: flex-end;">AMOUNT</div>
-                    <div class="bt-th" style="justify-content: flex-end;">BALANCE</div>
-                    <div class="bt-th bt-th-post" style="justify-content: flex-end;">POST</div>
-                    <div class="bt-th bt-th-split" style="justify-content: flex-end;">SPLIT</div>
+                    <div class="bt-th bt-th-chk" style="justify-content:center;"><input type="checkbox" id="bt-selectAll"></div>
+                    <div class="bt-th bt-th-sortable bt-th-date" id="bt-headerDate">DATE <span id="bt-sortArrow" style="margin-left:5px;">&#8595;</span></div>
+                    <div class="bt-th bt-th-vend">VENDOR<div class="bt-resizer"></div></div>
+                    <div class="bt-th bt-th-cat">CATEGORY<div class="bt-resizer"></div></div>
+                    <div class="bt-th bt-th-desc">DESCRIPTION<div class="bt-resizer"></div></div>
+                    <div class="bt-th bt-th-amt">AMOUNT<div class="bt-resizer"></div></div>
+                    <div class="bt-th bt-th-bal">BALANCE</div>
+                    <div class="bt-th bt-th-post">POST</div>
+                    <div class="bt-th bt-th-split">SPLIT</div>
                 </div>
                 <div id="bt-listContainer">
                     <div style="padding: 40px; text-align: center; color: #666;">Select an account to view transactions.</div>
@@ -349,6 +385,37 @@ export function init(containerId, entityId = null) {
     let currentTransactions = []; 
     let currentPage = 1;
     let rowsPerPage = 25;
+
+    // Smart Resizer: Only adjusts CSS variables instead of overriding the entire grid string
+    const initResizer = () => {
+        if(window.innerWidth <= 768) return; 
+        const table = document.querySelector('.bt-table');
+        const headers = table.querySelectorAll('.bt-th');
+        // Map headers to the CSS variables that control their width
+        const varNames = ['--col-chk', '--col-date', '--col-vend', '--col-cat', '--col-desc', '--col-amt', '--col-bal'];
+        
+        headers.forEach((th, i) => {
+            const resizer = th.querySelector('.bt-resizer');
+            if (!resizer || !varNames[i]) return;
+            let startX, startWidth;
+            resizer.addEventListener('mousedown', (e) => {
+                startX = e.pageX;
+                startWidth = th.offsetWidth;
+                const onMouseMove = (e) => {
+                    const diff = e.pageX - startX;
+                    const newWidth = Math.max(30, startWidth + diff);
+                    table.style.setProperty(varNames[i], newWidth + 'px');
+                };
+                const onMouseUp = () => {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                };
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+        });
+    };
+    initResizer();
 
     const primaryBtn = document.getElementById('bt-btnPrimaryDropdown');
     const primaryMenu = document.getElementById('bt-primaryMenu');
@@ -532,7 +599,6 @@ export function init(containerId, entityId = null) {
             
             let allTxs = [];
             snap.forEach(doc => allTxs.push({ id: doc.id, ...doc.data() }));
-            
             allTxs.sort((a, b) => new Date(a.date) - new Date(b.date));
 
             let runningBalance = 0, displayTxs = [];
@@ -619,8 +685,14 @@ export function init(containerId, entityId = null) {
                 const vendEmptyCls = tx.vendorId ? '' : 'is-empty';
                 const catEmptyCls = defCatId ? '' : 'is-empty';
                 
-                vendHtml = `<select class="cat-select vend-select-box ${vendEmptyCls}" id="vend-${tx.id}">${buildVendorDropdown(tx.vendorId)}</select>`;
-                catHtml = `<select class="cat-select cat-select-box ${catEmptyCls}" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>`;
+                vendHtml = `
+                    <span class="inline-lbl lbl-vend">Vendor</span>
+                    <select class="cat-select vend-select-box ${vendEmptyCls}" id="vend-${tx.id}">${buildVendorDropdown(tx.vendorId)}</select>
+                `;
+                catHtml = `
+                    <span class="inline-lbl lbl-cat">Category</span>
+                    <select class="cat-select cat-select-box ${catEmptyCls}" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>
+                `;
                 postHtml = `<a class="txt-link post btn-post" data-id="${tx.id}">Post</a>`;
                 splitHtml = `<a class="txt-link btn-split" data-id="${tx.id}">Split</a>`;
             } else {
@@ -628,8 +700,15 @@ export function init(containerId, entityId = null) {
                 const vendName = vendorsList.find(v => v.id === tx.vendorId)?.name || '';
                 const catName = tx.status === 'Split' ? `Split (${tx.splits ? tx.splits.length : 0})` : (chartOfAccounts.find(c => c.id === tx.postedCategoryId)?.name || 'Categorized');
                 
-                vendHtml = `<span class="${borderClass}">${vendName}</span>`;
-                catHtml = `<span class="${borderClass}" style="color: #2e7d32; font-weight: 500;">${catName}</span>`;
+                vendHtml = `
+                    <span class="inline-lbl lbl-vend">Vendor</span>
+                    <span class="${borderClass}">${vendName}</span>
+                `;
+                catHtml = `
+                    <span class="inline-lbl lbl-cat">Category</span>
+                    <span class="${borderClass}" style="color: #2e7d32; font-weight: 500;">${catName}</span>
+                `;
+                
                 postHtml = `<span class="txt-green">&#10003;</span>`;
                 splitHtml = `<a class="txt-link undo cat-btn-undo" data-id="${tx.id}">Undo</a>`;
             }
@@ -638,8 +717,8 @@ export function init(containerId, entityId = null) {
                 <div class="bt-row-group ${statusClass}">
                     <div class="bt-cell bt-cell-chk"><input type="checkbox" class="bt-row-check" data-id="${tx.id}"></div>
                     <div class="bt-cell bt-cell-date"><span class="${borderClass}">${tx.date}</span></div>
-                    <div class="bt-cell bt-cell-vend"><span class="inline-lbl lbl-vend">Vendor</span><div style="flex:1;">${vendHtml}</div></div>
-                    <div class="bt-cell bt-cell-cat"><span class="inline-lbl lbl-cat">Category</span><div style="flex:1;">${catHtml}</div></div>
+                    <div class="bt-cell bt-cell-vend">${vendHtml}</div>
+                    <div class="bt-cell bt-cell-cat">${catHtml}</div>
                     <div class="bt-cell bt-cell-desc"><span class="inline-lbl lbl-desc">Bank Memo</span><span class="${borderClass}">${tx.description}</span></div>
                     <div class="bt-cell bt-cell-amt ${amtClass}"><span class="${borderClass}">${formatCurrency(Math.abs(tx.foreignAmount), tx.currency)}</span></div>
                     <div class="bt-cell bt-cell-bal"><span class="${borderClass}">${formatCurrency(tx.calculatedBalance, tx.currency)}</span></div>
