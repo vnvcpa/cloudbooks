@@ -73,8 +73,8 @@ export function init(containerId, entityId = null) {
               display: inline-block;
               font-weight: 600;
               font-size: 12px;
-              color: #ffffff;               /* white text */
-              background: #003366;          /* dark blue background */
+              color: var(--primary-dark);               /* white text */
+              background: #003366;          /* #003366 - dark blue background */
               padding: 1px;                 /* 1px internal padding on all sides */
               text-transform: uppercase;
               position: relative;
