@@ -183,6 +183,9 @@ export function init(containerId, entityId = null) {
 
             /* STATE 3: Tablet Wide (901px - 1100px) - 6 Columns */
             @media (max-width: 1100px) and (min-width: 901px) {
+                /* Reduce grid min-width by the Post/Split column widths + gap (approx 6rem) */
+                .bt-table-inner { min-width: 59rem; }
+                
                 .bt-thead, .bt-row-group, .bt-bal-row { grid-template-columns: var(--col-chk) var(--col-date) 1fr 1fr var(--col-amt) var(--col-bal); }
                 
                 .bt-th-desc, .bt-th-post, .bt-th-split { display: none; }
