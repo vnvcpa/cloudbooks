@@ -36,7 +36,7 @@ export function init(containerId, entityId = null) {
             /* FLUID CONTROLS BAR                        */
             /* ========================================= */
             .bt-ctrl-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 15px; margin-bottom: 20px; }
-            .bt-ctrl-group { display: flex; align-items: center; gap: 8px; }
+            .bt-ctrl-group { display: flex; align-items: center; gap: 8px; position: relative; }
             
             /* Oval Hover Inputs (Hidden by default, visible on hover) */
             .bt-oval-input { 
@@ -47,11 +47,12 @@ export function init(containerId, entityId = null) {
                 outline: none; 
                 color: #000; 
                 background: transparent; 
-                transition: border-color 0.2s; 
+                transition: border-color 0.2s, width 0.1s ease-out; 
                 appearance: none; 
                 -webkit-appearance: none; 
                 height: 32px; 
                 box-sizing: border-box; 
+                cursor: pointer;
             }
             .bt-oval-input:hover { border-color: #ccc; }
             .bt-oval-input:focus { border-color: var(--primary-dark); }
@@ -70,14 +71,15 @@ export function init(containerId, entityId = null) {
             .bt-ctrl-lbl { font-weight: 600; font-size: 12px; color: var(--primary-dark); text-transform: uppercase; position: relative; z-index: 2; pointer-events: none; }
             
             /* Slides the border exactly behind the 'O' in ACCOUNT: */
-            #bt-filterAccount { min-width: 250px; margin-left: -40px; padding-left: 45px; position: relative; z-index: 1; }
+            #bt-filterAccount { margin-left: -40px; padding-left: 45px; position: relative; z-index: 1; }
             
             .grp-search { order: 2; flex: 1; display: flex; justify-content: center; }
             .bt-search { width: 100%; max-width: 400px; padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; outline: none; height: 32px; box-sizing: border-box; color: #000; }
             
             .grp-date { order: 3; justify-content: flex-end; }
-            #bt-dateMode { width: auto; min-width: 140px; }
-            .bt-date-box { width: 115px; }
+            
+            /* Headless Date Pickers (Visually hidden but functional) */
+            .bt-headless-date { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; border: none; top: 15px; left: 50%; z-index: -1; }
             
             /* Persistent Oval Border for Active Date Display */
             #bt-date-display-container {
@@ -94,7 +96,7 @@ export function init(containerId, entityId = null) {
 
             /* Responsive Cascading Controls */
             @media (max-width: 1100px) {
-                .bt-ctrl-bar { row-gap: 2px; } /* Reduced vertical gap when stacked */
+                .bt-ctrl-bar { row-gap: 2px; } 
                 .grp-acc { flex: 1 1 100%; margin-bottom: 5px; }
                 .grp-date { order: 2; justify-content: flex-start; flex: 1; }
                 .grp-search { order: 3; justify-content: flex-end; flex: initial; }
@@ -351,13 +353,12 @@ export function init(containerId, entityId = null) {
                     <option value="not_between">Not between</option>
                 </select>
                 
-                <input type="date" id="bt-date1" class="bt-oval-input bt-date-box" style="display:none;">
-                <span id="bt-date-and" style="display:none; font-size:13px; color:#666; font-weight:500; padding: 0 2px;">and</span>
-                <input type="date" id="bt-date2" class="bt-oval-input bt-date-box" style="display:none;" title="End Date">
+                <input type="date" id="bt-date1" class="bt-headless-date">
+                <input type="date" id="bt-date2" class="bt-headless-date">
                 
-                <div id="bt-date-display-container">
+                <div id="bt-date-display-container" style="display:none;">
                     <span id="bt-date-display-text"></span>
-                    <button id="bt-date-clear" style="background:transparent; border:none; color:#d9534f; cursor:pointer; font-size:18px; line-height:1; padding:0; display:flex; align-items:center;" title="Clear Filter">&times;</button>
+                    <button id="bt-date-clear" title="Clear Filter">&times;</button>
                 </div>
             </div>
         </div>
@@ -392,7 +393,7 @@ export function init(containerId, entityId = null) {
             <div id="bt-page-info">Showing 0-0 of 0</div>
             <div class="bt-page-controls">
                 <label style="margin-right: 10px;">Rows per page: 
-                    <select class="bt-oval-input" style="min-width: auto; border: 1px solid #ccc; border-radius: 4px; padding: 4px 10px;" id="bt-rowsPerPage">
+                    <select class="bt-oval-input" style="border: 1px solid #ccc; width:auto;" id="bt-rowsPerPage">
                         <option value="25">25</option>
                         <option value="50">50</option>
                         <option value="75">75</option>
@@ -409,7 +410,6 @@ export function init(containerId, entityId = null) {
     const dateMode = document.getElementById('bt-dateMode');
     const elDate1 = document.getElementById('bt-date1');
     const elDate2 = document.getElementById('bt-date2');
-    const elDateAnd = document.getElementById('bt-date-and');
     const dateDisplayContainer = document.getElementById('bt-date-display-container');
     const dateDisplayText = document.getElementById('bt-date-display-text');
     const dateClearBtn = document.getElementById('bt-date-clear');
@@ -427,6 +427,20 @@ export function init(containerId, entityId = null) {
     let currentTransactions = []; 
     let currentPage = 1;
     let rowsPerPage = 25;
+
+    // --- Core Action: Dynamic Width Calculator for Selects ---
+    const adjustSelectWidth = (selElement, extraPadding) => {
+        let span = document.createElement('span');
+        span.style.font = window.getComputedStyle(selElement).font;
+        span.style.visibility = 'hidden';
+        span.style.whiteSpace = 'pre';
+        span.style.position = 'absolute';
+        span.textContent = selElement.options[selElement.selectedIndex]?.text || selElement.value || '';
+        document.body.appendChild(span);
+        const newWidth = span.offsetWidth + extraPadding;
+        selElement.style.width = newWidth + 'px';
+        span.remove();
+    };
 
     // Header Options Actions
     const optionsGroup = document.getElementById('bt-optionsGroup');
@@ -492,6 +506,10 @@ export function init(containerId, entityId = null) {
             const snapVend = await getDocs(qVend);
             snapVend.forEach(doc => vendorsList.push({ id: doc.id, ...doc.data() }));
 
+            // Adjust widths instantly on load
+            adjustSelectWidth(elAccount, 75); // 45px left padding + 30px right space
+            adjustSelectWidth(dateMode, 44);
+
         } catch(e) { console.error(e); }
     };
 
@@ -535,7 +553,7 @@ export function init(containerId, entityId = null) {
         window.refreshBankTransactionsTable();
     };
 
-    // --- Dynamic Date Control UI Logic ---
+    // --- Dynamic Headless Date Picker Engine ---
     const updateDateUI = () => {
         const mode = dateMode.value;
         const d1 = elDate1.value;
@@ -543,40 +561,29 @@ export function init(containerId, entityId = null) {
         const requiresTwo = mode === 'between' || mode === 'not_between';
 
         if (mode === 'all') {
-            elDate1.style.display = 'none';
-            elDate2.style.display = 'none';
-            elDateAnd.style.display = 'none';
             dateDisplayContainer.style.display = 'none';
+            resetFiltersAndFetch();
         } else {
             const isPopulated = requiresTwo ? (d1 && d2) : (d1 !== '');
-            
             if (isPopulated) {
-                elDate1.style.display = 'none';
-                elDate2.style.display = 'none';
-                elDateAnd.style.display = 'none';
                 dateDisplayText.textContent = requiresTwo ? `${d1} and ${d2}` : d1;
                 dateDisplayContainer.style.display = 'flex';
+                resetFiltersAndFetch();
             } else {
                 dateDisplayContainer.style.display = 'none';
-                elDate1.style.display = 'block';
-                if (requiresTwo) {
-                    elDateAnd.style.display = 'block';
-                    elDate2.style.display = 'block';
-                } else {
-                    elDateAnd.style.display = 'none';
-                    elDate2.style.display = 'none';
-                }
             }
         }
-        resetFiltersAndFetch();
     };
 
     dateMode.addEventListener('change', () => {
+        adjustSelectWidth(dateMode, 44);
         elDate1.value = '';
         elDate2.value = '';
         updateDateUI();
+        
+        // Trigger native calendar programmatically
         if (dateMode.value !== 'all') {
-            try { elDate1.showPicker(); } catch(e) {}
+            try { elDate1.showPicker(); } catch(e) { console.warn("Auto-picker not supported by this browser."); }
         }
     });
 
@@ -584,7 +591,9 @@ export function init(containerId, entityId = null) {
         updateDateUI();
         const mode = dateMode.value;
         if ((mode === 'between' || mode === 'not_between') && !elDate2.value) {
-            try { setTimeout(() => elDate2.showPicker(), 100); } catch(e) {}
+            try { 
+                setTimeout(() => elDate2.showPicker(), 100); 
+            } catch(e) {}
         }
     });
 
@@ -592,12 +601,17 @@ export function init(containerId, entityId = null) {
 
     dateClearBtn.addEventListener('click', () => {
         dateMode.value = 'all';
+        adjustSelectWidth(dateMode, 44);
         elDate1.value = '';
         elDate2.value = '';
         updateDateUI();
     });
 
-    elAccount.addEventListener('change', resetFiltersAndFetch);
+    elAccount.addEventListener('change', () => {
+        adjustSelectWidth(elAccount, 75);
+        resetFiltersAndFetch();
+    });
+    
     elSearch.addEventListener('input', resetFiltersAndFetch);
 
     document.getElementById('bt-headerDate').addEventListener('click', () => {
@@ -729,8 +743,14 @@ export function init(containerId, entityId = null) {
                 const vendEmptyCls = tx.vendorId ? '' : 'is-empty';
                 const catEmptyCls = defCatId ? '' : 'is-empty';
                 
-                vendHtml = `<select class="cat-select vend-select-box ${vendEmptyCls}" id="vend-${tx.id}">${buildVendorDropdown(tx.vendorId)}</select>`;
-                catHtml = `<select class="cat-select cat-select-box ${catEmptyCls}" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>`;
+                vendHtml = `
+                    <span class="inline-lbl lbl-vend">Vendor</span>
+                    <select class="cat-select vend-select-box ${vendEmptyCls}" id="vend-${tx.id}">${buildVendorDropdown(tx.vendorId)}</select>
+                `;
+                catHtml = `
+                    <span class="inline-lbl lbl-cat">Category</span>
+                    <select class="cat-select cat-select-box ${catEmptyCls}" id="sel-${tx.id}">${buildCategoryDropdown(defCatId)}</select>
+                `;
                 postHtml = `<a class="txt-link post btn-post" data-id="${tx.id}">Post</a>`;
                 splitHtml = `<a class="txt-link btn-split" data-id="${tx.id}">Split</a>`;
             } else {
@@ -738,8 +758,14 @@ export function init(containerId, entityId = null) {
                 const vendName = vendorsList.find(v => v.id === tx.vendorId)?.name || '';
                 const catName = tx.status === 'Split' ? `Split (${tx.splits ? tx.splits.length : 0})` : (chartOfAccounts.find(c => c.id === tx.postedCategoryId)?.name || 'Categorized');
                 
-                vendHtml = `<span class="${borderClass}">${vendName}</span>`;
-                catHtml = `<span class="${borderClass}" style="color: #2e7d32; font-weight: 500;">${catName}</span>`;
+                vendHtml = `
+                    <span class="inline-lbl lbl-vend">Vendor</span>
+                    <span class="${borderClass}">${vendName}</span>
+                `;
+                catHtml = `
+                    <span class="inline-lbl lbl-cat">Category</span>
+                    <span class="${borderClass}" style="color: #2e7d32; font-weight: 500;">${catName}</span>
+                `;
                 
                 postHtml = `<span class="txt-green">&#10003;</span>`;
                 splitHtml = `<a class="txt-link undo cat-btn-undo" data-id="${tx.id}">Undo</a>`;
@@ -749,8 +775,8 @@ export function init(containerId, entityId = null) {
                 <div class="bt-row-group ${statusClass}">
                     <div class="bt-cell bt-cell-chk"><input type="checkbox" class="bt-row-check" data-id="${tx.id}"></div>
                     <div class="bt-cell bt-cell-date"><span class="${borderClass}">${tx.date}</span></div>
-                    <div class="bt-cell bt-cell-vend"><span class="inline-lbl lbl-vend">Vendor</span><div style="flex:1;">${vendHtml}</div></div>
-                    <div class="bt-cell bt-cell-cat"><span class="inline-lbl lbl-cat">Category</span><div style="flex:1;">${catHtml}</div></div>
+                    <div class="bt-cell bt-cell-vend"><div style="flex:1; min-width:0;">${vendHtml}</div></div>
+                    <div class="bt-cell bt-cell-cat"><div style="flex:1; min-width:0;">${catHtml}</div></div>
                     <div class="bt-cell bt-cell-desc"><span class="inline-lbl lbl-desc">Bank Memo</span><span class="${borderClass}">${tx.description}</span></div>
                     <div class="bt-cell bt-cell-amt ${amtClass}"><span class="${borderClass}">${formatCurrency(Math.abs(tx.foreignAmount), tx.currency)}</span></div>
                     <div class="bt-cell bt-cell-bal"><span class="${borderClass}">${formatCurrency(tx.calculatedBalance, tx.currency)}</span></div>
