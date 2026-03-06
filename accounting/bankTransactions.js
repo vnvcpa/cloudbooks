@@ -314,7 +314,7 @@ export function init(containerId, entityId = null) {
                 <h3>Transactions</h3>
             </div>
             <div class="bt-options-wrapper" id="bt-optionsGroup">
-                <button class="bt-btn-options" id="bt-btnOptions">
+                <button class="bt-oval-input" id="bt-btnOptions">
                     Options <span style="font-size:10px;">▼</span>
                 </button>
                 <div class="bt-dropdown" id="bt-primaryMenu">
