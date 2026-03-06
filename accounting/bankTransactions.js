@@ -69,21 +69,7 @@ export function init(containerId, entityId = null) {
             /* Specific Group Overlaps & Layouts */
             .grp-acc { position: relative; order: 1; }
             /*.bt-ctrl-lbl { font-weight: 600; font-size: 12px; color: var(--primary-dark); text-transform: uppercase; position: relative; z-index: 2; pointer-events: none; }*/
-            .bt-ctrl-lbl { 
-              display: inline-block;
-              font-weight: 600;
-              font-size: 12px;
-              color: #ffffff;               /* white text */
-              background: var(--primary-dark);          /* #003366 - dark blue background */
-              padding: 3px;                 /* 1px internal padding on all sides */
-              text-transform: uppercase;
-              position: relative;
-              z-index: 2;
-              pointer-events: none;
-              line-height: 1;
-              vertical-align: middle;
-              border-radius: 20px;
-            }
+            .bt-ctrl-lbl { display: inline-block; font-weight: 600; font-size: 12px; color: #ffffff; background: var(--primary-dark); padding: 3px; text-transform: uppercase; position: relative; z-index: 2; pointer-events: none; line-height: 1; vertical-align: middle; border-radius: 20px; }
             
             /* Slides the border exactly behind the 'O' in ACCOUNT: */
             #bt-filterAccount { margin-left: -40px; padding-left: 45px; position: relative; z-index: 1; }
